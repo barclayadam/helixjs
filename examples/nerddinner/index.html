@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <title>Nerd Dinner</title>
+
+	  <!-- Lib Files -->
+	  <script type="text/javascript" src='/ext/jquery.js'></script>
+	  <script type="text/javascript" src='/ext/underscore.js'></script>
+	  <script type="text/javascript" src='/ext/knockout.js'></script>
+      <script type="text/javascript" src='/lib/hx.js'></script>
+	  
+	  <!-- Source Files -->  
+      <script type="text/javascript" src='js/app.js'></script>
+      <script type="text/javascript" src='js/homepage.js'></script>
+
+	  <!-- Styles -->
+	  <link rel="stylesheet" type="text/css" href="styles/site.css" />
+  </head>
+
+  <body data-bind="app: nerddinner.app">
+	<div class="page">
+        <header>
+            <div id="title">
+                <h1>
+                    <a href="/" title="Nerd Dinner" class="logo"></a>
+                </h1>
+            </div>
+
+            <div id="logindisplay">
+    			[ <a href="/LogOn">Log On</a> ]
+            </div>
+
+            <nav>
+                <ul id="menu">
+                    <li><a href="/">Find Dinner</a></li>
+                    <li><a href="/Dinners/Create">Host Dinner</a></li>
+                    <li class="last"><a href="/Home/About">About</a></li>
+                </ul>
+            </nav>
+        </header>
+        
+        <region id="main" class="clearfix"></region>
+
+        <footer>
+            Copyright &copy; The HelixJS Team
+        </footer>
+    </div>
+  </body>
+</html>

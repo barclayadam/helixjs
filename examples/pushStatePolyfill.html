@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+<head>  
+  <!-- Lib Files -->
+  <script type="text/javascript" src='/ext/json2.js'></script>
+  <script type="text/javascript" src='/ext/jquery.js'></script>
+  <script type="text/javascript" src='/ext/underscore.js'></script>
+  <script type="text/javascript" src='/ext/knockout.js'></script>
+  
+  <!-- Source Files -->  
+  <script type="text/javascript" src='/lib/hx.js'></script>
+
+  <script type="text/javascript">
+    function pushNewState() {
+      hx.location.routePath('My New Url' + (new Date()).getTime());
+      hx.location.routeVariables.set('A Key', (new Date()).getTime(), { history: false })
+    }
+
+    function replaceState() {
+      window.history.replaceState(null, 'New Title', 'My New Url' + (new Date()).getTime());
+    }
+  </script>
+</head>
+<body>
+
+  <button onclick="pushNewState();">pushNewState() - Using hx.location API</button>
+
+   <br />
+
+  <button onclick="replaceState();">replaceState() - Using window.history API</button>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Name
+        <th>Value
+
+    <tbody>
+      <tr>
+        <td>hx.location.uri
+        <td data-bind="text: hx.location.uri"></td>
+
+      <tr>
+        <td>hx.location.path
+        <td data-bind="text: hx.location.path"></td>
+
+      <tr>
+        <td>hx.location.fragment
+        <td data-bind="text: hx.location.fragment"></td>
+
+      <tr>
+        <td>hx.location.variables
+        <td data-bind="text: ko.toJSON(hx.location.variables)"></td>
+
+      <tr>
+        <td>hx.location.query
+        <td data-bind="text:hx.location.query"></td>
+
+      <tr>
+        <td>hx.location.routePath 
+        <td data-bind="text: hx.location.routePath"></td>
+
+      <tr>
+        <td>hx.location.routeVariables 
+        <td data-bind="text: ko.toJSON(hx.location.routeVariables)"></td>
+    </table>
+
+    <script>
+       ko.applyBindings({ bo: bo })
+    </script>
+</body>
+</html>

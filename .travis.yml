@@ -1,0 +1,7 @@
+---
+language: node_js
+node_js:
+- 0.8
+env:
+  global:
+  - secure: BUrq3PxOOzAegrSzRZisCqtz1Q0cD5z6Pd3H2hY/HRNxU9noREcxmEI9cjGOwAmJUonoK3+LldWyUJ9pbcgbdEtug6CSad93e6gSy4EvUTt+2UehYQxxv1aDYasrFDKpGgwJhotSX2Ebvuo1KvCnZ3Q8NyxM8WYmLVhFgdH9ILo=
