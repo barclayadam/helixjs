@@ -10,8 +10,8 @@ module.exports = function (grunt) {
 
     var saucekey = null;
 
-    if (typeof process.env.saucekey !== "undefined") {
-        saucekey = process.env.saucekey;
+    if (typeof process.env["SAUCE_ACCESS_KEY"] !== "undefined") {
+        saucekey = process.env["SAUCE_ACCESS_KEY"];
     }
 
     grunt.loadNpmTasks('grunt-contrib-uglify');
@@ -123,7 +123,7 @@ module.exports = function (grunt) {
     if (saucekey) {
         grunt.registerTask('test', ['serve', 'saucelabs-jasmine']);
     } else {
-        grunt.registerTask('test', ['serve', 'regarde']);
+        grunt.registerTask('test', ['serve']);
     }
 
     grunt.registerTask('default', ['serve', 'regarde']);
