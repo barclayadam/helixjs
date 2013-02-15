@@ -23,9 +23,11 @@
         // Root namespace into which the public API will be exported.
         var hx = hxExports != null ? hxExports : {};
 
-        //= core/log.js
-
         //= core/utils.js
+
+        //= core/log.js
+        //= core/injector.js
+
         //= core/bus.js
         //= core/uri.js
         //= core/ajax.js
