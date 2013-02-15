@@ -102,7 +102,7 @@ module.exports = function (grunt) {
 
     grunt.registerTask('rig', 'Compile files using rigger', function () {
         var inPath = 'src/hx.js',
-            outPath = 'lib/hxs.js',
+            outPath = 'lib/hx.js',
             done = this.async();
 
         rigger.process(grunt.file.read(inPath), {
@@ -121,7 +121,7 @@ module.exports = function (grunt) {
     grunt.registerTask('serve', ['livereload-start', 'connect']);
 
     if (saucekey) {
-        grunt.registerTask('test', ['rig', 'serve', 'saucelabs-jasmine']);
+        grunt.registerTask('test', ['rig', 'connect', 'saucelabs-jasmine']);
     } else {
         grunt.registerTask('test', ['rig', 'serve']);
     }
