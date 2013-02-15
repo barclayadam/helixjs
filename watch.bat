@@ -1,1 +1,1 @@
-grunt serve
+grunt
