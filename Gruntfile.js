@@ -121,9 +121,9 @@ module.exports = function (grunt) {
     grunt.registerTask('serve', ['livereload-start', 'connect']);
 
     if (saucekey) {
-        grunt.registerTask('test', ['build', 'serve', 'saucelabs-jasmine']);
+        grunt.registerTask('test', ['rig', 'serve', 'saucelabs-jasmine']);
     } else {
-        grunt.registerTask('test', ['build', 'serve']);
+        grunt.registerTask('test', ['rig', 'serve']);
     }
 
     grunt.registerTask('default', ['serve', 'regarde']);
