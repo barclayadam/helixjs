@@ -62,7 +62,7 @@ module.exports = function (grunt) {
         regarde: {
             serve: {
                 files: ['src/**/*.*', 'spec/**/*.*'],
-                tasks: ['build', 'livereload']
+                tasks: ['rig', 'livereload']
             }
         },
 
