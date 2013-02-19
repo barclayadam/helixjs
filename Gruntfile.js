@@ -10,7 +10,7 @@ module.exports = function (grunt) {
 
     var saucekey = null;
 
-    if (typeof process.env["SAUCE_ACCESS_KEY"] !== "undefined") {
+    if (typeof process.env["SAUCE_ACCESS_KEY"] !== "undefined") {        
         saucekey = process.env["SAUCE_ACCESS_KEY"];
     }
 
@@ -117,11 +117,19 @@ module.exports = function (grunt) {
         });
     });
 
+
+    grunt.registerTask('check-saucekey', 'Checks for the presence of the saucekey variable from the environment', function() {
+        if(!saucekey) {
+            grunt.fatal("The saucekey environment variable cannot be found. Add the key as env variable SAUCE_ACCESS_KEY");
+        }
+    });
+
     grunt.registerTask('build', ['rig', 'uglify']);
     grunt.registerTask('serve', ['livereload-start', 'connect']);
+    grunt.registerTask('saucelabs', ['check-saucekey', 'rig', 'connect', 'saucelabs-jasmine'])
 
     if (saucekey) {
-        grunt.registerTask('test', ['rig', 'connect', 'saucelabs-jasmine']);
+        grunt.registerTask('test', ['saucelabs']);
     } else {
         grunt.registerTask('test', ['rig', 'serve']);
     }
