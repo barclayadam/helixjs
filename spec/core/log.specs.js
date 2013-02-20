@@ -10,10 +10,10 @@ var levelMethodSpecs = (function (method) {
             $log.enabled = false;
         });
 
-        if (console[method] != undefined) {
+        if (window.console && window.console[method] != undefined && window.console[method].hasOwnProperty) {
             describe('when direct console equivalent is available', function () {
                 beforeEach(function () {
-                    this.logStub = this.stub(console, method);
+                    this.logStub = this.stub(window.console, method);
                     $log[method]('An Argument', 'Another Argument');
                 });
 
@@ -21,10 +21,10 @@ var levelMethodSpecs = (function (method) {
                     expect(this.logStub).toHaveBeenCalledWith('An Argument', 'Another Argument');
                 });
             });
-        } else if (console['log'] != undefined) {
+        } else if (window.console && window.console['log'] != undefined && window.console['log'].hasOwnProperty) {
             describe('when console.log is available', function () {
                 beforeEach(function () {
-                    this.logStub = this.stub(console, 'log');
+                    this.logStub = this.stub(window.console, 'log');
                     $log[method]('An Argument', 'Another Argument');
                 });
 
@@ -50,10 +50,10 @@ var levelMethodSpecs = (function (method) {
             $log.enabled = false;
         });
 
-        if (console[method] != undefined) {
+        if (window.console && window.console[method] != undefined && window.console[method].hasOwnProperty) {
             describe('when direct console equivalent is available', function () {
                 beforeEach(function () {
-                    this.logStub = this.stub(console, method);
+                    this.logStub = this.stub(window.console, method);
                     $log[method]('An Argument', 'Another Argument');
                 });
 
@@ -61,10 +61,10 @@ var levelMethodSpecs = (function (method) {
                     expect(this.logStub).toHaveNotBeenCalled();
                 });
             });
-        } else if (console['log'] != undefined) {
+        } else if (window.console && window.console['log'] != undefined && window.console['log'].hasOwnProperty) {
             describe('when console.log is available', function () {
                 beforeEach(function () {
-                    this.logStub = this.stub(console, 'log');
+                    this.logStub = this.stub(window.console, 'log');
                     $log[method]('An Argument', 'Another Argument');
                 });
 
