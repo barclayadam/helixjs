@@ -1,8 +1,10 @@
 describe('Messaging - Commands', function () {
+    var $command = hx.get('$command');
+    
     describe('Executing a command (low-level)', function () {
         beforeEach(function () {
-            hx.messaging.commandUrlTemplate = 'ExecuteCommand/{name}';
-            this.promise = hx.messaging.command('My Command', {
+            $command.commandUrlTemplate = 'ExecuteCommand/{name}';
+            this.promise = $command.command('My Command', {
                 id: 3456
             });
 
@@ -43,7 +45,7 @@ describe('Messaging - Commands', function () {
     });
     describe('Manipulating a Command', function () {
         beforeEach(function () {
-            this.command = new hx.messaging.Command('My Command', {
+            this.command = new $command.Command('My Command', {
                 id: 3456,
                 name: 'My Name'
             });
@@ -70,9 +72,9 @@ describe('Messaging - Commands', function () {
 
     describe('Executing a Command', function () {
         beforeEach(function () {
-            hx.messaging.commandUrlTemplate = 'ExecuteCommand/{name}';
+            $command.commandUrlTemplate = 'ExecuteCommand/{name}';
 
-            this.command = new hx.messaging.Command('My Command', {
+            this.command = new $command.Command('My Command', {
                 id: ko.observable(3456).addValidationRules({
                     required: true
                 })

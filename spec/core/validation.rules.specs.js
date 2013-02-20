@@ -29,28 +29,23 @@ function itShouldReturnTrueForEmptyValues(ruleName) {
 describe('Validation', function () {
     describe('With a required validator', function () {
         it('should true if property value is defined', function () {
-            var isValid;
-            isValid = rules.required.validator('My Value', true, {});
+            var isValid = rules.required.validator('My Value', true, {});
             expect(isValid).toBe(true);
         });
         it('should false if property value is undefined', function () {
-            var isValid;
-            isValid = rules.required.validator(void 0, true, {});
+            var isValid = rules.required.validator(void 0, true, {});
             expect(isValid).toBe(false);
         });
         it('should false if property value is null', function () {
-            var isValid;
-            isValid = rules.required.validator(null, true, {});
+            var isValid = rules.required.validator(null, true, {});
             expect(isValid).toBe(false);
         });
         it('should false if property value is empty string', function () {
-            var isValid;
-            isValid = rules.required.validator('', true, {});
+            var isValid = rules.required.validator('', true, {});
             expect(isValid).toBe(false);
         });
         it('should false if property value is all spaces', function () {
-            var isValid;
-            isValid = hx.validation.rules.required.validator('    ', true, {});
+            var isValid = hx.validation.rules.required.validator('    ', true, {});
             expect(isValid).toBe(false);
         });
         describe('with a modified input element', function () {
@@ -70,13 +65,11 @@ describe('Validation', function () {
     describe('With a regex validator', function () {
         itShouldReturnTrueForEmptyValues('regex');
         it('should true if property value matches regular expression', function () {
-            var isValid;
-            isValid = rules.regex.validator('01234', /[0-9]+/, {});
+            var isValid = rules.regex.validator('01234', /[0-9]+/, {});
             expect(isValid).toBe(true);
         });
         it('should false if property value does not match regular expression', function () {
-            var isValid;
-            isValid = rules.regex.validator('abc', /[0-9]+/, {});
+            var isValid = rules.regex.validator('abc', /[0-9]+/, {});
             expect(isValid).toBe(false);
         });
         describe('with a modified input element', function () {
@@ -131,76 +124,62 @@ describe('Validation', function () {
     describe('With a minLength validator', function () {
         itShouldReturnTrueForEmptyValues('minLength');
         it('should true if property is string with required number of characters', function () {
-            var isValid;
-            isValid = rules.minLength.validator('01', 2, {});
+            var isValid = rules.minLength.validator('01', 2, {});
             expect(isValid).toBe(true);
         });
         it('should true if property is string with more than required number of characters', function () {
-            var isValid;
-            isValid = rules.minLength.validator('0123456', 2, {});
+            var isValid = rules.minLength.validator('0123456', 2, {});
             expect(isValid).toBe(true);
         });
         it('should false if property is string with too few characters', function () {
-            var isValid;
-            isValid = rules.minLength.validator('c', 2, {});
+            var isValid = rules.minLength.validator('c', 2, {});
             expect(isValid).toBe(false);
         });
         it('should true if property is an array with required number of items', function () {
-            var isValid;
-            isValid = rules.minLength.validator(['0', '1'], 2, {});
+            var isValid = rules.minLength.validator(['0', '1'], 2, {});
             expect(isValid).toBe(true);
         });
         it('should true if property is an array with more than required number of items', function () {
-            var isValid;
-            isValid = rules.minLength.validator(['0', '1'], 1);
+            var isValid = rules.minLength.validator(['0', '1'], 1);
             expect(isValid).toBe(true);
         });
         it('should false if property is an array with too few items', function () {
-            var isValid;
-            isValid = rules.minLength.validator(['c'], 2, {});
+            var isValid = rules.minLength.validator(['c'], 2, {});
             expect(isValid).toBe(false);
         });
         it('should false if property does not have a length', function () {
-            var isValid;
-            isValid = rules.minLength.validator(false, [2, 4], {});
+            var isValid = rules.minLength.validator(false, [2, 4], {});
             expect(isValid).toBe(false);
         });
     });
     describe('With an exactLength validator', function () {
         itShouldReturnTrueForEmptyValues('exactLength');
         it('should true if property is string with exact number of characters allowed', function () {
-            var isValid;
-            isValid = rules.exactLength.validator('01', 2, {});
+            var isValid = rules.exactLength.validator('01', 2, {});
             expect(isValid).toBe(true);
         });
         it('should false if property is string with less than the exact number of characters allowed', function () {
-            var isValid;
-            isValid = rules.exactLength.validator('0', 2, {});
+            var isValid = rules.exactLength.validator('0', 2, {});
             expect(isValid).toBe(false);
         });
         it('should false if property is string with greater than the exact number of characters allowed', function () {
-            var isValid;
-            isValid = rules.exactLength.validator('012', 2, {});
+            var isValid = rules.exactLength.validator('012', 2, {});
             expect(isValid).toBe(false);
         });
         it('should true if property is an array with exact number of items allowed', function () {
-            var isValid;
-            isValid = rules.exactLength.validator(['0', '1'], 2, {});
+            var isValid = rules.exactLength.validator(['0', '1'], 2, {});
             expect(isValid).toBe(true);
         });
         it('should false if property is an array with less than the exact number of items allowed', function () {
-            var isValid;
-            isValid = rules.exactLength.validator(['0'], 2, {});
+            var isValid = rules.exactLength.validator(['0'], 2, {});
             expect(isValid).toBe(false);
         });
         it('should false if property is an array with greater than the exact number of items allowed', function () {
-            var isValid;
-            isValid = rules.exactLength.validator(['0', '1', '2'], 2, {});
+            var isValid = rules.exactLength.validator(['0', '1', '2'], 2, {});
             expect(isValid).toBe(false);
         });
         it('should false if property does not have a length', function () {
-            var isValid;
-            isValid = rules.exactLength.validator(true, 3, {});
+            var isValid = rules.exactLength.validator(true, 3, {});
             expect(isValid).toBe(false);
         });
         describe('with a modified input element', function () {
@@ -217,38 +196,31 @@ describe('Validation', function () {
     describe('With a maxLength validator', function () {
         itShouldReturnTrueForEmptyValues('maxLength');
         it('should true if property is string with maximum number of characters allowed', function () {
-            var isValid;
-            isValid = rules.maxLength.validator('01', 2, {});
+            var isValid = rules.maxLength.validator('01', 2, {});
             expect(isValid).toBe(true);
         });
         it('should true if property is string with less than maximum number of characters', function () {
-            var isValid;
-            isValid = rules.maxLength.validator('0', 2, {});
+            var isValid = rules.maxLength.validator('0', 2, {});
             expect(isValid).toBe(true);
         });
         it('should false if property is string with too many characters', function () {
-            var isValid;
-            isValid = rules.maxLength.validator('cfty', 2, {});
+            var isValid = rules.maxLength.validator('cfty', 2, {});
             expect(isValid).toBe(false);
         });
         it('should true if property is an array with maximum number of items allowed', function () {
-            var isValid;
-            isValid = rules.maxLength.validator(['0', '1'], 2, {});
+            var isValid = rules.maxLength.validator(['0', '1'], 2, {});
             expect(isValid).toBe(true);
         });
         it('should true if property is an array with less than maximum number of items', function () {
-            var isValid;
-            isValid = rules.maxLength.validator(['0'], 2, {});
+            var isValid = rules.maxLength.validator(['0'], 2, {});
             expect(isValid).toBe(true);
         });
         it('should false if property is an array with too many items', function () {
-            var isValid;
-            isValid = rules.maxLength.validator(['c', 'f', 't', 'y'], 2, {});
+            var isValid = rules.maxLength.validator(['c', 'f', 't', 'y'], 2, {});
             expect(isValid).toBe(false);
         });
         it('should false if property does not have a length', function () {
-            var isValid;
-            isValid = rules.maxLength.validator(false, [2, 4], {});
+            var isValid = rules.maxLength.validator(false, [2, 4], {});
             expect(isValid).toBe(false);
         });
         describe('with a modified input element', function () {
@@ -265,33 +237,27 @@ describe('Validation', function () {
     describe('With a rangeLength validator', function () {
         itShouldReturnTrueForEmptyValues('rangeLength');
         it('should true if property is string with minimum number of characters as defined by first element of options array', function () {
-            var isValid;
-            isValid = rules.rangeLength.validator('12', [2, 4], {});
+            var isValid = rules.rangeLength.validator('12', [2, 4], {});
             expect(isValid).toBe(true);
         });
         it('should true if property is string with maximum number of characters as defined by second element of options array', function () {
-            var isValid;
-            isValid = rules.rangeLength.validator('1234', [2, 4], {});
+            var isValid = rules.rangeLength.validator('1234', [2, 4], {});
             expect(isValid).toBe(true);
         });
         it('should true if property is string with character count within minimum and maximum allowed', function () {
-            var isValid;
-            isValid = rules.rangeLength.validator('123', [2, 4], {});
+            var isValid = rules.rangeLength.validator('123', [2, 4], {});
             expect(isValid).toBe(true);
         });
         it('should false if property is string with too many characters', function () {
-            var isValid;
-            isValid = rules.rangeLength.validator('12345', [2, 4], {});
+            var isValid = rules.rangeLength.validator('12345', [2, 4], {});
             expect(isValid).toBe(false);
         });
         it('should false if property is string with too few characters', function () {
-            var isValid;
-            isValid = rules.rangeLength.validator('1', [2, 4], {});
+            var isValid = rules.rangeLength.validator('1', [2, 4], {});
             expect(isValid).toBe(false);
         });
         it('should false if property is not a string', function () {
-            var isValid;
-            isValid = rules.rangeLength.validator(false, [2, 4], {});
+            var isValid = rules.rangeLength.validator(false, [2, 4], {});
             expect(isValid).toBe(false);
         });
         describe('with a modified input element', function () {
@@ -309,23 +275,19 @@ describe('Validation', function () {
     describe('With a min validator', function () {
         itShouldReturnTrueForEmptyValues('min');
         it('should true if property value is equal to minimum option value', function () {
-            var isValid;
-            isValid = rules.min.validator(56, 56, {});
+            var isValid = rules.min.validator(56, 56, {});
             expect(isValid).toBe(true);
         });
         it('should true if property value is greater than minimum option value', function () {
-            var isValid;
-            isValid = rules.min.validator(456, 56, {});
+            var isValid = rules.min.validator(456, 56, {});
             expect(isValid).toBe(true);
         });
         it('should false if property value is less than minimum option value', function () {
-            var isValid;
-            isValid = rules.min.validator(4, 56, {});
+            var isValid = rules.min.validator(4, 56, {});
             expect(isValid).toBe(false);
         });
         it('should false if property is not a number', function () {
-            var isValid;
-            isValid = rules.min.validator("Not a Number", 5, {});
+            var isValid = rules.min.validator("Not a Number", 5, {});
             expect(isValid).toBe(false);
         });
         describe('with a modified input element', function () {
@@ -345,46 +307,38 @@ describe('Validation', function () {
     describe('With a moreThan validator', function () {
         itShouldReturnTrueForEmptyValues('moreThan');
         it('should false if property value is equal to minimum option value', function () {
-            var isValid;
-            isValid = hx.validation.rules.moreThan.validator(56, 56, {});
+            var isValid = hx.validation.rules.moreThan.validator(56, 56, {});
             expect(isValid).toBe(false);
         });
         it('should true if property value is greater than minimum option value', function () {
-            var isValid;
-            isValid = hx.validation.rules.moreThan.validator(456, 56, {});
+            var isValid = hx.validation.rules.moreThan.validator(456, 56, {});
             expect(isValid).toBe(true);
         });
         it('should false if property value is less than minimum option value', function () {
-            var isValid;
-            isValid = hx.validation.rules.moreThan.validator(4, 56, {});
+            var isValid = hx.validation.rules.moreThan.validator(4, 56, {});
             expect(isValid).toBe(false);
         });
         it('should false if property is not a number', function () {
-            var isValid;
-            isValid = hx.validation.rules.moreThan.validator("Not a Number", 5, {});
+            var isValid = hx.validation.rules.moreThan.validator("Not a Number", 5, {});
             expect(isValid).toBe(false);
         });
     });
     describe('With a max validator', function () {
         itShouldReturnTrueForEmptyValues('max');
         it('should true if property value is equal to maximum option value', function () {
-            var isValid;
-            isValid = rules.max.validator(56, 56, {});
+            var isValid = rules.max.validator(56, 56, {});
             expect(isValid).toBe(true);
         });
         it('should true if property value is less than maximum option value', function () {
-            var isValid;
-            isValid = rules.max.validator(34, 56, {});
+            var isValid = rules.max.validator(34, 56, {});
             expect(isValid).toBe(true);
         });
         it('should false if property value is greater than maximum option value', function () {
-            var isValid;
-            isValid = rules.max.validator(346, 56, {});
+            var isValid = rules.max.validator(346, 56, {});
             expect(isValid).toBe(false);
         });
         it('should false if property is not a number', function () {
-            var isValid;
-            isValid = rules.max.validator("Not a Number", 5, {});
+            var isValid = rules.max.validator("Not a Number", 5, {});
             expect(isValid).toBe(false);
         });
         describe('with a modified input element', function () {
@@ -404,56 +358,46 @@ describe('Validation', function () {
     describe('With a lessThan validator', function () {
         itShouldReturnTrueForEmptyValues('lessThan');
         it('should false if property value is equal to maximum option value', function () {
-            var isValid;
-            isValid = hx.validation.rules.lessThan.validator(56, 56, {});
+            var isValid = hx.validation.rules.lessThan.validator(56, 56, {});
             expect(isValid).toBe(false);
         });
         it('should true if property value is less than maximum option value', function () {
-            var isValid;
-            isValid = hx.validation.rules.lessThan.validator(34, 56, {});
+            var isValid = hx.validation.rules.lessThan.validator(34, 56, {});
             expect(isValid).toBe(true);
         });
         it('should false if property value is greater than maximum option value', function () {
-            var isValid;
-            isValid = hx.validation.rules.lessThan.validator(346, 56, {});
+            var isValid = hx.validation.rules.lessThan.validator(346, 56, {});
             expect(isValid).toBe(false);
         });
         it('should false if property is not a number', function () {
-            var isValid;
-            isValid = hx.validation.rules.lessThan.validator("Not a Number", 5, {});
+            var isValid = hx.validation.rules.lessThan.validator("Not a Number", 5, {});
             expect(isValid).toBe(false);
         });
     });
     describe('With a range validator', function () {
         itShouldReturnTrueForEmptyValues('range');
         it('should true if property is minimum value as defined by first element of options array', function () {
-            var isValid;
-            isValid = rules.range.validator(2, [2, 65], {});
+            var isValid = rules.range.validator(2, [2, 65], {});
             expect(isValid).toBe(true);
         });
         it('should true if property is maximum value as defined by second element of options array', function () {
-            var isValid;
-            isValid = rules.range.validator(65, [2, 65], {});
+            var isValid = rules.range.validator(65, [2, 65], {});
             expect(isValid).toBe(true);
         });
         it('should true if property is within minimum and maximum allowed', function () {
-            var isValid;
-            isValid = rules.range.validator(3, [2, 4], {});
+            var isValid = rules.range.validator(3, [2, 4], {});
             expect(isValid).toBe(true);
         });
         it('should false if property is more than maximum', function () {
-            var isValid;
-            isValid = rules.range.validator(5, [2, 4], {});
+            var isValid = rules.range.validator(5, [2, 4], {});
             expect(isValid).toBe(false);
         });
         it('should false if property is less than minimum', function () {
-            var isValid;
-            isValid = rules.range.validator(1, [2, 4], {});
+            var isValid = rules.range.validator(1, [2, 4], {});
             expect(isValid).toBe(false);
         });
         it('should false if property is not a number', function () {
-            var isValid;
-            isValid = rules.range.validator("Not a Number", [2, 4], {});
+            var isValid = rules.range.validator("Not a Number", [2, 4], {});
             expect(isValid).toBe(false);
         });
         describe('with a modified input element', function () {
@@ -480,46 +424,38 @@ describe('Validation', function () {
     describe('With a min date validator', function () {
         itShouldReturnTrueForEmptyValues('minDate');
         it('should true if property value is equal to minimum date value', function () {
-            var isValid;
-            isValid = rules.minDate.validator(new Date(2011, 1, 1), new Date(2011, 1, 1));
+            var isValid = rules.minDate.validator(new Date(2011, 1, 1), new Date(2011, 1, 1));
             expect(isValid).toBe(true);
         });
         it('should true if property value is after than minimum date value', function () {
-            var isValid;
-            isValid = rules.minDate.validator(new Date(2010, 1, 1), new Date(2009, 1, 1));
+            var isValid = rules.minDate.validator(new Date(2010, 1, 1), new Date(2009, 1, 1));
             expect(isValid).toBe(true);
         });
         it('should false if property value is before than minimum option value', function () {
-            var isValid;
-            isValid = rules.minDate.validator(new Date(2010, 1, 1), new Date(2011, 1, 1));
+            var isValid = rules.minDate.validator(new Date(2010, 1, 1), new Date(2011, 1, 1));
             expect(isValid).toBe(false);
         });
         it('should false if property is not a date', function () {
-            var isValid;
-            isValid = rules.minDate.validator("Not a Number", 5, {});
+            var isValid = rules.minDate.validator("Not a Number", 5, {});
             expect(isValid).toBe(false);
         });
     });
     describe('With a max date validator', function () {
         itShouldReturnTrueForEmptyValues('maxDate');
         it('should true if property value is equal to maximum date value', function () {
-            var isValid;
-            isValid = rules.maxDate.validator(new Date(2011, 1, 1), new Date(2011, 1, 1));
+            var isValid = rules.maxDate.validator(new Date(2011, 1, 1), new Date(2011, 1, 1));
             expect(isValid).toBe(true);
         });
         it('should true if property value is less than maximum date value', function () {
-            var isValid;
-            isValid = rules.maxDate.validator(new Date(2010, 1, 1), new Date(2011, 1, 1));
+            var isValid = rules.maxDate.validator(new Date(2010, 1, 1), new Date(2011, 1, 1));
             expect(isValid).toBe(true);
         });
         it('should false if property value is greater than maximum option value', function () {
-            var isValid;
-            isValid = rules.maxDate.validator(new Date(2011, 1, 1), new Date(2010, 1, 1));
+            var isValid = rules.maxDate.validator(new Date(2011, 1, 1), new Date(2010, 1, 1));
             expect(isValid).toBe(false);
         });
         it('should false if property is not a date', function () {
-            var isValid;
-            isValid = rules.maxDate.validator("Not a Number", 5, {});
+            var isValid = rules.maxDate.validator("Not a Number", 5, {});
             expect(isValid).toBe(false);
         });
     });
@@ -533,8 +469,7 @@ describe('Validation', function () {
             expect(isValid).toBe(true);
         });
         it('should false if property value is today', function () {
-            var isValid;
-            isValid = rules.inFuture.validator(new Date(), "Date", {});
+            var isValid = rules.inFuture.validator(new Date(), "Date", {});
             expect(isValid).toBe(false);
         });
         it('should false if property value is yesterday', function () {
@@ -545,8 +480,7 @@ describe('Validation', function () {
             expect(isValid).toBe(false);
         });
         it('should false if property is not a date', function () {
-            var isValid;
-            isValid = rules.inFuture.validator("Not a Number", "Date", {});
+            var isValid = rules.inFuture.validator("Not a Number", "Date", {});
             expect(isValid).toBe(false);
         });
         it('should true if date is in the future and temporal check type is DateTime', function () {
@@ -578,8 +512,7 @@ describe('Validation', function () {
             expect(isValid).toBe(false);
         });
         it('should false if property is not a date and temporal check type is DateTime', function () {
-            var isValid;
-            isValid = rules.inFuture.validator("Not a Number", "DateTime", {});
+            var isValid = rules.inFuture.validator("Not a Number", "DateTime", {});
             expect(isValid).toBe(false);
         });
         it('should true if date is in the future and temporal check type is Date', function () {
@@ -621,8 +554,7 @@ describe('Validation', function () {
             expect(isValid).toBe(false);
         });
         it('should false if property value is today', function () {
-            var isValid;
-            isValid = rules.inPast.validator(new Date(), "Date", {});
+            var isValid = rules.inPast.validator(new Date(), "Date", {});
             expect(isValid).toBe(false);
         });
         it('should true if property value is yesterday', function () {
@@ -633,8 +565,7 @@ describe('Validation', function () {
             expect(isValid).toBe(true);
         });
         it('should false if property is not a date', function () {
-            var isValid;
-            isValid = rules.inPast.validator("Not a Number", "Date", {});
+            var isValid = rules.inPast.validator("Not a Number", "Date", {});
             expect(isValid).toBe(false);
         });
         it('should false if date is in the future and temporal check type is DateTime', function () {
@@ -666,8 +597,7 @@ describe('Validation', function () {
             expect(isValid).toBe(true);
         });
         it('should false if property is not a date and temporal check type is DateTime', function () {
-            var isValid;
-            isValid = rules.inFuture.validator("Not a Number", "DateTime", {});
+            var isValid = rules.inFuture.validator("Not a Number", "DateTime", {});
             expect(isValid).toBe(false);
         });
         it('should false if date is in the future and temporal check type is Date', function () {
@@ -709,8 +639,7 @@ describe('Validation', function () {
             expect(isValid).toBe(true);
         });
         it('should true if property value is today', function () {
-            var isValid;
-            isValid = rules.notInPast.validator(new Date(), "Date", {});
+            var isValid = rules.notInPast.validator(new Date(), "Date", {});
             expect(isValid).toBe(true);
         });
         it('should false if property value is yesterday', function () {
@@ -721,8 +650,7 @@ describe('Validation', function () {
             expect(isValid).toBe(false);
         });
         it('should false if property is not a date', function () {
-            var isValid;
-            isValid = rules.notInPast.validator("Not a Number", "Date", {});
+            var isValid = rules.notInPast.validator("Not a Number", "Date", {});
             expect(isValid).toBe(false);
         });
         it('should true if date is in the future and temporal check type is DateTime', function () {
@@ -754,8 +682,7 @@ describe('Validation', function () {
             expect(isValid).toBe(false);
         });
         it('should false if property is not a date and temporal check type is DateTime', function () {
-            var isValid;
-            isValid = rules.notInPast.validator("Not a Number", "DateTime", {});
+            var isValid = rules.notInPast.validator("Not a Number", "DateTime", {});
             expect(isValid).toBe(false);
         });
         it('should true if date is in the future and temporal check type is Date', function () {
@@ -797,8 +724,7 @@ describe('Validation', function () {
             expect(isValid).toBe(false);
         });
         it('should true if property value is today', function () {
-            var isValid;
-            isValid = rules.notInFuture.validator(new Date(), "Date", {});
+            var isValid = rules.notInFuture.validator(new Date(), "Date", {});
             expect(isValid).toBe(true);
         });
         it('should true if property value is yesterday', function () {
@@ -809,8 +735,7 @@ describe('Validation', function () {
             expect(isValid).toBe(true);
         });
         it('should false if property is not a date', function () {
-            var isValid;
-            isValid = rules.notInFuture.validator("Not a Number", "Date", {});
+            var isValid = rules.notInFuture.validator("Not a Number", "Date", {});
             expect(isValid).toBe(false);
         });
         it('should false if date is in the future and temporal check type is DateTime', function () {
@@ -842,8 +767,7 @@ describe('Validation', function () {
             expect(isValid).toBe(true);
         });
         it('should false if property is not a date and temporal check type is DateTime', function () {
-            var isValid;
-            isValid = rules.notInFuture.validator("Not a Number", "DateTime", {});
+            var isValid = rules.notInFuture.validator("Not a Number", "DateTime", {});
             expect(isValid).toBe(false);
         });
         it('should false if date is in the future and temporal check type is Date', function () {

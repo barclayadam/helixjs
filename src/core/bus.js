@@ -1,9 +1,7 @@
-var EventBus = function() {
-    var clearAll, publish, subscribe, _subscribers;
+hx.provide('$EventBus', ['$log'], function($log) {
+    var _subscribers = {};
     
-    _subscribers = {};
-    
-    clearAll = function() {
+    function clearAll() {
         _subscribers = {};
     };
 
@@ -19,7 +17,7 @@ var EventBus = function() {
       subscription to the named event meaning no further events will be published
       to the given function.
     */
-    subscribe = function(messageName, callback) {
+    function subscribe(messageName, callback) {
         var message, newToken, _i, _len;
 
         if (_.isArray(messageName)) {
@@ -53,14 +51,14 @@ var EventBus = function() {
           publish   "My Event", messageData
         )
     */
-    publish = function(messageName, args) {
+    function publish(messageName, args) {
         var indexOfSeparator, messages, msg, subscriber, t, _i, _len, _ref;
 
         if (args == null) {
             args = {};
         }
 
-        hx.log.debug("Publishing " + messageName, args);
+        $log.debug("Publishing " + messageName, args);
         
         indexOfSeparator = -1;
         messages = [messageName];
@@ -78,7 +76,6 @@ var EventBus = function() {
                 subscriber.call(this, args);
             }
         }
-        return void 0;
     };
 
     return {
@@ -86,7 +83,6 @@ var EventBus = function() {
         subscribe: subscribe,
         publish: publish
     };
-};
+});
 
-hx.EventBus = EventBus;
-hx.bus = new hx.EventBus;
+hx.provide('$bus', hx.get('$EventBus'));

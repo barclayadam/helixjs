@@ -3,7 +3,7 @@ function browserTagCaseIndependentHtml(html) {
 };
 
 beforeEach(function () {
-    var publishSpy = window.sinonSandbox.spy(hx.bus, "publish");
+    var publishSpy = window.sinonSandbox.spy(hx.get('$bus'), "publish");
 
     this.addMatchers({
         toBeAPromise: function () {

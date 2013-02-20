@@ -1,4 +1,4 @@
-var defineRegexValidator,  labels, rules, today, withoutTime;
+var labels, rules;
 
 function hasValue(value) {
     return (value != null) && (!value.replace || value.replace(/[ ]/g, '') !== '');
@@ -351,7 +351,7 @@ hx.validation.rules = rules = {
     }
 };
 
-defineRegexValidator = function (name, regex) {
+function defineRegexValidator(name, regex) {
     rules[name] = {
         validator: function (value, options) {
             return rules.regex.validator(value, regex);

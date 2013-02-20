@@ -2,7 +2,6 @@
 <html>
 <head>  
   <!-- Lib Files -->
-  <script type="text/javascript" src='/ext/json2.js'></script>
   <script type="text/javascript" src='/ext/jquery.js'></script>
   <script type="text/javascript" src='/ext/underscore.js'></script>
   <script type="text/javascript" src='/ext/knockout.js'></script>
@@ -11,19 +10,21 @@
   <script type="text/javascript" src='/lib/hx.js'></script>
 
   <script type="text/javascript">
+    var $location = hx.get('$location');
+
     function pushNewState() {
-      hx.location.routePath('My New Url' + (new Date()).getTime());
-      hx.location.routeVariables.set('A Key', (new Date()).getTime(), { history: false })
+      $location.routePath('My Pushed Url' + (new Date()).getTime());
+      $location.routeVariables.set('A Key', (new Date()).getTime(), { history: false })
     }
 
     function replaceState() {
-      window.history.replaceState(null, 'New Title', 'My New Url' + (new Date()).getTime());
+      window.history.replaceState(null, 'New Title', 'My Replaced Url' + (new Date()).getTime());
     }
   </script>
 </head>
 <body>
 
-  <button onclick="pushNewState();">pushNewState() - Using hx.location API</button>
+  <button onclick="pushNewState();">pushNewState() - Using $location API</button>
 
    <br />
 
@@ -37,36 +38,36 @@
 
     <tbody>
       <tr>
-        <td>hx.location.uri
-        <td data-bind="text: hx.location.uri"></td>
+        <td>$location.uri
+        <td data-bind="text: $location.uri"></td>
 
       <tr>
-        <td>hx.location.path
-        <td data-bind="text: hx.location.path"></td>
+        <td>$location.path
+        <td data-bind="text: $location.path"></td>
 
       <tr>
-        <td>hx.location.fragment
-        <td data-bind="text: hx.location.fragment"></td>
+        <td>$location.fragment
+        <td data-bind="text: $location.fragment"></td>
 
       <tr>
-        <td>hx.location.variables
-        <td data-bind="text: ko.toJSON(hx.location.variables)"></td>
+        <td>$location.variables
+        <td data-bind="text: ko.toJSON($location.variables)"></td>
 
       <tr>
-        <td>hx.location.query
-        <td data-bind="text:hx.location.query"></td>
+        <td>$location.query
+        <td data-bind="text:$location.query"></td>
 
       <tr>
-        <td>hx.location.routePath 
-        <td data-bind="text: hx.location.routePath"></td>
+        <td>$location.routePath 
+        <td data-bind="text: $location.routePath"></td>
 
       <tr>
-        <td>hx.location.routeVariables 
-        <td data-bind="text: ko.toJSON(hx.location.routeVariables)"></td>
+        <td>$location.routeVariables 
+        <td data-bind="text: ko.toJSON($location.routeVariables)"></td>
     </table>
 
     <script>
-       ko.applyBindings({ bo: bo })
+       ko.applyBindings()
     </script>
 </body>
 </html>

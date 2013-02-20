@@ -1,11 +1,13 @@
 function basicMethodTests(methodName, httpMethod) {
+    var $ajax = hx.get('$ajax');
+    
     return describe(methodName, function () {
         describe('success', function () {
             beforeEach(function () {
                 this.path = '/Templates/Users List';
 
                 this.response = "My HTML Response";
-                this.request = hx.ajax.url(this.path)[methodName]();
+                this.request = $ajax.url(this.path)[methodName]();
 
                 this.doneSpy = this.spy();
                 this.failSpy = this.spy();
@@ -66,7 +68,7 @@ function basicMethodTests(methodName, httpMethod) {
 
                 this.responseObjectAsString = JSON.stringify(this.responseObject);
 
-                this.request = hx.ajax.url(this.path)[methodName]();
+                this.request = $ajax.url(this.path)[methodName]();
 
                 this.doneSpy = this.spy();
 
@@ -100,9 +102,9 @@ function basicMethodTests(methodName, httpMethod) {
                         response: ['Delete', ' Suspend']
                     }];
 
-                this.aggregatePromise = hx.ajax.listen(function () {
+                this.aggregatePromise = $ajax.listen(function () {
                     _.each(_this.requests, function(r) {
-                        r.promise = hx.ajax.url(r.path)[methodName]();
+                        r.promise = $ajax.url(r.path)[methodName]();
                         r.doneSpy = _this.spy();  
 
                         r.promise.done(r.doneSpy)                      
@@ -122,7 +124,7 @@ function basicMethodTests(methodName, httpMethod) {
 
                 this.server.respond();
 
-                this.requestOutsideOfDetection = hx.ajax.url('/OutsideDetectionPath')[methodName]();
+                this.requestOutsideOfDetection = $ajax.url('/OutsideDetectionPath')[methodName]();
                 this.requestOutsideOfDetectionDoneSpy = this.spy();
                 this.requestOutsideOfDetection.done(this.requestOutsideOfDetectionDoneSpy);
 
@@ -157,7 +159,7 @@ function basicMethodTests(methodName, httpMethod) {
             beforeEach(function () {
                 this.path = '/Users/List';
 
-                this.request = hx.ajax.url(this.path)[methodName]();
+                this.request = $ajax.url(this.path)[methodName]();
                 this.response = "Failed";
 
                 this.doneSpy = this.spy();
@@ -208,7 +210,7 @@ function basicMethodTests(methodName, httpMethod) {
         describe('failure, with failure handlers added as second argument to then', function () {
             beforeEach(function () {
                 this.path = '/Users/List';
-                this.request = hx.ajax.url(this.path)[methodName]();
+                this.request = $ajax.url(this.path)[methodName]();
                 this.response = "Failed";
 
                 this.doneSpy = this.spy();
@@ -258,7 +260,7 @@ function basicMethodTests(methodName, httpMethod) {
         describe('failure with no fail handlers added', function () {
             beforeEach(function () {
                 this.path = '/Users/List';
-                this.request = hx.ajax.url(this.path)[methodName]();
+                this.request = $ajax.url(this.path)[methodName]();
                 this.response = "Failed";
 
                 this.server.respondWith(httpMethod, this.path, [
@@ -291,8 +293,10 @@ describe('ajax', function () {
     basicMethodTests('head', 'HEAD');
     
     describe('POST specific', function () {
+        var $ajax = hx.get('$ajax');
+
         it('should POST "values"', function () {
-            this.request = hx.ajax.url('/AUrl').data({
+            this.request = $ajax.url('/AUrl').data({
                 id: 342
             }).post();
         });

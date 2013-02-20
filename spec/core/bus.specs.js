@@ -1,7 +1,7 @@
 describe('Bus', function () {
     describe('Given a new EventBus', function () {
         beforeEach(function () {
-            this.bus = new hx.EventBus();
+            this.bus = hx.get('$EventBus');
         });
 
         it('Allows subscribing to named event', function () {

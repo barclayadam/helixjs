@@ -1,4 +1,6 @@
 describe('component binding provider', function () {
+    var $templating = hx.get('$templating');
+
     // A small selection of tests for existing functionality as a sanity check. NOT comprehensive.
     describe('existing functionality', function () {
         beforeEach(function () {
@@ -68,7 +70,7 @@ describe('component binding provider', function () {
             ko.bindingHandlers.templateTag = {
                 tag: 'templateTag->div',
                 init: function (element, valueAccessor) {
-                    hx.templating.set('myNamedTemplate', 'A Cool Template');
+                    $templating.set('myNamedTemplate', 'A Cool Template');
                     ko.renderTemplate("myNamedTemplate", {}, {}, element, "replaceChildren");
                 }
             };

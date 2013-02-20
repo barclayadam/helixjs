@@ -1,7 +1,9 @@
 function behavesLikeNotification(name) {
+    var $notifier = hx.get('$notifier');
+
     describe("" + name + " with no options", function () {
         beforeEach(function () {
-            hx.notifications[name]('This is the message');
+            $notifier[name]('This is the message');
         });
 
         it('should raise an event with text and level with default empty options', function () {
@@ -15,7 +17,7 @@ function behavesLikeNotification(name) {
 
     describe("" + name + " with options", function () {
         beforeEach(function () {
-            hx.notifications[name]('This is the message', {
+            $notifier[name]('This is the message', {
                 anOption: 'An option value'
             });
         });

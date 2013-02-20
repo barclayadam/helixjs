@@ -1,4 +1,9 @@
 describe('region manager', function () {
+    var $RegionManager = hx.get('$RegionManager'),
+        $templating = hx.get('$templating'),
+        $ajax = hx.get('$ajax'),
+        $log = hx.get('$log');
+
     describe('region without a region manager', function () {
         beforeEach(function () {
             var _this = this;
@@ -16,7 +21,7 @@ describe('region manager', function () {
 
     describe('single region', function () {
         beforeEach(function () {
-            this.regionManager = new hx.RegionManager();
+            this.regionManager = new $RegionManager();
 
             // Typically, a region manager would be the root `app` on the
             // body, but it is not a requirement.
@@ -43,7 +48,7 @@ describe('region manager', function () {
         describe('with view model set', function () {
             beforeEach(function () {
                 this.partBindingHandlerSpy = this.spy(ko.bindingHandlers.part, "update");
-                hx.templating.set('myViewModelTemplateName', 'This is the template');
+                $templating.set('myViewModelTemplateName', 'This is the template');
                 this.viewModel = {
                     templateName: 'myViewModelTemplateName'
                 };
@@ -63,7 +68,7 @@ describe('region manager', function () {
 
     describe('multiple regions with a default set', function () {
         beforeEach(function () {
-            this.regionManager = new hx.RegionManager();
+            this.regionManager = new $RegionManager();
             this.setHtmlFixture("<div id=\"body\" data-bind=\"regionManager: regionManager\">\n    <header id=\"header\">This is the header</header>\n\n    <region id=\"main\" data-default=\"true\"></region>\n    <region id=\"help\"></region>\n\n    <footer id=\"footer\">This is the footer</footer>\n</div>");
             
             this.applyBindingsToFixture({
@@ -88,7 +93,7 @@ describe('region manager', function () {
 
         describe('show', function () {
             beforeEach(function () {
-                hx.templating.set('myViewModelTemplateName', 'This is the main template');
+                $templating.set('myViewModelTemplateName', 'This is the main template');
 
                 this.viewModel = {
                     templateName: 'myViewModelTemplateName'
@@ -105,7 +110,7 @@ describe('region manager', function () {
         describe('show', function () {
             describe('with one view model set', function () {
                 beforeEach(function () {
-                    hx.templating.set('myViewModelTemplateName', 'This is the main template');
+                    $templating.set('myViewModelTemplateName', 'This is the main template');
 
                     this.mainViewModel = {
                         templateName: 'myViewModelTemplateName'
@@ -127,8 +132,8 @@ describe('region manager', function () {
 
             describe('with all view models set', function () {
                 beforeEach(function () {
-                    hx.templating.set('myMainViewModelTemplateName', 'This is the main template');
-                    hx.templating.set('myHelpViewModelTemplateName', 'This is the help template');
+                    $templating.set('myMainViewModelTemplateName', 'This is the main template');
+                    $templating.set('myHelpViewModelTemplateName', 'This is the help template');
 
                     this.mainViewModel = {
                         templateName: 'myMainViewModelTemplateName'
@@ -151,7 +156,7 @@ describe('region manager', function () {
 
                 describe('show called again with only a single region', function () {
                     beforeEach(function () {
-                        hx.templating.set('myNewMainViewModelTemplateName', 'This is the new main template');
+                        $templating.set('myNewMainViewModelTemplateName', 'This is the new main template');
 
                         this.newMainViewModel = {
                             templateName: 'myNewMainViewModelTemplateName'
@@ -174,7 +179,7 @@ describe('region manager', function () {
 
             describe('with unknown region specified in show', function () {
                 beforeEach(function () {
-                    hx.log.debug = this.spy();
+                    $log.debug = this.spy();
 
                     this.regionManager.show({
                         'main': {},
@@ -183,7 +188,7 @@ describe('region manager', function () {
                 });
 
                 it('should log a debug error message', function () {
-                    expect(hx.log.debug).toHaveBeenCalledWith("This region manager does not have a 'unknown' region");
+                    expect($log.debug).toHaveBeenCalledWith("This region manager does not have a 'unknown' region");
                 });
             });
         });

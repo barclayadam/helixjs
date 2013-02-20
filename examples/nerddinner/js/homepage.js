@@ -1,10 +1,14 @@
-var homepageViewModel = 
-{ 
-    templateName: 'homepage', 
+hx.provide('$homepage', ['$router'], function($router) {
+    return { 
+            templateName: 'homepage', 
 
-    show: function() {
-        this.myName = nerddinner.app.router.currentParameters.name || 'You';
-    }
-};
+            show: function() {
+                this.myName = $router.currentParameters.name || 'You';
+            }
+        };
 
-nerddinner.app.router.route('Homepage', '/examples/nerddinner/', { 'main': homepageViewModel });
+});
+
+hx.config('$router', function($router) {
+    $router.route('Homepage', '/examples/nerddinner/', { 'main': '$homepage' });
+})

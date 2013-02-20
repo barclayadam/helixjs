@@ -57,61 +57,61 @@
     template has been rendered by `knockout` the `show` function of the `view model`
     will be called.
 */
-koBindingHandlers.part = {
-    init: function (element, valueAccessor) {
-        var templateValueAccessor, viewModel;
-        viewModel = ko.utils.unwrapObservable(valueAccessor() || {});
-
-        templateValueAccessor = function () {
-            return {
-                data: viewModel,
-                name: viewModel.templateName
-            };
-        };
-
-        return koBindingHandlers.template.init(element, templateValueAccessor);
-    },
-
-    update: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-        var deferred, lastViewModel;
-        viewModel = ko.utils.unwrapObservable(valueAccessor());
-
-        if (!(viewModel != null)) {
-            return;
-        }
-
-        lastViewModel = ko.utils.domData.get(element, '__part__lastViewModel');
-
-        if ((lastViewModel != null) && (lastViewModel.hide != null)) {
-            lastViewModel.hide();
-        }
-
-        deferred = new $.Deferred();
-
-        if (viewModel.show != null) {
-            deferred = hx.ajax.listen(function () {
-                viewModel.show();
-            });
-        } else {
-            // Resolve immediately, nothing to wait for
-            deferred.resolve();
-        }
-
-        deferred.done(function () {
-            var templateValueAccessor = function () {
-                return {
-                    data: viewModel,
-                    name: viewModel.templateName
+hx.provide('$partBindingHandler', hx.instantiate(['$ajax'], function($ajax) {
+    koBindingHandlers.part = {
+        init: function (element, valueAccessor) {
+            var viewModel = ko.utils.unwrapObservable(valueAccessor() || {}),
+                templateValueAccessor = function () {
+                    return {
+                        data: viewModel,
+                        name: viewModel.templateName
+                    };
                 };
-            };
 
-            koBindingHandlers.template.update(element, templateValueAccessor, allBindingsAccessor, viewModel, bindingContext);
+            return koBindingHandlers.template.init(element, templateValueAccessor);
+        },
 
-            if (viewModel.afterShow != null) {
-                viewModel.afterShow();
+        update: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+            var deferred, lastViewModel;
+            viewModel = ko.utils.unwrapObservable(valueAccessor());
+
+            if (!(viewModel != null)) {
+                return;
             }
 
-            ko.utils.domData.set(element, '__part__lastViewModel', viewModel);
-        });
-    }
-};
+            lastViewModel = ko.utils.domData.get(element, '__part__lastViewModel');
+
+            if ((lastViewModel != null) && (lastViewModel.hide != null)) {
+                lastViewModel.hide();
+            }
+
+            deferred = new $.Deferred();
+
+            if (viewModel.show != null) {
+                deferred = $ajax.listen(function () {
+                    viewModel.show();
+                });
+            } else {
+                // Resolve immediately, nothing to wait for
+                deferred.resolve();
+            }
+
+            deferred.done(function () {
+                var templateValueAccessor = function () {
+                    return {
+                        data: viewModel,
+                        name: viewModel.templateName
+                    };
+                };
+
+                koBindingHandlers.template.update(element, templateValueAccessor, allBindingsAccessor, viewModel, bindingContext);
+
+                if (viewModel.afterShow != null) {
+                    viewModel.afterShow();
+                }
+
+                ko.utils.domData.set(element, '__part__lastViewModel', viewModel);
+            });
+        }
+    };
+}));

@@ -19,8 +19,10 @@ function itShouldReturnMatchedRoute(options) {
 };
 
 describe('Routing:', function () {
+    var $bus = hx.get('$bus');
+
     beforeEach(function () {
-        this.router = new hx.routing.Router();
+        this.router = hx.get('$RouteTable');
     });
 
     describe('No routes defined', function () {
@@ -46,7 +48,7 @@ describe('Routing:', function () {
 
         describe('URL changed by user', function () {
             beforeEach(function () {
-                hx.bus.publish('urlChanged:external', {
+                $bus.publish('urlChanged:external', {
                     url: '/404',
                     external: true
                 });
@@ -84,7 +86,7 @@ describe('Routing:', function () {
 
         describe('URL changed externally to one matching route', function () {
             beforeEach(function () {
-                hx.bus.publish('urlChanged:external', {
+                $bus.publish('urlChanged:external', {
                     url: '/Contact Us',
                     external: true
                 });
@@ -112,7 +114,7 @@ describe('Routing:', function () {
 
         describe('URL changed externally to one matching route with query string params', function () {
             beforeEach(function () {
-                 hx.bus.publish('urlChanged:external', {
+                 $bus.publish('urlChanged:external', {
                     url: '/Contact Us?name=My Name',
                     external: true
                 });
@@ -127,7 +129,7 @@ describe('Routing:', function () {
 
         describe('URL changed by user to not match URL', function () {
             beforeEach(function () {
-                hx.bus.publish('urlChanged:external', {
+                $bus.publish('urlChanged:external', {
                     url: '/Some URL That Does Not Exist',
                     external: true
                 });
@@ -143,7 +145,7 @@ describe('Routing:', function () {
         describe('navigateTo route', function () {
             describe('once', function () {
                 beforeEach(function () {
-                    this.routePathStub = this.stub(hx.location, 'routePath');
+                    this.routePathStub = this.stub(hx.get('$location'), 'routePath');
                     this.router.navigateTo('Contact Us');
                 });
 
@@ -170,9 +172,9 @@ describe('Routing:', function () {
             describe('twice consecutively', function () {
                 beforeEach(function () {
                     this.routeNavigatedStub = this.stub();                    
-                    hx.bus.subscribe('routeNavigated', this.routeNavigatedStub);
+                    $bus.subscribe('routeNavigated', this.routeNavigatedStub);
 
-                    this.routePathStub = this.stub(hx.location, 'routePath');
+                    this.routePathStub = this.stub(hx.get('$location'), 'routePath');
 
                     this.router.navigateTo('Contact Us');
                     this.router.navigateTo('Contact Us');
@@ -245,7 +247,7 @@ describe('Routing:', function () {
 
         describe('navigateTo route', function () {
             beforeEach(function () {
-                this.routePathStub = this.stub(hx.location, 'routePath');
+                this.routePathStub = this.stub(hx.get('$location'), 'routePath');
                 this.router.navigateTo('Contact Us');
             });
 
@@ -272,7 +274,7 @@ describe('Routing:', function () {
 
         describe('URL changed externally to one matching route', function () {
             beforeEach(function () {
-                hx.bus.publish('urlChanged:external', {
+                $bus.publish('urlChanged:external', {
                     url: '/Contact Us',
                     external: true
                 });
@@ -296,7 +298,7 @@ describe('Routing:', function () {
 
         describe('URL changed by user to not match URL', function () {
             beforeEach(function () {
-                 hx.bus.publish('urlChanged:external', {
+                 $bus.publish('urlChanged:external', {
                     url: '/Some URL That Does Not Exist',
                     external: true
                 });
@@ -312,7 +314,7 @@ describe('Routing:', function () {
         describe('navigateTo route', function () {
             describe('switch between two routes', function () {
                 beforeEach(function () {
-                    this.routePathStub = this.stub(hx.location, 'routePath');
+                    this.routePathStub = this.stub(hx.get('$location'), 'routePath');
 
                     this.router.navigateTo('Contact Us');
                     this.router.navigateTo('About Us');
@@ -371,7 +373,7 @@ describe('Routing:', function () {
 
         describe('URL changed externally to one matching route', function () {
             beforeEach(function () {
-                hx.bus.publish('urlChanged:external', {
+                $bus.publish('urlChanged:external', {
                     url: '/Contact Us',
                     external: true
                 });
@@ -405,7 +407,7 @@ describe('Routing:', function () {
 
         describe('URL changed externally to one matching route', function () {
             beforeEach(function () {
-                hx.bus.publish('urlChanged:external', {
+                $bus.publish('urlChanged:external', {
                     url: '/Contact Us/A Category',
                     external: true
                 });
@@ -441,9 +443,9 @@ describe('Routing:', function () {
             describe('twice consecutively with same parameters', function () {
                 beforeEach(function () {
                     this.routeNavigatedStub = this.stub();
-                    hx.bus.subscribe('routeNavigated', this.routeNavigatedStub);
+                    $bus.subscribe('routeNavigated', this.routeNavigatedStub);
 
-                    this.routePathStub = this.stub(hx.location, 'routePath');
+                    this.routePathStub = this.stub(hx.get('$location'), 'routePath');
 
                     this.router.navigateTo('Contact Us', {
                         category: 'A Category'
@@ -482,9 +484,9 @@ describe('Routing:', function () {
             describe('twice consecutively with different parameters', function () {
                 beforeEach(function () {
                     this.routeNavigatedStub = this.stub();
-                    hx.bus.subscribe('routeNavigated', this.routeNavigatedStub);
+                    $bus.subscribe('routeNavigated', this.routeNavigatedStub);
 
-                    this.routePathStub = this.stub(hx.location, 'routePath');
+                    this.routePathStub = this.stub(hx.get('$location'), 'routePath');
 
                     this.router.navigateTo('Contact Us', {
                         category: 'A Category'

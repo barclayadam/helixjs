@@ -1,6 +1,5 @@
-hx.log.enabled = true;
-hx.templating.externalPath = '/examples/nerddinner/templates/{name}.html'
-
-var nerddinner = window.nerddinner = {};
-
-nerddinner.app = new hx.App()
+hx.config(['$log', '$templating'], 
+  function( $log,   $templating) {
+        $log.enabled = true;
+        $templating.externalPath = '/examples/nerddinner/templates/{name}.html';
+  });

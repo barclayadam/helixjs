@@ -1,6 +1,9 @@
 var testHistoryPolyfill = false;
 
 describe('location', function () {
+    var $location = hx.get('$location'),
+        $bus = hx.get('$bus');
+
     beforeEach(function () {
         this.currentLocation = window.location.pathname;
         this.currentTitle = document.title;
@@ -35,7 +38,7 @@ describe('location', function () {
                     });
 
                     it('should return the new URL from routePath, with a preceeding slash', function () {
-                        expect(hx.location.routePath()).toContain('/MyNewUrl');
+                        expect($location.routePath()).toContain('/MyNewUrl');
                     });
 
                     describe('when going back', function () {
@@ -73,7 +76,7 @@ describe('location', function () {
                     });
 
                     it('should return the new URL from routePath, with a preceeding slash', function () {
-                        expect(hx.location.routePath()).toContain('/MyNewUrl');
+                        expect($location.routePath()).toContain('/MyNewUrl');
                     });
 
                     describe('when going back', function () {
@@ -104,38 +107,38 @@ describe('location', function () {
     }
 
     beforeEach(function () {
-        hx.location.reset();
+        $location.reset();
     });
 
     describe('uri observables', function () {
         it('should have populated uri observable from current URL', function () {
-            expect(hx.location.uri).toBeObservable();
-            expect(hx.location.uri().toString()).toContain('http://localhost');
-            expect(hx.location.uri().toString()).toContain('runner.html');
+            expect($location.uri).toBeObservable();
+            expect($location.uri().toString()).toContain('http://localhost');
+            expect($location.uri().toString()).toContain('runner.html');
         });
 
         it('should have populated host property from current URL', function () {
-            expect(hx.location.host()).toEqual('localhost');
+            expect($location.host()).toEqual('localhost');
         });
 
         it('should have populated fragment observable from current URL', function () {
-            expect(hx.location.fragment).toBeObservable();
-            expect(hx.location.fragment()).toEqual(hx.location.uri().fragment);
+            expect($location.fragment).toBeObservable();
+            expect($location.fragment()).toEqual($location.uri().fragment);
         });
 
         it('should have populated path observable from current URL', function () {
-            expect(hx.location.path).toBeObservable();
-            expect(hx.location.path()).toContain('runner.html');
+            expect($location.path).toBeObservable();
+            expect($location.path()).toContain('runner.html');
         });
 
         it('should have populated variables observable from current URL', function () {
-            expect(hx.location.variables).toBeObservable();
-            expect(hx.location.variables()).toEqual({});
+            expect($location.variables).toBeObservable();
+            expect($location.variables()).toEqual({});
         });
 
         it('should have populated query observable from current URL', function () {
-            expect(hx.location.query).toBeObservable();
-            expect(hx.location.query()).toEqual('');
+            expect($location.query).toBeObservable();
+            expect($location.query()).toEqual('');
         });
     });
 
@@ -143,7 +146,7 @@ describe('location', function () {
         beforeEach(function () {
             window.history.pushState(null, null, '/My New Url?key=value');
             ko.utils.triggerEvent(window, 'popstate');
-            hx.location.initialise();
+            $location.initialise();
         });
 
         it('should publish a urlChanged:external with current fragment and external=true', function () {
@@ -159,22 +162,22 @@ describe('location', function () {
         });
 
         it('should update the uri observable', function () {
-            expect(hx.location.uri().toString()).toContain('/My New Url');
+            expect($location.uri().toString()).toContain('/My New Url');
         });
 
         it('should update the routePath observable', function () {
-            expect(hx.location.routePath()).toEqual('/My New Url');
+            expect($location.routePath()).toEqual('/My New Url');
         });
 
         it('should decode the routePath observable\'s value', function () {
-            expect(hx.location.routePath()).toEqual('/My New Url');
+            expect($location.routePath()).toEqual('/My New Url');
         });
     });
     describe('setting URL', function () {
         describe('when changing the path to a new value', function () {
             beforeEach(function () {
                 this.pushStateSpy = this.spy(window.history, 'pushState');
-                hx.location.routePath('/Timesheets/Manage');
+                $location.routePath('/Timesheets/Manage');
             });
 
             it('should use pushState to modify the URL', function () {
@@ -192,11 +195,11 @@ describe('location', function () {
             });
 
             it('should update the uri observable', function () {
-                expect(hx.location.uri().toString()).toContain('/Timesheets/Manage');
+                expect($location.uri().toString()).toContain('/Timesheets/Manage');
             });
 
             it('should update the routePath observable', function () {
-                expect(hx.location.routePath()).toEqual('/Timesheets/Manage');
+                expect($location.routePath()).toEqual('/Timesheets/Manage');
             });
         });
 
@@ -205,10 +208,10 @@ describe('location', function () {
                 this.pushStateSpy = this.spy(window.history, 'pushState');
                 this.urlChangedMessageHandler = this.spy();
 
-                hx.bus.subscribe('urlChanged:internal', this.urlChangedMessageHandler);
+                $bus.subscribe('urlChanged:internal', this.urlChangedMessageHandler);
 
-                hx.location.routePath('/Users/Manage');
-                hx.location.routePath('/Users/Manage');
+                $location.routePath('/Users/Manage');
+                $location.routePath('/Users/Manage');
             });
 
             it('should not push a new entry', function () {
@@ -225,21 +228,21 @@ describe('location', function () {
         describe('when setting bookmarkable, history creating, key to a new value', function () {
             beforeEach(function () {
                 this.pushStateSpy = this.spy(window.history, "pushState");
-                this.currentRoutePath = hx.location.routePath();
+                this.currentRoutePath = $location.routePath();
                 this.key = 'My Key';
                 this.value = 'Value' + (new Date()).getTime();
 
-                hx.location.routeVariables.set(this.key, this.value, {
+                $location.routeVariables.set(this.key, this.value, {
                     history: true
                 });
             });
 
             it('should change URL to include key and value', function () {
-                expect(decodeURIComponent(hx.location.uri().toString())).toContain("" + this.key + "=" + this.value);
+                expect(decodeURIComponent($location.uri().toString())).toContain("" + this.key + "=" + this.value);
             });
 
             it('should update variables observable to contain new value', function () {
-                expect(hx.location.routeVariables()[this.key]).toEqual(this.value);
+                expect($location.routeVariables()[this.key]).toEqual(this.value);
             });
 
             it('should push a new history entry', function () {
@@ -247,28 +250,28 @@ describe('location', function () {
             });
 
             it('should not change the routePath observable', function () {
-                expect(hx.location.routePath()).toEqual(this.currentRoutePath);
+                expect($location.routePath()).toEqual(this.currentRoutePath);
             });
         });
 
         describe('when setting bookmarkable, non history creating, key to a new value', function () {
             beforeEach(function () {
                 this.replaceStateSpy = this.spy(window.history, "replaceState");
-                this.currentRoutePath = hx.location.routePath();
+                this.currentRoutePath = $location.routePath();
                 this.key = 'My Key';
                 this.value = 'Value' + (new Date()).getTime();
                 
-                hx.location.routeVariables.set(this.key, this.value, {
+                $location.routeVariables.set(this.key, this.value, {
                     history: false
                 });
             });
 
             it('should change URL to include key and value', function () {
-                expect(decodeURIComponent(hx.location.uri().toString())).toContain("" + this.key + "=" + this.value);
+                expect(decodeURIComponent($location.uri().toString())).toContain("" + this.key + "=" + this.value);
             });
 
             it('should update variables observable to contain new value', function () {
-                expect(hx.location.routeVariables()[this.key]).toEqual(this.value);
+                expect($location.routeVariables()[this.key]).toEqual(this.value);
             });
 
             it('should not push a new history entry', function () {
@@ -276,7 +279,7 @@ describe('location', function () {
             });
 
             it('should not change the routePath observable', function () {
-                expect(hx.location.routePath()).toEqual(this.currentRoutePath);
+                expect($location.routePath()).toEqual(this.currentRoutePath);
             });
         });
     });

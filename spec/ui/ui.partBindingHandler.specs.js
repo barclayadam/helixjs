@@ -1,4 +1,7 @@
 describe('part binding handler', function () {
+    var $templating = hx.get('$templating'),
+        $ajax = hx.get('$ajax');
+
     describe('binding undefined view model', function () {
         beforeEach(function () {
             this.setHtmlFixture("<div id=\"fixture\" data-bind=\"part: viewModel\">\n    This is an anonymous template\n</div>");
@@ -53,7 +56,7 @@ describe('part binding handler', function () {
 
     describe('binding a plain object with named view', function () {
         beforeEach(function () {
-            hx.templating.set('myNamedPartTemplate', 'This is the template');
+            $templating.set('myNamedPartTemplate', 'This is the template');
 
             this.viewModel = {
                 templateName: 'myNamedPartTemplate'
@@ -121,7 +124,7 @@ describe('part binding handler', function () {
                     anObservableProperty: ko.observable(),
 
                     show: this.spy(function () {
-                        hx.ajax.url('/Users/Managers').get();
+                        $ajax.url('/Users/Managers').get();
                     }),
 
                     afterShow: this.spy(function () {
@@ -171,8 +174,8 @@ describe('part binding handler', function () {
 
         describe('switching view models', function () {
             beforeEach(function () {
-                hx.templating.set('viewModelOneTemplate', 'Template One');
-                hx.templating.set('viewModelTwoTemplate', 'Template Two');
+                $templating.set('viewModelOneTemplate', 'Template One');
+                $templating.set('viewModelTwoTemplate', 'Template Two');
 
                 this.viewModelOne = {
                     templateName: 'viewModelOneTemplate',

@@ -25,8 +25,10 @@
 
         //= core/utils.js
 
-        //= core/log.js
         //= core/injector.js
+        //= core/bootstrap.js
+
+        //= core/log.js
 
         //= core/bus.js
         //= core/uri.js
@@ -44,22 +46,11 @@
         //= core/tagBindingsProvider.js
         //= core/viewModel.js
 
-        //= core/app.js
-
         //= messaging/messaging.query.js
         //= messaging/messaging.command.js
 
         //= ui/ui.uiaction.js
         //= ui/ui.partBindingHandler.js
         //= ui/ui.regionManager.js
-
-        // Once everything has been loaded we bootstrap, which simply involvs attempting
-        // to bind the current document, which will find any app binding handler definitions
-        // which kicks off the 'app' semantics of a HelixJS application.
-
-        // TODO: Remove jQuery dependency
-        $(document).ready(function() {
-            ko.applyBindings({});
-        });
     });
 })(window, document, window["jQuery"], window["ko"]);

@@ -4,8 +4,8 @@ beforeEach(function () {
         useFakeTimers: false
     }));
 
-    hx.bus.clearAll();
-    hx.templating.reset();
+    hx.get('$bus').clearAll();
+    hx.get('$templating').reset();
 
     window.sessionStorage.clear();
     window.localStorage.clear();
