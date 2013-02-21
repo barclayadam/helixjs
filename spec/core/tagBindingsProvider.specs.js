@@ -44,37 +44,35 @@ describe('component binding provider', function () {
     });
 
     describe('binding handler specified as tag compatible, with replacement', function () {
+        ko.bindingHandlers.tagSample = {
+            tag: 'tagSample->div',
+
+            init: function (element, valueAccessor) {
+                ko.utils.setTextContent(element, 'My New Text');
+            },
+
+            update: function (element) {
+                ko.utils.toggleDomNodeCssClass(element, 'myClass', true);
+            }
+        };
+
+        ko.bindingHandlers.complexOptionSample = {
+            tag: 'complexOptionSample->span',
+
+            init: function (element, valueAccessor) {
+            }
+        };
+
+        ko.bindingHandlers.templateTag = {
+            tag: 'templateTag->div',
+            
+            init: function (element, valueAccessor) {
+                $templating.set('myNamedTemplate', 'A Cool Template');
+                ko.renderTemplate("myNamedTemplate", {}, {}, element, "replaceChildren");
+            }
+        };
+
         beforeEach(function () {
-            var _this = this;
-            this.valuePassed = void 0;
-            this.complexValuePassed = void 0;
-
-            ko.bindingHandlers.tagSample = {
-                tag: 'tagSample->div',
-                init: function (element, valueAccessor) {
-                    ko.utils.setTextContent(element, 'My New Text');
-                    _this.valuePassed = valueAccessor();
-                },
-                update: function (element) {
-                    ko.utils.toggleDomNodeCssClass(element, 'myClass', true);
-                }
-            };
-
-            ko.bindingHandlers.complexOptionSample = {
-                tag: 'complexOptionSample->span',
-                init: function (element, valueAccessor) {
-                    _this.complexValuePassed = valueAccessor();
-                }
-            };
-
-            ko.bindingHandlers.templateTag = {
-                tag: 'templateTag->div',
-                init: function (element, valueAccessor) {
-                    $templating.set('myNamedTemplate', 'A Cool Template');
-                    ko.renderTemplate("myNamedTemplate", {}, {}, element, "replaceChildren");
-                }
-            };
-
             this.setHtmlFixture("<div>\n    <tagSample id=\"tag-sample\" data-option=\"'My Passed In Value'\" data-bind=\"css: { myOtherBoundClass: true }\"></tagSample>\n    <complexOptionSample id=\"complex-option-sample\" data-option=\"{ key: 'complex value' }\"></complexOptionSample>\n    <templateTag id=\"template-tag\" class=\"my-class\"></templateTag>\n</div>");
             this.applyBindingsToFixture({});
         });
@@ -103,16 +101,6 @@ describe('component binding provider', function () {
 
         it('should use data-bind attribute as well', function () {
             expect(document.getElementById("tag-sample")).toHaveClass('myOtherBoundClass');
-        });
-
-        it('should pass simple type data-option to init', function () {
-            expect(this.valuePassed).toEqual('My Passed In Value');
-        });
-
-        it('should pass complex type data-option to init', function () {
-            expect(this.complexValuePassed).toEqual({
-                key: 'complex value'
-            });
         });
     });
 

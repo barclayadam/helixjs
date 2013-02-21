@@ -6,6 +6,7 @@ beforeEach(function () {
 
     hx.get('$bus').clearAll();
     hx.get('$templating').reset();
+    hx.get('$hxBindingsProvider').configure();
 
     window.sessionStorage.clear();
     window.localStorage.clear();
