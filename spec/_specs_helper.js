@@ -12,7 +12,7 @@ beforeEach(function () {
     window.localStorage.clear();
 
     this.getFixtureTextContent = function() {
-        return document.getElementById("fixture").innerText || document.getElementById("fixture").textContent;
+        return document.getElementById(jasmine.getFixtures().containerId).innerText || document.getElementById(jasmine.getFixtures().containerId).textContent;
     }
 
     this.setHtmlFixture = function (html) {
@@ -20,7 +20,7 @@ beforeEach(function () {
     };
 
     this.applyBindingsToFixture = function (viewModel) {
-        ko.applyBindings(viewModel, document.getElementById('jasmine-fixture'));
+        ko.applyBindings(viewModel, document.getElementById(jasmine.getFixtures().containerId));
     };
 
     this.respondWithTemplate = function (path, body) {
