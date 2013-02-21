@@ -75,7 +75,7 @@ hx.singleton('$hxBindingsProvider', function() {
             if (document.body.mergeAttributes) {
                 destination.mergeAttributes(source, false);
             } else {
-                var attr, _i, _len,;
+                var attr, _i, _len;
 
                 for (_i = 0, _len = source.attributes.length; _i < _len; _i++) {
                     attr = source.attributes[_i];
