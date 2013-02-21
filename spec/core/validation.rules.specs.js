@@ -32,33 +32,45 @@ describe('Validation', function () {
             var isValid = rules.required.validator('My Value', true, {});
             expect(isValid).toBe(true);
         });
+
         it('should false if property value is undefined', function () {
             var isValid = rules.required.validator(void 0, true, {});
             expect(isValid).toBe(false);
         });
+
         it('should false if property value is null', function () {
             var isValid = rules.required.validator(null, true, {});
             expect(isValid).toBe(false);
         });
+
         it('should false if property value is empty string', function () {
             var isValid = rules.required.validator('', true, {});
             expect(isValid).toBe(false);
         });
+
         it('should false if property value is all spaces', function () {
             var isValid = hx.validation.rules.required.validator('    ', true, {});
             expect(isValid).toBe(false);
         });
+
         describe('with a modified input element', function () {
             beforeEach(function () {
-                this.options = true;
-                this.input = document.createElement('input');
+                this.setHtmlFixture("<div><label for='MyTestInputElement' id='MyTestInputElementLabel'>Label:</label><input id='MyTestInputElement' /></div>");
+
+                this.input = document.getElementById('MyTestInputElement');
                 rules.required.modifyElement(this.input, this.options);
             });
+
             it('should set aria-required attribute to true', function () {
                 expect(this.input).toHaveAttr('aria-required', 'true');
             });
+
             it('should set required attribute to true', function () {
                 expect(this.input).toHaveAttr('required', 'required');
+            });
+
+            it('should add a required class to associated label', function () {
+                expect(document.getElementById('MyTestInputElementLabel')).toHaveClass('required');
             });
         });
     });

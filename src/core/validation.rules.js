@@ -48,7 +48,7 @@ hx.validation.rules = rules = {
             label = getLabelFor(element);
 
             if (label) {
-                ko.utils.toggleDomNodeCssClass(element, 'required', true);
+                ko.utils.toggleDomNodeCssClass(label, 'required', true);
             }
         }
     },
