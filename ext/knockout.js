@@ -2009,6 +2009,13 @@ ko.exportSymbol('bindingProvider', ko.bindingProvider);
 
         var shouldApplyBindings = (isElement && bindingContextMayDifferFromDomParentElement)             // Case (1)
                                || ko.bindingProvider['instance']['nodeHasBindings'](nodeVerified);       // Case (2)
+
+        // HELIXJS MODIFICATION START
+        if(ko.bindingProvider['instance']['preprocessNode']) {
+            nodeVerified = ko.bindingProvider['instance']['preprocessNode'](nodeVerified) || nodeVerified;
+        }
+        // HELIXJS MODIFICATION END
+
         if (shouldApplyBindings)
             shouldBindDescendants = applyBindingsToNodeInternal(nodeVerified, null, viewModel, bindingContextMayDifferFromDomParentElement).shouldBindDescendants;
 
@@ -2039,10 +2046,6 @@ ko.exportSymbol('bindingProvider', ko.bindingProvider);
         }
         function parsedBindingsAccessor() {
             return parsedBindings;
-        }
-
-        if(ko.bindingProvider['instance']['preprocessNode']) {
-            node = ko.bindingProvider['instance']['preprocessNode'](node) || node;
         }
 
         var bindingHandlerThatControlsDescendantBindings;

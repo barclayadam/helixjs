@@ -73,7 +73,11 @@ describe('component binding provider', function () {
         };
 
         beforeEach(function () {
-            this.setHtmlFixture("<div>\n    <tagSample id=\"tag-sample\" data-option=\"'My Passed In Value'\" data-bind=\"css: { myOtherBoundClass: true }\"></tagSample>\n    <complexOptionSample id=\"complex-option-sample\" data-option=\"{ key: 'complex value' }\"></complexOptionSample>\n    <templateTag id=\"template-tag\" class=\"my-class\"></templateTag>\n</div>");
+            this.setHtmlFixture("<div>" +
+                                 "<tagSample id=\"tag-sample\" data-option=\"'My Passed In Value'\" data-bind=\"css: { myOtherBoundClass: true }\"></tagSample>" +
+                                 "<complexOptionSample id=\"complex-option-sample\" data-option=\"{ key: 'complex value' }\"></complexOptionSample>" +
+                                 "<templateTag id=\"template-tag\" class=\"my-class\"></templateTag>" +
+                                "</div>");
             this.applyBindingsToFixture({});
         });
 
@@ -103,6 +107,33 @@ describe('component binding provider', function () {
             expect(document.getElementById("tag-sample")).toHaveClass('myOtherBoundClass');
         });
     });
+
+    describe('binding handler specified as tag compatible, with replacement, and children', function () {
+        ko.bindingHandlers.tagSampleWithChildren = {
+            tag: 'tagSampleWithChildren->div'
+        };
+
+        beforeEach(function () {
+            this.setHtmlFixture("<div>" +
+                                 "<tagSampleWithChildren id=\"tag-sample-with-children\">" +
+                                    "<div>" + 
+                                        "<span data-bind=\"text: 'Some bound text'\" id=\"child-with-bound-text\"></span>" +
+                                    "</div>" +
+                                 "</tagSample>" +
+                                "</div>");
+
+            this.applyBindingsToFixture({});
+        });
+
+        it('should copy all children across', function () {
+            expect(document.getElementById("tag-sample-with-children").children[0].tagName.toLowerCase()).toBe("div");
+        });
+
+        it('should apply bindings to children correctly', function () {
+            expect(document.getElementById("child-with-bound-text")).toHaveText('Some bound text');
+        });
+    });
+
 
     describe('binding handler specified as tag compatible, without replacement', function () {
         beforeEach(function () {

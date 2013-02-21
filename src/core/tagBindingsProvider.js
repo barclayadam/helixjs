@@ -138,6 +138,11 @@ hx.singleton('$hxBindingsProvider', function() {
                     nodeReplacement = document.createElement(tagBindingHandler.tag.replacedWith);
                     mergeAllAttributes(node, nodeReplacement);
 
+                    // Copy all children across to new element
+                    while (node.hasChildNodes()) {
+                      nodeReplacement.appendChild(node.removeChild(node.firstChild))
+                    }
+
                     ko.utils.replaceDomNodes(node, [nodeReplacement]);
 
                     nodeReplacement.tagHandlers = tagBindingHandlerNames;
