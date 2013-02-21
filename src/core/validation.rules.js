@@ -41,12 +41,11 @@ hx.validation.rules = rules = {
         message: "This field is required",
 
         modifyElement: function (element, options) {
-            var label;
+            var label = getLabelFor(element);
+
             element.setAttribute("aria-required", "true");
             element.setAttribute("required", "required");
-
-            label = getLabelFor(element);
-
+           
             if (label) {
                 ko.utils.toggleDomNodeCssClass(label, 'required', true);
             }

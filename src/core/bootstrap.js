@@ -6,9 +6,9 @@
 
     // Expose methods of the single internal injector as 'globals'.
     hx.provide = injector.provide.bind(injector);
+    hx.singleton = injector.singleton.bind(injector); 
     hx.get = injector.get.bind(injector);
     hx.instantiate = injector.instantiate.bind(injector);
-    hx.singleton = injector.singleton.bind(injector); 
 
     /**
      * A simple no-op function that can be used in places where a function is expected

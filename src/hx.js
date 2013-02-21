@@ -52,5 +52,7 @@
         //= ui/ui.uiaction.js
         //= ui/ui.partBindingHandler.js
         //= ui/ui.regionManager.js
+
+        //= ui/ui.validation.js
     });
 })(window, document, window["jQuery"], window["ko"]);
