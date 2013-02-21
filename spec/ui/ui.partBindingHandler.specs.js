@@ -5,14 +5,13 @@ describe('part binding handler', function () {
     describe('binding undefined view model', function () {
         beforeEach(function () {
             this.setHtmlFixture("<div id=\"fixture\" data-bind=\"part: viewModel\">\n    This is an anonymous template\n</div>");
-            this.applyBindingsToFixture({
-                viewModel: void 0
-            });
-            this.wrapper = document.getElementById("fixture");
+
         });
 
-        it('should not render the template', function () {
-            expect(this.wrapper).toBeEmpty();
+        it('should throw an exception', function () {
+            expect(function() {
+                this.applyBindingsToFixture({ viewModel: undefined });
+            }.bind(this)).toThrow('A null or undefined view model cannot be passed to a part binding handler');
         });
     });
 
@@ -74,6 +73,24 @@ describe('part binding handler', function () {
             // Just check that when binding directly to a property of the view model 
             // binding handlers are getting called with it (a little brittle!)
             expect(this.wrapper).toHaveText('This is the template');
+        });
+    });
+
+    describe('binding to a registered module view model', function () {
+        beforeEach(function () {
+            this.viewModelModuleCreator = this.stub().returns({ aProp: 'a value'});
+
+            hx.provide('myInjectedViewModel', this.viewModelModuleCreator);            
+
+            this.setHtmlFixture("<div id=\"fixture\" data-bind=\"part: 'myInjectedViewModel'\"><span data-bind='text: aProp'></span></div>");
+
+            this.applyBindingsToFixture();
+
+            this.wrapper = document.getElementById("fixture");
+        });
+
+        it('should use injector to load the view module', function () {
+            expect(this.viewModelModuleCreator).toHaveBeenCalled();
         });
     });
 

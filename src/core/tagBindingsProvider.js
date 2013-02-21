@@ -124,8 +124,6 @@ hx.singleton('$hxBindingsProvider', function() {
             // node so we use the specified replacement node from the binding handler's
             // tag option.
             if (tagBindingHandlerNames.length > 0) {
-                node.tagHandlers = tagBindingHandlerNames;
-
                 replacementRequiredBindingHandlers = _.filter(tagBindingHandlerNames, function (key) {
                     return koBindingHandlers[key].tag.replacedWith != null;
                 });

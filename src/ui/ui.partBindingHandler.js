@@ -57,10 +57,14 @@
     template has been rendered by `knockout` the `show` function of the `view model`
     will be called.
 */
-hx.provide('$partBindingHandler', hx.instantiate(['$ajax'], function($ajax) {
+hx.provide('$partBindingHandler', hx.instantiate(['$ajax', '$injector'], function($ajax, $injector) {
+    function getViewModel(valueAccessor) {
+        return $injector.get(ko.utils.unwrapObservable(valueAccessor()))
+    }
+
     koBindingHandlers.part = {
         init: function (element, valueAccessor) {
-            var viewModel = ko.utils.unwrapObservable(valueAccessor() || {}),
+            var viewModel = getViewModel(valueAccessor),
                 templateValueAccessor = function () {
                     return {
                         data: viewModel,
@@ -68,14 +72,18 @@ hx.provide('$partBindingHandler', hx.instantiate(['$ajax'], function($ajax) {
                     };
                 };
 
+            if(!viewModel) {
+                throw new Error('A null or undefined view model cannot be passed to a part binding handler');
+            }
+
             return koBindingHandlers.template.init(element, templateValueAccessor);
         },
 
         update: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
             var deferred, lastViewModel;
-            viewModel = ko.utils.unwrapObservable(valueAccessor());
+            viewModel = getViewModel(valueAccessor);
 
-            if (!(viewModel != null)) {
+            if (!viewModel) {
                 return;
             }
 
