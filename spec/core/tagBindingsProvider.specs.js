@@ -78,6 +78,7 @@ describe('component binding provider', function () {
                                  "<complexOptionSample id=\"complex-option-sample\" data-option=\"{ key: 'complex value' }\"></complexOptionSample>" +
                                  "<templateTag id=\"template-tag\" class=\"my-class\"></templateTag>" +
                                 "</div>");
+
             this.applyBindingsToFixture({});
         });
 
@@ -136,7 +137,6 @@ describe('component binding provider', function () {
 
     describe('binding handler specified as tag compatible, without replacement', function () {
         beforeEach(function () {
-            var _this = this;
             ko.bindingHandlers.inputEnhancer = {
                 tag: 'input',
                 init: function (element, valueAccessor) {
@@ -153,6 +153,29 @@ describe('component binding provider', function () {
 
         it('should not replace the element with another', function () {
             expect(document.getElementById("input-control").tagName).toEqual('INPUT');
+        });
+    });
+
+    describe('binding handler specified as tag compatible for multiple tags, without replacement', function () {
+        beforeEach(function () {
+            ko.bindingHandlers.inputEnhancer = {
+                tag: ['input', 'select'],
+                init: function (element, valueAccessor) {
+                    ko.utils.toggleDomNodeCssClass(element, 'a-new-class', true);
+                }
+            };
+            this.setHtmlFixture("<div><input id=\"input-control\" /><input id=\"select-control\" /></div>");
+            this.applyBindingsToFixture({});
+        });
+
+        it('should call binding handlers init function for all tags', function () {
+            expect(document.getElementById("input-control")).toHaveClass('a-new-class');
+            expect(document.getElementById("select-control")).toHaveClass('a-new-class');
+        });
+
+        it('should not replace the element with another', function () {
+            expect(document.getElementById("input-control").tagName).toEqual('INPUT');
+            expect(document.getElementById("select-control").tagName).toEqual('INPUT');
         });
     });
 

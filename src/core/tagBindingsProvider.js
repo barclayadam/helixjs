@@ -25,7 +25,33 @@ hx.singleton('$hxBindingsProvider', function() {
     var tagBindingProvider = function () {
         var realBindingProvider = new ko.bindingProvider(),
             hasProcessed = false,
-            tagNameToBindingHandlerNames = {};
+            tagNameToBindingHandlers = {};
+
+        function processBindingHandlerTagDefinitionInstance(tag, bindingHandler, name) {
+            var description = { name: name, bindingHandler: bindingHandler};
+
+            if(_.isString(tag)) {
+                var split = tag.split("->"),
+                    appliesToTag = split[0];
+
+                description.appliesTo = appliesToTag;
+
+                if (split.length === 2) {
+                    description.replacedWith = split[1];
+                }
+            } else {
+                description.appliesTo = tag.appliesTo;
+                description.replacedWith = tag.replacedWith;
+            }
+
+            description.appliesTo = description.appliesTo.toUpperCase();
+
+            if(tagNameToBindingHandlers[description.appliesTo]) {
+                tagNameToBindingHandlers[description.appliesTo].push(description);
+            } else {
+                tagNameToBindingHandlers[description.appliesTo] = [description];
+            }
+        }
 
         /*
           The definition of what tag to apply a binding handler, and the
@@ -37,28 +63,12 @@ hx.singleton('$hxBindingsProvider', function() {
         */
         function processBindingHandlerTagDefinition(bindingHandler, name) {
             if (bindingHandler.tag) {
-                if(_.isString(bindingHandler.tag)) {
-                    var split = bindingHandler.tag.split("->"),
-                        appliesToTag = split[0].toUpperCase();
-
-                    if (split.length === 1) {
-                        bindingHandler.tag = {
-                            appliesTo: appliesToTag
-                        };
-                    } else {
-                        bindingHandler.tag = {
-                            appliesTo: appliesToTag,
-                            replacedWith: split[1]
-                        };
-                    }
-                }
-
-                var appliesToTag = bindingHandler.tag.appliesTo.toUpperCase();
-
-                if(tagNameToBindingHandlerNames[appliesToTag]) {
-                    tagNameToBindingHandlerNames[appliesToTag].push(name);
+                if(_.isArray(bindingHandler.tag)) {
+                    _.each(bindingHandler.tag, function(t) {
+                        processBindingHandlerTagDefinitionInstance(t, bindingHandler, name);
+                    });
                 } else {
-                    tagNameToBindingHandlerNames[appliesToTag] = [name];
+                    processBindingHandlerTagDefinitionInstance(bindingHandler.tag, bindingHandler, name);
                 }
             }
         };
@@ -84,12 +94,8 @@ hx.singleton('$hxBindingsProvider', function() {
             }
         };
 
-        function findTagCompatibleBindingHandlerNames (node) {
-            if (node.tagHandlers != null) {
-                return node.tagHandlers;
-            } else {            
-                return tagNameToBindingHandlerNames[node.tagName] || [];
-            }
+        function findTagCompatibleBindingHandlers (node) {
+            return tagNameToBindingHandlers[node.originalTagName || node.tagName] || [];
         };
          
         function processOptions (node, tagBindingHandlerName, bindingContext) {
@@ -117,15 +123,15 @@ hx.singleton('$hxBindingsProvider', function() {
          * @param {Element} node - The node that is being processed
          */
         this.preprocessNode = function (node) {
-            var nodeReplacement, replacementRequiredBindingHandlers, tagBindingHandler, tagBindingHandlerNames;
-            tagBindingHandlerNames = findTagCompatibleBindingHandlerNames(node);
+            var nodeReplacement, replacementRequiredBindingHandlers, tagBindingHandlers;
+            tagBindingHandlers = findTagCompatibleBindingHandlers(node);
 
             // We assume that if this is for a 'tag binding handler' it refers to an unknown
             // node so we use the specified replacement node from the binding handler's
             // tag option.
-            if (tagBindingHandlerNames.length > 0) {
-                replacementRequiredBindingHandlers = _.filter(tagBindingHandlerNames, function (key) {
-                    return koBindingHandlers[key].tag.replacedWith != null;
+            if (tagBindingHandlers.length > 0) {
+                replacementRequiredBindingHandlers = _.filter(tagBindingHandlers, function (description) {
+                    return description.replacedWith != null;
                 });
 
                 if (replacementRequiredBindingHandlers.length > 1) {
@@ -133,9 +139,7 @@ hx.singleton('$hxBindingsProvider', function() {
                 }
 
                 if (replacementRequiredBindingHandlers.length === 1) {
-                    tagBindingHandler = koBindingHandlers[replacementRequiredBindingHandlers[0]];
-
-                    nodeReplacement = document.createElement(tagBindingHandler.tag.replacedWith);
+                    nodeReplacement = document.createElement(replacementRequiredBindingHandlers[0].replacedWith);
                     mergeAllAttributes(node, nodeReplacement);
 
                     // Copy all children across to new element
@@ -145,7 +149,6 @@ hx.singleton('$hxBindingsProvider', function() {
 
                     ko.utils.replaceDomNodes(node, [nodeReplacement]);
 
-                    nodeReplacement.tagHandlers = tagBindingHandlerNames;
                     nodeReplacement.originalTagName = node.tagName;
 
                     return nodeReplacement;
@@ -156,7 +159,7 @@ hx.singleton('$hxBindingsProvider', function() {
         this.nodeHasBindings = function (node, bindingContext) {
             processAllBindingHandlers();
 
-            var tagBindingHandlers = findTagCompatibleBindingHandlerNames(node),
+            var tagBindingHandlers = findTagCompatibleBindingHandlers(node),
                 isCompatibleTagHandler = tagBindingHandlers.length > 0;
 
             return isCompatibleTagHandler || realBindingProvider.nodeHasBindings(node, bindingContext);
@@ -165,15 +168,15 @@ hx.singleton('$hxBindingsProvider', function() {
         this.getBindings = function (node, bindingContext) {
             processAllBindingHandlers();
 
-            var existingBindings, tagBindingHandlerName, tagBindingHandlerNames, _i, _len;
+            var existingBindings, tagBindingHandlerName, tagBindingHandlers, _i, _len;
 
             // parse the bindings with the 'real' binding provider
             existingBindings = (realBindingProvider.getBindings(node, bindingContext)) || {};
-            tagBindingHandlerNames = findTagCompatibleBindingHandlerNames(node);
+            tagBindingHandlers = findTagCompatibleBindingHandlers(node);
 
-            if (tagBindingHandlerNames.length > 0) {
-                for (_i = 0, _len = tagBindingHandlerNames.length; _i < _len; _i++) {
-                    tagBindingHandlerName = tagBindingHandlerNames[_i];
+            if (tagBindingHandlers.length > 0) {
+                for (_i = 0, _len = tagBindingHandlers.length; _i < _len; _i++) {
+                    tagBindingHandlerName = tagBindingHandlers[_i].name;
                     existingBindings[tagBindingHandlerName] = processOptions(node, tagBindingHandlerName, bindingContext);
                 }
             }
