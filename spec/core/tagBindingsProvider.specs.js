@@ -134,7 +134,6 @@ describe('component binding provider', function () {
         });
     });
 
-
     describe('binding handler specified as tag compatible, without replacement', function () {
         beforeEach(function () {
             var _this = this;
