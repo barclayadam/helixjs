@@ -63,6 +63,8 @@ hx.provide('$partBindingHandler', hx.instantiate(['$ajax', '$injector'], functio
     }
 
     koBindingHandlers.part = {
+        tag: 'part->div',
+
         init: function (element, valueAccessor) {
             var viewModel = getViewModel(valueAccessor),
                 templateValueAccessor = function () {
@@ -80,10 +82,11 @@ hx.provide('$partBindingHandler', hx.instantiate(['$ajax', '$injector'], functio
         },
 
         update: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-            var deferred, lastViewModel;
-            viewModel = getViewModel(valueAccessor);
+            var deferred, lastViewModel, partViewModel;
+            
+            partViewModel = getViewModel(valueAccessor);
 
-            if (!viewModel) {
+            if (!partViewModel) {
                 return;
             }
 
@@ -95,9 +98,9 @@ hx.provide('$partBindingHandler', hx.instantiate(['$ajax', '$injector'], functio
 
             deferred = new $.Deferred();
 
-            if (viewModel.show != null) {
+            if (partViewModel.show != null) {
                 deferred = $ajax.listen(function () {
-                    viewModel.show();
+                    partViewModel.show();
                 });
             } else {
                 // Resolve immediately, nothing to wait for
@@ -107,18 +110,18 @@ hx.provide('$partBindingHandler', hx.instantiate(['$ajax', '$injector'], functio
             deferred.done(function () {
                 var templateValueAccessor = function () {
                     return {
-                        data: viewModel,
-                        name: viewModel.templateName
+                        data: partViewModel,
+                        name: partViewModel.templateName
                     };
                 };
 
                 koBindingHandlers.template.update(element, templateValueAccessor, allBindingsAccessor, viewModel, bindingContext);
 
-                if (viewModel.afterShow != null) {
-                    viewModel.afterShow();
+                if (partViewModel.afterShow != null) {
+                    partViewModel.afterShow();
                 }
 
-                ko.utils.domData.set(element, '__part__lastViewModel', viewModel);
+                ko.utils.domData.set(element, '__part__lastViewModel', partViewModel);
             });
         }
     };
