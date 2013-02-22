@@ -54,5 +54,7 @@
         //= ui/ui.regionManager.js
 
         //= ui/ui.validation.js
+
+        //= ui/ui.navigate.js
     });
 })(window, document, window["jQuery"], window["ko"]);

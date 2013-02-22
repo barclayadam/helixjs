@@ -22,7 +22,7 @@ describe('Routing:', function () {
     var $bus = hx.get('$bus');
 
     beforeEach(function () {
-        this.router = hx.get('$RouteTable');
+        this.router = new (hx.get('$RouteTable'));
     });
 
     describe('No routes defined', function () {

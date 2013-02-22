@@ -36,8 +36,6 @@
         var appRegionManager = new $RegionManager();
         hx.provide('$appRegionManager', appRegionManager);
 
-        hx.provide('$router', hx.get('$RouteTable'));
-
         for (var i = 0; i < configBlocks.length; i++) {
             // create will execute our config block
             configBlocks[i]();

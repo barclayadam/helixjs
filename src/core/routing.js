@@ -269,5 +269,15 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location'], function ($bus, $log, $
         return url;
     };
 
-    return new RouteTable();
+    return RouteTable;
+});
+
+/**
+ * Declares a singleton router that is an instance of a `$RouteTable` that provides
+ * the ability to declare routes (e.g. URL constructs) and respond to the change
+ * in browser URL (history) and to navigate to those routes, changing the URL
+ * using the `$location` service 
+ */
+hx.singleton('$router', ['$RouteTable'], function($RouteTable) {
+    return new $RouteTable();
 });

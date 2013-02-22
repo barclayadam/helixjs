@@ -1,4 +1,4 @@
-hx.provide('$homepage', ['$router'], function($router) {
+hx.provide('homepage', ['$router'], function($router) {
     return { 
             templateName: 'homepage', 
 
@@ -10,5 +10,5 @@ hx.provide('$homepage', ['$router'], function($router) {
 });
 
 hx.config('$router', function($router) {
-    $router.route('Homepage', '/examples/nerddinner/', { 'main': '$homepage' });
+    $router.route('Homepage', '/examples/nerddinner/', { 'main': 'homepage' });
 })
