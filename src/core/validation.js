@@ -250,7 +250,6 @@ ko.extenders.validationRules = function (target, validationRules) {
     target.errors = ko.observable([]);
     target.isValid = ko.observable(true);
 
-
     // An observable that will contain an array of error messages
     // that apply to this property but are not considered when
     // determining the `isValid` state of this property (e.g. it would not
