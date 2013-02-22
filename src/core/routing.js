@@ -79,10 +79,10 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location'], function ($bus, $log, $
         };
 
         Route.prototype.buildUrl = function (parameters) {
-            var _this = this;
             if (parameters == null) {
                 parameters = {};
             }
+
             if (this._allRequiredParametersPresent(parameters)) {
                 return this.url.replace(paramRegex, function (_, mode, name) {
                     return ko.utils.unwrapObservable(parameters[name] || '');
