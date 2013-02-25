@@ -46,7 +46,8 @@
         //= core/viewModel.js
 
         //= data/dataSource.js
-        
+        //= data/provider.memory.js
+                
         //= messaging/messaging.query.js
         //= messaging/messaging.command.js
 

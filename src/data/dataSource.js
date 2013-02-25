@@ -9,6 +9,8 @@ hx.provide('$DataSource', function() {
             this.$$provider = provider;
         }
 
+        this.$$initialisedProvider = false;
+
         // A provider can provide extra methods which will be exposed on this data source
         // through proxying. For each method defined a new one will be created on the
         // dataSource that will pass through the dataSource, a parameter store and all
@@ -170,6 +172,14 @@ hx.provide('$DataSource', function() {
      * in any properties that are observables.
      */
     DataSource.prototype.load = function() {
+        if(!this.$$initialisedProvider) {
+            if(this.$$provider.initialise) {
+                this.$$provider.initialise(this);
+            }
+
+            this.$$initialisedProvider = true;
+        }
+
         if(this.$$paramsObservable == undefined) {
             this.$$paramsObservable = ko.computed(function() {
                 return ko.toJS(this.$$parameters);
@@ -181,17 +191,20 @@ hx.provide('$DataSource', function() {
         var providerReturn = this.$$provider.load(this.$$paramsObservable());
 
         hx.utils.asPromise(providerReturn).done(function(result) {
+            result = result || { totalCount: 0, items: [] };
+
+            // TODO: Verification of result (e.g. must be paged if option specified)
             // If we are paged
-            if(this.page() && this.pageSize()) {
+            if(result.totalCount) {
                 this.totalCount(result.totalCount);
                 this.pageCount(Math.ceil(result.totalCount / this.pageSize()));
 
                 this.data(result.items);
             } else {
-                this.totalCount(result == undefined ? 0 : result.length);
+                this.totalCount(result.length);
                 this.pageCount(1);
 
-                this.data(result || []);
+                this.data(result);
             }
         }.bind(this));
     }

@@ -1,7 +1,6 @@
 describe('dataSource', function() {
     var $DataSource = hx.get('$DataSource');
 
-
     describe('newly created with no options specified', function() {   
         beforeEach(function() {
             this.dataSource = $DataSource
@@ -250,7 +249,39 @@ describe('dataSource', function() {
                 skip: 10
             })
         })
-    });
+    })
+
+    describe('with a provider that has an initialise function', function() {   
+        beforeEach(function() {
+            this.returnValue = ['a', 42, 5, 3, 'ds', 34];
+            this.dataSourceInInitialise = undefined;
+            this.initialiseCount = 0;
+
+            this.provider = {
+                initialise: this.spy(),
+
+                load: this.stub().returns(this.returnValue)
+            }
+
+            this.dataSource = $DataSource
+                                .from(this.provider)
+                                .params({ aParam: 1 })
+                                .take(15)
+                                .skip(10);
+
+            this.dataSource.load();
+            this.dataSource.load();
+        });
+
+        it('should call initialise with dataSource argument', function() {
+            expect(this.provider.initialise).toHaveBeenCalledWith(this.dataSource);
+        })
+
+        it('should call initialise only once when load is called multiple times', function() {
+            expect(this.provider.initialise).toHaveBeenCalledOnce();
+        })
+
+    })
 
     describe('with a provider that returns a promise', function() {    
         beforeEach(function() {
