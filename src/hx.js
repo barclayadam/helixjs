@@ -39,13 +39,14 @@
         //= core/templating.js
         //= core/validation.js
         //= core/validation.rules.js
-        //= core/dataSource.js
         //= core/location.js
         //= core/routing.js
                 
         //= core/tagBindingsProvider.js
         //= core/viewModel.js
 
+        //= data/dataSource.js
+        
         //= messaging/messaging.query.js
         //= messaging/messaging.command.js
 
