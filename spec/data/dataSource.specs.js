@@ -280,8 +280,57 @@ describe('dataSource', function() {
         it('should call initialise only once when load is called multiple times', function() {
             expect(this.provider.initialise).toHaveBeenCalledOnce();
         })
-
     })
+
+    describe('with a provider that has a normaliseResult function', function() {    
+        beforeEach(function() {
+            this.returnValue = ['a', 42, 5, 3, 'ds', 34];
+            this.normalisedReturnValue = { totalCount: 51, items: ['ds', 34] };
+
+            this.provider = {
+                load: this.stub().returns(this.returnValue),
+
+                processResult: this.stub().returns(this.normalisedReturnValue)
+            }
+
+            this.dataSource = $DataSource
+                                .from(this.provider)
+                                .take(15)
+                                .skip(10);
+
+            this.dataSource.load();
+        }); 
+
+        it('should call normaliseResult with result from load, and loadOptions', function() {
+            expect(this.provider.processResult).toHaveBeenCalledWith(this.returnValue, {
+                take: 15,
+                skip: 10
+            });
+        })
+
+        it('should use return from normaliseResult', function() {
+            expect(this.dataSource.data()).toBe(this.normalisedReturnValue.items);
+            expect(this.dataSource.totalCount()).toBe(this.normalisedReturnValue.totalCount);
+        })
+    });
+
+    describe('with a provider that has a normaliseResult function and returns undefined', function() {    
+        beforeEach(function() {
+            this.provider = {
+                load: this.stub(),
+
+                processResult: this.stub().returns(this.normalisedReturnValue)
+            }
+
+            this.dataSource = $DataSource
+                                .from(this.provider)
+                                .load();
+        }); 
+
+        it('should not call normaliseResult with result from load, and loadOptions', function() {
+            expect(this.provider.processResult).toHaveNotBeenCalled()
+        })
+    });
 
     describe('with a provider that returns a promise', function() {    
         beforeEach(function() {

@@ -191,10 +191,14 @@ hx.provide('$DataSource', function() {
         var providerReturn = this.$$provider.load(this.$$paramsObservable());
 
         hx.utils.asPromise(providerReturn).done(function(result) {
+            if(this.$$provider.processResult && result) {
+                result = this.$$provider.processResult(result, this.$$paramsObservable());
+            }
+
             result = result || { totalCount: 0, items: [] };
 
             // TODO: Verification of result (e.g. must be paged if option specified)
-            // If we are paged
+            // if we are paged
             if(result.totalCount) {
                 this.totalCount(result.totalCount);
                 this.pageCount(Math.ceil(result.totalCount / this.pageSize()));

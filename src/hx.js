@@ -47,7 +47,8 @@
 
         //= data/dataSource.js
         //= data/provider.memory.js
-                
+        //= data/provider.odata.js
+                        
         //= messaging/messaging.query.js
         //= messaging/messaging.command.js
 

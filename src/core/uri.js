@@ -7,12 +7,13 @@ hx.Uri = (function () {
         };
 
      function queryStringVariable(name, value) {
-        var t;
-        t = encode(name);
-        value = value.toString();
+        var t = name,
+            value = value.toString();
+
         if (value.length > 0) {
             t += "=" + encode(value);
         }
+        
         return t;
     };
 
