@@ -48,7 +48,7 @@ hx.provide('$InMemoryProvider', function() {
         }
 
         // We need to split here for grouping purposes because the return type
-        // changes from an array to an object (e.e. A: [], B: []) so slicing
+        // changes from an array to an object (e.g. A: [], B: []) so slicing
         // and mapping needs to change.
         if(!loadOptions.groupBy) {
             if(loadOptions.take || loadOptions.skip || loadOptions.page) {

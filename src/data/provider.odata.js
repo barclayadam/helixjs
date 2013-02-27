@@ -4,7 +4,15 @@ hx.provide('$OdataProvider', ['$ajax'], function($ajax) {
     }
 
     $OdataProvider.prototype.fn = {
-        service: function(dataSource, parameters, serviceName) {
+        /**
+         * Specifies the service operation to call.
+         *
+         * @param {hx.DataSource} dataSource The data source this method is being called on
+         * @param {object} parameter The parameter store to which new parameters can be attached
+         * @param {string} serviceName The name of the service operation to use, passed by clients 
+         *   of the data source.
+         */
+        operation: function(dataSource, parameters, serviceName) {
             parameters.serviceName = serviceName;
         }
     }
@@ -34,9 +42,21 @@ hx.provide('$OdataProvider', ['$ajax'], function($ajax) {
             uri.variables['$inlinecount'] = 'allpages';            
         }
 
-        return $ajax.url(uri.toString()).get();
+        return $ajax
+            .url(uri.toString())
+            .get();
     }
 
+    /**
+     * Normalises the result from an OData data source, converting the result from OData-specific
+     * conventions to that of the DataSource. 
+     *
+     * If an OData-formatted result set is not returned then no processing will occur, allowing an 
+     * endpoint to accept OData querying abilities without conforming to the complete OData protocol.
+     *
+     * @param {Mixed} result The result to be processed
+     * @param {object} loadOptions The options used to generate the given result, ignored.
+     */
     $OdataProvider.prototype.processResult = function(result, loadOptions) {
         if(result.d && result.d.results) {
             return result.d.results;

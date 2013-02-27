@@ -16,33 +16,33 @@ describe('dataSource providers - odata', function() {
 
         this.dataSource = $DataSource
             .from(this.provider)
-            .service('MyService');
+            .operation('MyServiceOperation');
     })
 
     describe('querying', function() {
         it('should return complete data set when no options specified', function() {
             this.dataSource.load();
 
-            expect(this.urlCalledWith).toEqual('/api/MyService');
+            expect(this.urlCalledWith).toEqual('/api/MyServiceOperation');
             expect(this.getStub).toHaveBeenCalled();
         })
 
         it('should handle take param', function() {
             this.dataSource.take(5).load();
 
-            expect(this.urlCalledWith).toEqual('/api/MyService?$take=5&$inlinecount=allpages');
+            expect(this.urlCalledWith).toEqual('/api/MyServiceOperation?$take=5&$inlinecount=allpages');
         })
 
         it('should handle skip param', function() {
             this.dataSource.skip(5).load();
 
-            expect(this.urlCalledWith).toEqual('/api/MyService?$skip=5&$inlinecount=allpages');
+            expect(this.urlCalledWith).toEqual('/api/MyServiceOperation?$skip=5&$inlinecount=allpages');
         })
 
         it('should handle paging', function() {
             this.dataSource.page(2).pageSize(5).load();
 
-            expect(this.urlCalledWith).toEqual('/api/MyService?$take=5&$skip=5&$inlinecount=allpages');
+            expect(this.urlCalledWith).toEqual('/api/MyServiceOperation?$take=5&$skip=5&$inlinecount=allpages');
         })
 
         it('should handle filtering (where) using a string', function() {
@@ -50,7 +50,7 @@ describe('dataSource providers - odata', function() {
                 .where("numberProperty lt 10")
                 .load();
 
-            expect(this.urlCalledWith).toEqual('/api/MyService?$filter=numberProperty%20lt%2010');
+            expect(this.urlCalledWith).toEqual('/api/MyServiceOperation?$filter=numberProperty%20lt%2010');
         })
 
         it('should handle filtering (where) with parameters passed to where function', function() {
@@ -61,7 +61,7 @@ describe('dataSource providers - odata', function() {
                 })
                 .load();
 
-            expect(this.urlCalledWith).toEqual('/api/MyService?$filter=numberProperty%20lt%205');
+            expect(this.urlCalledWith).toEqual('/api/MyServiceOperation?$filter=numberProperty%20lt%205');
         })
 
         xit('should handle mapping', function() {
@@ -69,13 +69,13 @@ describe('dataSource providers - odata', function() {
                 return { mappedProperty: i.numberProperty };
             }).load();
 
-            expect(this.urlCalledWith).toEqual('/api/MyService?$select=numberProperty');
+            expect(this.urlCalledWith).toEqual('/api/MyServiceOperation?$select=numberProperty');
         })
 
         it('should handle orderBy', function() {
             this.dataSource.orderBy('numberProperty desc').load();
 
-            expect(this.urlCalledWith).toEqual('/api/MyService?$orderby=numberProperty%20desc');
+            expect(this.urlCalledWith).toEqual('/api/MyServiceOperation?$orderby=numberProperty%20desc');
         })
 
         xit('should handle groupBy', function() {
@@ -86,7 +86,7 @@ describe('dataSource providers - odata', function() {
             it('skip and take', function() {
                 this.dataSource.skip(3).take(5).load();
 
-                expect(this.urlCalledWith).toEqual('/api/MyService?$take=5&$skip=3&$inlinecount=allpages');
+                expect(this.urlCalledWith).toEqual('/api/MyServiceOperation?$take=5&$skip=3&$inlinecount=allpages');
             })
 
             it('filtering (where) and paging', function() {
@@ -95,13 +95,13 @@ describe('dataSource providers - odata', function() {
                     .page(2).pageSize(5)
                     .load();
 
-                expect(this.urlCalledWith).toEqual('/api/MyService?$filter=numberProperty%20lt%2010&$take=5&$skip=5&$inlinecount=allpages');
+                expect(this.urlCalledWith).toEqual('/api/MyServiceOperation?$filter=numberProperty%20lt%2010&$take=5&$skip=5&$inlinecount=allpages');
             })
 
             it('order by and paging', function() {
                 this.dataSource.orderBy('numberProperty').page(2).pageSize(5).load();
 
-                expect(this.urlCalledWith).toEqual('/api/MyService?$orderby=numberProperty&$take=5&$skip=5&$inlinecount=allpages');
+                expect(this.urlCalledWith).toEqual('/api/MyServiceOperation?$orderby=numberProperty&$take=5&$skip=5&$inlinecount=allpages');
             })
 
             xit('group by and paging', function() {
