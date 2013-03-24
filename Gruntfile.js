@@ -134,5 +134,5 @@ module.exports = function (grunt) {
         grunt.registerTask('test', ['rig', 'serve']);
     }
 
-    grunt.registerTask('default', ['serve', 'regarde']);
+    grunt.registerTask('default', ['build', 'serve', 'regarde']);
 };
