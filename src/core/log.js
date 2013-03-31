@@ -1,3 +1,4 @@
+/** @namespace $log */
 hx.singleton('$log', function() {
     var console = window.console || {},
         logger = {
@@ -13,13 +14,50 @@ hx.singleton('$log', function() {
         console = {};
     }
 
-    // For the given `levels` will create a logging method
-    // on the `hx.log` object to be used to log:
-    //
-    // * debug
-    // * info
-    // * warn
-    // * error
+    /**
+     * @name debug
+     * @memberOf $log#
+     * @function
+     *
+     * @description
+     * Logs a debug-level message to the log
+     *
+     * @param {string[]} args The values to log
+     */
+
+    /**
+     * @name info
+     * @memberOf $log#
+     * @function
+     *
+     * @description
+     * Logs an info-level message to the log
+     *
+     * @param {string[]} args The values to log
+     */
+
+    /**
+     * @name warn
+     * @memberOf $log#
+     * @function
+     *
+     * @description
+     * Logs a warn-level message to the log
+     *
+     * @param {string[]} args The values to log
+     */
+
+    /**
+     * @name error
+     * @memberOf $log#
+     * @function
+     *
+     * @description
+     * Logs an error-level message to the log
+     *
+     * @param {string[]} args The values to log
+     */
+
     'debug info warn error'.replace(/\w+/g, function (n) {        
         logger[n] = function (arg1, arg2, arg3) {
             if (logger.enabled) {                

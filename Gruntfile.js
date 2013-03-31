@@ -16,9 +16,10 @@ module.exports = function (grunt) {
 
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-livereload');
-    grunt.loadNpmTasks('grunt-regarde');
     grunt.loadNpmTasks('grunt-contrib-connect');
+    grunt.loadNpmTasks('grunt-jsdoc');
 
+    grunt.loadNpmTasks('grunt-regarde');
     grunt.loadNpmTasks('grunt-saucelabs');
 
     grunt.initConfig({
@@ -31,6 +32,16 @@ module.exports = function (grunt) {
                     ' Distributed under MIT license\n' + 
                     ' http://github.com/barclayadam/HelixJS\n' +
                     '*/\n'
+        },
+
+        jsdoc : {
+            dist : {
+                src: ['src/**/*.js'], 
+
+                options: {
+                    destination: 'doc'
+                }
+            }
         },
 
         uglify: {

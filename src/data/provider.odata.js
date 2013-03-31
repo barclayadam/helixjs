@@ -1,4 +1,5 @@
 hx.provide('$OdataProvider', ['$ajax'], function($ajax) {
+    /** @class $OdataProvider */
     function $OdataProvider(options) {
         this.options = options;
     }

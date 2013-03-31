@@ -1,3 +1,7 @@
+/**
+ * @class $EventBus
+ */
+
 hx.provide('$EventBus', ['$log'], function($log) {
     var _subscribers = {};
     
@@ -6,17 +10,23 @@ hx.provide('$EventBus', ['$log'], function($log) {
     };
 
     /**
-      Subscribes the given function to the specified messageName, being executed
-      if the exact same named event is raised or a `namespaced` event published
-      with a root of the given `messageName` (e.g. publishing a message with
-      the name `myNamespace:myEvent` will call subscribers of both 
-      `myNamespace:myEvent` and `myNamespace`).
-     
-      The return result from this function is a subscription, an object that
-      has a single 'unsubscribe' method that, if called, will dispose of the
-      subscription to the named event meaning no further events will be published
-      to the given function.
-    */
+     * Subscribes the given function to the specified messageName, being executed
+     * if the exact same named event is raised or a `namespaced` event published
+     * with a root of the given `messageName` (e.g. publishing a message with
+     * the name `myNamespace:myEvent` will call subscribers of both 
+     * `myNamespace:myEvent` and `myNamespace`).
+     * 
+     * The return result from this function is a subscription, an object that
+     * has a single 'unsubscribe' method that, if called, will dispose of the
+     * subscription to the named event meaning no further events will be published
+     * to the given function.
+     * 
+     * @param {string} messageName The name of the message to subscribe to.
+     * @param {function} callback The function to be executed when a message of
+     * the specified name is published
+     *
+     * @memberOf $EventBus#
+     */
     function subscribe(messageName, callback) {
         var message, newToken, _i, _len;
 
@@ -42,14 +52,19 @@ hx.provide('$EventBus', ['$log'], function($log) {
     };
 
     /**
-        Publishes the given named message to any subscribed listeners, passing 
-        the `messageData` argument on to each subscriber as an arguments to the 
-        subscription call.
-    
-        (e.g. 
-          subscribe "My Event", (messageData) ->
-          publish   "My Event", messageData
-        )
+     * Publishes the given named message to any subscribed listeners, passing 
+     * the `messageData` argument on to each subscriber as an arguments to the 
+     * subscription call.
+     * 
+     * (e.g. 
+     *   subscribe "My Event", (messageData) ->
+     *   publish   "My Event", messageData
+     * )
+     * 
+     * @param {string} messageName The name of the message to publish
+     * @param {object} args The arguments that should be passed to any subscribers
+     *
+     * @memberOf $EventBus#
     */
     function publish(messageName, args) {
         var indexOfSeparator, messages, msg, subscriber, t, _i, _len, _ref;

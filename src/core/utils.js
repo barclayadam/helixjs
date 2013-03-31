@@ -1,3 +1,4 @@
+/** @namespace */
 hx.utils = {
     toTitleCase: function (str) {
         if (str != null) {

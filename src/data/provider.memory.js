@@ -1,4 +1,5 @@
 hx.provide('$InMemoryProvider', function() {
+    /** @class $InMemoryProvider */
     function $InMemoryProvider(options) {
         this.options = options;
     }

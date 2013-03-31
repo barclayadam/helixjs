@@ -1,5 +1,5 @@
 hx.provide('$DataSource', function() {
-
+    /** @class $DataSource */
     function DataSource(provider) {
         if(_.isFunction(provider)) {
             // Ensure if a function is supplied as a provider it conforms to

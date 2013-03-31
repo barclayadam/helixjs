@@ -22,7 +22,7 @@ hx.singleton('$hxBindingsProvider', function() {
      *    older versions of IE that can not properly support custom, non-standard
      *    elements out-of-the-box.
     */
-    var tagBindingProvider = function () {
+    var TagBindingProvider = function () {
         var realBindingProvider = new ko.bindingProvider(),
             hasProcessed = false,
             tagNameToBindingHandlers = {};
@@ -187,14 +187,17 @@ hx.singleton('$hxBindingsProvider', function() {
         return this;
     };
 
+    /** @namespace $hxBindingsProvider */
     return {
         /**
          * Configures the `ko.bindingProvider` instance to be a new instance of the tag binding provider,
          * a binding provider that supports the ability of using custom tags in the HTML source that are
          * transformed into 'standard' elements when binding.
+         *
+         * @memberOf $hxBindingsProvider
          */
         configure: function() {
-            ko.bindingProvider.instance = new tagBindingProvider();
+            ko.bindingProvider.instance = new TagBindingProvider();
         }
     }
 

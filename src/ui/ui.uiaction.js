@@ -18,6 +18,8 @@
  * action is asynchrounous the user can not execute the action multiple times in parallel,
  * which is particularly useful when submitting forms to the server.
  *
+ * @constructor
+ *
  * @param {object|function} funcOrOptions - The function to execute, or an options object
  * @param {function} funcOrOptions.action - [required] The function to execute
  * @param {function|observable} funcOrOptions.enabled - A function or observable that can
@@ -38,51 +40,51 @@ hx.UiAction = function (funcOrOptions) {
         action = funcOrOptions.action;
     }
 
-    executing = ko.observable(false);
+    /**
+     * Determines whether or not this action is enabled, that when {@link execute} is called
+     * it will be executed. 
+     *
+     * @type {observable<bool>}
+     */
+    this.enabled = enabled;
 
-    return {
-        /**
-         * @observable
-         *
-         * Determines whether or not this action is enabled, that when {@link execute} is called
-         * it will be executed. 
-         */
-        enabled: enabled,
+    /**
+     * Determines whether this action is currently executing, useful when binding to an async
+     * action to be able to provide feedback to the user and to stop them attempting to execute
+     * this action again.
+     *
+     * @type {observable<bool>}
+     */
+    this.executing = ko.observable(false);
 
-        /**
-         * @observable
-         *
-         * Determines whether this action is currently executing, useful when binding to an async
-         * action to be able to provide feedback to the user and to stop them attempting to execute
-         * this action again.
-         */
-        executing: executing,
+    /**
+     * Determines whether or not this action should be disabled during execution, such that
+     * executing the action again during an execution (async) will result in no processing
+     * and an immediate return.
+     *
+     * @type {bool}
+     */
+    this.disableDuringExecution = disableDuringExecution;
 
-        /**
-         * Determines whether or not this action should be disabled during execution, such that
-         * executing the action again during an execution (async) will result in no processing
-         * and an immediate return.
-         */
-        disableDuringExecution: disableDuringExecution,
 
-        execute: function () {
-            var ret;
+    /**
+     * Executes this UiAction.
+     *
+     * @return {any} The result of executing this action
+     */
+    this.execute = function () {
+        var ret, self = this;
 
-            if (enabled() && (!disableDuringExecution || !executing())) {
-                executing(true);
+        if (this.enabled() && (!this.disableDuringExecution || !this.executing())) {
+            this.executing(true);
 
-                ret = action.apply(this, arguments);
+            ret = action.apply(this, arguments);
 
-                if (ret && ret.then) { // TODO: Better way of determining a promise?
-                    ret.then(function () {
-                        executing(false);
-                    });
-                } else {
-                    executing(false);
-                }
+            hx.utils.asPromise(ret).then(function () {
+                self.executing(false);
+            });
 
-                return ret;
-            }
+            return ret;
         }
     };
 };
