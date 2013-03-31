@@ -4,21 +4,6 @@ describe('region manager', function () {
         $ajax = hx.get('$ajax'),
         $log = hx.get('$log');
 
-    describe('region without a region manager', function () {
-        beforeEach(function () {
-            var _this = this;
-            this.setHtmlFixture("<div id=\"body\">\n    <region class=\"region\"></region>\n</div>");
-            
-            this.applyBindingsFunc = function () {
-                _this.applyBindingsToFixture();
-            };
-        });
-
-        it('should throw an exception detailing incorrect usage', function () {
-            expect(this.applyBindingsFunc).toThrow('A region binding handler / tag must be a child of a regionManager');
-        });
-    });
-
     describe('single region', function () {
         beforeEach(function () {
             this.regionManager = new $RegionManager();
@@ -47,7 +32,6 @@ describe('region manager', function () {
 
         describe('with view model set', function () {
             beforeEach(function () {
-                this.partBindingHandlerSpy = this.spy(ko.bindingHandlers.part, "update");
                 $templating.set('myViewModelTemplateName', 'This is the template');
                 this.viewModel = {
                     templateName: 'myViewModelTemplateName'
@@ -58,10 +42,6 @@ describe('region manager', function () {
 
             it('should render the view model and its associated template in single region', function () {
                 expect(document.getElementById("my-main-region")).toHaveText('This is the template');
-            });
-
-            it('should use part binding handler to handle rendering', function () {
-                expect(this.partBindingHandlerSpy).toHaveBeenCalled();
             });
         });
     });

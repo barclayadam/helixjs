@@ -53,8 +53,7 @@
         //= messaging/messaging.command.js
 
         //= ui/ui.uiaction.js
-        //= ui/ui.partBindingHandler.js
-        //= ui/ui.regionManager.js
+        //= ui/ui.regions.js
 
         //= ui/ui.validation.js
 

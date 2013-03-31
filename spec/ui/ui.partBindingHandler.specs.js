@@ -4,14 +4,14 @@ describe('part binding handler', function () {
 
     describe('binding undefined view model', function () {
         beforeEach(function () {
-            this.setHtmlFixture("<div id=\"fixture\" data-bind=\"part: viewModel\">\n    This is an anonymous template\n</div>");
+            this.setHtmlFixture("<div id=\"fixture\" data-bind=\"region: viewModel\">\n    This is an anonymous template\n</div>");
 
         });
 
         it('should throw an exception', function () {
             expect(function() {
                 this.applyBindingsToFixture({ viewModel: undefined });
-            }.bind(this)).toThrow('A null or undefined view model cannot be passed to a part binding handler');
+            }.bind(this)).toThrow('A null or undefined view model cannot be passed to a region binding handler');
         });
     });
 
@@ -30,7 +30,7 @@ describe('part binding handler', function () {
                 })
             };
 
-            this.setHtmlFixture("<div id=\"fixture\" data-bind=\"part: viewModel\">\n    This is an anonymous template\n\n    <span data-bind=\"test1: anObservableProperty\"></span>\n</div>");
+            this.setHtmlFixture("<div id=\"fixture\" data-bind=\"region: viewModel\">\n    This is an anonymous template\n\n    <span data-bind=\"test1: anObservableProperty\"></span>\n</div>");
             this.applyBindingsToFixture({
                 viewModel: this.viewModel
             });
@@ -61,7 +61,7 @@ describe('part binding handler', function () {
                 templateName: 'myNamedPartTemplate'
             };
 
-            this.setHtmlFixture("<div id=\"fixture\" data-bind=\"part: viewModel\"></div>");
+            this.setHtmlFixture("<div id=\"fixture\" data-bind=\"region: viewModel\"></div>");
             this.applyBindingsToFixture({
                 viewModel: this.viewModel
             });
@@ -82,7 +82,7 @@ describe('part binding handler', function () {
 
             hx.provide('myInjectedViewModel', this.viewModelModuleCreator);            
 
-            this.setHtmlFixture("<div id=\"fixture\" data-bind=\"part: 'myInjectedViewModel'\"><span data-bind='text: aProp'></span></div>");
+            this.setHtmlFixture("<div id=\"fixture\" data-bind=\"region: 'myInjectedViewModel'\"><span data-bind='text: aProp'></span></div>");
 
             this.applyBindingsToFixture();
 
@@ -113,7 +113,7 @@ describe('part binding handler', function () {
                     })
                 };
 
-                this.setHtmlFixture("<div id=\"fixture\" data-bind=\"part: viewModel\">\n    This is the template\n</div>");
+                this.setHtmlFixture("<div id=\"fixture\" data-bind=\"region: viewModel\">\n    This is the template\n</div>");
                 
                 this.applyBindingsToFixture({
                     viewModel: this.viewModel
@@ -151,7 +151,7 @@ describe('part binding handler', function () {
                     hide: this.spy()
                 };
 
-                this.setHtmlFixture("<div id=\"fixture\" data-bind=\"part: viewModel\">\n    This is the template\n</div>");
+                this.setHtmlFixture("<div id=\"fixture\" data-bind=\"region: viewModel\">\n    This is the template\n</div>");
                 
                 this.applyBindingsToFixture({
                     viewModel: this.viewModel
@@ -209,7 +209,7 @@ describe('part binding handler', function () {
                 };
 
                 this.viewModel = ko.observable(this.viewModelOne);
-                this.setHtmlFixture("<div id=\"fixture\" data-bind=\"part: viewModel\">\n    This is the template\n</div>");
+                this.setHtmlFixture("<div id=\"fixture\" data-bind=\"region: viewModel\">\n    This is the template\n</div>");
                 
                 this.applyBindingsToFixture({
                     viewModel: this.viewModel
