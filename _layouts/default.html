@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Mike Taylor">
+    <meta name="description" content="HelixJS - DNA for web apps" />
+
+    <title>{{ page.title }}</title>
+
+    <!-- STYLES -->
+    <link href="styles/bootstrap.css" rel="stylesheet" media="screen">
+    <link href="styles/bootstrap-responsive.css" rel="stylesheet" media="screen">    
+    <link href="styles/main.css" rel="stylesheet" media="screen">
+
+    <!--[if lt IE 9]>
+      <script src="scripts/lib/html5shiv.js"></script>
+    <![endif]-->
+
+    <link href="icons/apple-touch-icon-144-precomposed.png" rel="apple-touch-icon-precomposed" sizes="144x144">
+    <link href="icons/apple-touch-icon-114-precomposed.png" rel="apple-touch-icon-precomposed" sizes="114x114">
+    <link href="icons/apple-touch-icon-72-precomposed.png" rel="apple-touch-icon-precomposed" sizes="72x72">
+    <link href="icons/apple-touch-icon-57-precomposed.png" rel="apple-touch-icon-precomposed">
+    <link href="icons/favicon.png" rel="shortcut icon">
+  </head>
+
+  <body>
+    <a href="https://github.com/barclayadam/helixjs">
+      <img class="github-banner" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+    </a>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+      <header class="inner">
+        <img src="images/logo.png" alt="HelixJS logo" />
+
+        <h2 id="project_tagline">DNA for web apps</h2>
+
+        <section id="downloads">
+          <a class="zip_download_link" href="https://github.com/barclayadam/helixjs/zipball/master">Download this project as a .zip file</a>
+          <a class="tar_download_link" href="https://github.com/barclayadam/helixjs/tarball/master">Download this project as a tar.gz file</a>
+        </section>
+      </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+        {{ page.content }}
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p><a href="https://saucelabs.com/u/barclayadam"><img src="https://saucelabs.com/buildstatus/barclayadam" alt="Test Status"></a></p>
+        <p class="copyright">HelixJS is maintained by <a href="https://github.com/barclayadam">Adam Barclay</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="scripts/lib/bootstrap.js"></script>
+  </body>
+</html>
