@@ -10,8 +10,9 @@
     <title>HelixJS - DNA for web apps</title>
 
     <!-- STYLES -->
-    <link href="styles/bootstrap.css" rel="stylesheet" media="screen">
-    <link href="styles/bootstrap-responsive.css" rel="stylesheet" media="screen">    
+    <link href="styles/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="styles/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
+    <link href="styles/font-awesome.min.css" rel="stylesheet" media="screen">    
     <link href="styles/main.css" rel="stylesheet" media="screen">
 
     <!--[if lt IE 9]>
@@ -31,49 +32,72 @@
     </a>
 
     <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-      <header class="inner">
-        <img src="images/logo.png" alt="HelixJS logo" />
+    <div role="main" class="container-fluid">
+      <div class="row-fluid">
+        <div class="span6 offset3">
+          <header>
+            <div class="row-fluid">
+              <div class="span8 offset2">
+                <img src="images/logo.png" alt="HelixJS logo" />
+              </div>
+            </div>
 
-        <h2 id="project_tagline">DNA for web apps</h2>
+            <div class="center">
+              <div class="tagline-buttons">
+                <h2>DNA for web apps</h2>
 
-        <section id="downloads">
-          <a class="zip_download_link" href="https://github.com/barclayadam/helixjs/zipball/master">Download this project as a .zip file</a>
-          <a class="tar_download_link" href="https://github.com/barclayadam/helixjs/tarball/master">Download this project as a tar.gz file</a>
-        </section>
-      </header>
-    </div>
+                <section class="github-links">
+                  <a class="btn btn-large" type="button" href="https://github.com/barclayadam/helixjs">
+                    <i class="icon-github"></i> View on GitHub</a>
+                  <a class="btn btn-large btn-primary" type="button" href="https://github.com/barclayadam/helixjs//zipball/master">
+                    <i class="icon-download"></i> Download</a>
+                </section>
+              </div>
+            </div>
 
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-        <p><strong>HelixJS</strong> is a JavaScript library that provides a solid foundation for creating rich web applications, building 
-on the <a href="http://knockoutjs.com/">Knockout</a> library.</p>
+           <div class="navbar navbar-inverse">
+             <div class="navbar-inner">
+               <ul class="nav">
+                 <li class="active"><a href="#">Home</a></li>
+                 <li><a href="#">API</a></li>
+                 <li><a href="#">About</a></li>
+               </ul>
+            </div>
+          </div>            
 
-<p>License: MIT <a href="http://www.opensource.org/licenses/mit-license.php">http://www.opensource.org/licenses/mit-license.php</a></p>
+          </header>
+
+          <!-- MAIN CONTENT -->
+          <div class="content-wrapper">
+            <p><strong>HelixJS</strong> is a JavaScript library that provides a solid foundation for creating rich web applications, building on the <a href='http://knockoutjs.com'>Knockout</a> library.</p>
+
+<p>License: <a href='http://www.opensource.org/licenses/mit-license.php'>MIT</a></p>
 
 <p>Supported (Tested) Browsers:</p>
 
 <ul>
-  <li>IE8+ (Yes, it's time to drop support for IE7 and less)</li>
-  <li>Chrome (Latest)</li>
-  <li>Firefox (Latest)</li>
+<li>IE8+ (Yes, it&#8217;s time to drop support for IE7 and less)</li>
+
+<li>Chrome (Latest)</li>
+
+<li>Firefox (Latest)</li>
 </ul>
 
-<p>Other browsers that match the feature sets of Chrome and Firefox are likely to
-work as well as the other browsers, they are just not yet fully tested and
-supported.</p>
-    </div>
+<p>Other browsers that match the feature sets of Chrome and Firefox are likely to work as well as the other browsers, they are just not yet fully tested and supported.</p>
+          </div>
 
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p><a href="https://saucelabs.com/u/barclayadam"><img src="https://saucelabs.com/buildstatus/barclayadam" alt="Test Status"></a></p>
-        <p class="copyright">HelixJS is maintained by <a href="https://github.com/barclayadam">Adam Barclay</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
-      </footer>
+          <!-- FOOTER  -->
+          <footer>
+            <p><a href="https://saucelabs.com/u/barclayadam"><img src="https://saucelabs.com/buildstatus/barclayadam" alt="SauceLabs Test Status"></a></p>
+            <p class="copyright">HelixJS is maintained by <a href="https://github.com/barclayadam">Adam Barclay</a> and supported by <a href="https://github.com/michaeldtaylor">Mike Taylor</a>.</p>
+            <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+          </footer>
+        </div>           
+      </div>
     </div>
 
     <!-- SCRIPTS -->
-    <script src="scripts/lib/bootstrap.js"></script>
+    <script src="scripts/lib/jquery-1.9.1.min.js"></script>    
+    <script src="scripts/lib/bootstrap.min.js"></script>
   </body>
 </html>

@@ -3,8 +3,6 @@ layout: default
 title: HelixJS - DNA for web apps
 ---
 
-## Hello
-
 **HelixJS** is a JavaScript library that provides a solid foundation for creating rich web applications, building 
 on the [Knockout](http://knockoutjs.com) library.
 
