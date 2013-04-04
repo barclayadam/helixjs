@@ -1,8 +1,10 @@
 html {
+	display: block;
 	min-height: 100%;
 }
 
 body {
+	display: block;
 	min-height: 100%;
 	border-top: 6px #6600cc solid;
 	padding-top: 40px;
@@ -33,4 +35,11 @@ body {
 
 .content-wrapper {
 	margin-top: 30px;
+}
+
+footer {
+	padding-top: 2em;
+	background-color: #333;
+	color: white;
+	padding-bottom: 2em;
 }
