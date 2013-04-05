@@ -13,7 +13,7 @@ beforeEach(function () {
 
     this.getFixtureTextContent = function() {
         return document.getElementById(jasmine.getFixtures().containerId).innerText || document.getElementById(jasmine.getFixtures().containerId).textContent;
-    }
+    };
 
     this.setHtmlFixture = function (html) {
         setFixtures(html);

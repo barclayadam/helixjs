@@ -66,7 +66,6 @@ hx.UiAction = function (funcOrOptions) {
      */
     this.disableDuringExecution = disableDuringExecution;
 
-
     /**
      * Executes this UiAction.
      *
@@ -87,4 +86,43 @@ hx.UiAction = function (funcOrOptions) {
             return ret;
         }
     };
+};
+ 
+/**
+ * @bindingHandler action
+ *
+ * The action binding handler is used to execute a UiAction, registering a 'click'
+ * event handler that will call the `execute` method of the ui action when the
+ * element is clicked.
+ *
+ * To allow for styling, such as providing a loading spinner on a button when
+ * the action is being executed (assuming it is async) an 'is-executing' class
+ * is added during the processing of the ui action, with the execution status
+ * being determined by the @{link UiAction.executing#} observable.
+ *
+ * In addition a 'disabled' attribute will be managed, depending on the value
+ * of the ui action's enabled observable. If the action is enabled then no
+ * attribute will be set, if disabled the 'disabled' attribute will have its
+ * set to 'disabled', which can be targetted by CSS by using attribute selectors
+ * (e.g. a[disabled] { color: red; })
+ */
+koBindingHandlers.action = {
+    init: function(element, valueAccessor) {
+        ko.utils.registerEventHandler(element, 'click', function() {
+            valueAccessor().execute();
+        })
+    },
+
+    update: function(element, valueAccessor) {
+        var isEnabled = valueAccessor().enabled(),
+            isExecuting = valueAccessor().executing();
+
+        if(isEnabled) {
+            element.removeAttribute('disabled');
+        } else {
+            element.setAttribute('disabled', 'disabled')
+        }
+
+        ko.utils.toggleDomNodeCssClass(element, 'is-executing', isExecuting);
+    }
 };
