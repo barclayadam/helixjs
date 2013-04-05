@@ -10,9 +10,11 @@
     <title>HelixJS - DNA for web apps</title>
 
     <!-- STYLES -->
-    <link href="styles/bootstrap.min.css" rel="stylesheet" media="screen">
-    <link href="styles/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
-    <link href="styles/font-awesome.min.css" rel="stylesheet" media="screen">    
+    <link href="styles/lib/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="styles/lib/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
+    <link href="styles/lib/font-awesome.min.css" rel="stylesheet" media="screen">
+    <link href="styles/lib/shCore.css" rel="stylesheet" media="screen">
+    <link href="styles/lib/shThemeFadeToGrey.css" rel="stylesheet" media="screen">
     <link href="styles/main.css" rel="stylesheet" media="screen">
 
     <!--[if lt IE 9]>
@@ -31,11 +33,12 @@
       <img class="github-banner" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
     </a>
 
-    <!-- HEADER -->
-    <div role="main" class="container-fluid">
+    <div id="wrapper">
       <div class="row-fluid">
         <div class="span6 offset3">
-          <header>
+
+          <!-- HEADER -->
+          <header class="well well-large">
             <div class="row-fluid">
               <div class="span8 offset2">
                 <img src="images/logo.png" alt="HelixJS logo" />
@@ -46,6 +49,8 @@
               <div class="tagline-buttons">
                 <h2>DNA for web apps</h2>
 
+                <p><strong>HelixJS</strong> is a JavaScript library that provides a solid foundation for creating rich web applications, building on the <a href="http://knockoutjs.com">Knockout</a> library.</p>
+
                 <section class="github-links">
                   <a class="btn btn-large" type="button" href="https://github.com/barclayadam/helixjs">
                     <i class="icon-github"></i> View on GitHub</a>
@@ -53,27 +58,59 @@
                     <i class="icon-download"></i> Download</a>
                 </section>
               </div>
-            </div>
-
-             <div class="navbar navbar-inverse">
-               <div class="navbar-inner">
-                 <ul class="nav">
-                   <li class="active"><a href="#">Home</a></li>
-                   <li><a href="#">API</a></li>
-                   <li><a href="#">About</a></li>
-                 </ul>
-              </div>
-            </div>            
-
+            </div>         
           </header>
 
+          <!-- NAVIGATION -->
+          <div class="navbar navbar-inverse">
+            <div class="navbar-inner">
+              <nav>
+                <ul class="nav">
+                  <li class="active"><a href="#">Home</a></li>
+                  <li><a href="#">API</a></li>
+                  <li><a href="#">About</a></li>
+                  <li><a href="#">Docs</a></li>
+                  <li><a href="#">Blog</a></li>                                    
+                </ul>
+              </nav>
+            </div>
+          </div>
+
           <!-- MAIN CONTENT -->
-          <div class="content-wrapper">
-            <p><strong>HelixJS</strong> is a JavaScript library that provides a solid foundation for creating rich web applications, building on the <a href='http://knockoutjs.com'>Knockout</a> library.</p>
+          <div class="content">
+            <h2 id='why_helixjs'>Why HelixJS?</h2>
 
-<p>License: <a href='http://www.opensource.org/licenses/mit-license.php'>MIT</a></p>
+<p>You love the Model-View-ViewModel (MVVM) pattern. You love <a href='http://knockoutjs.org'>Knockout</a> but want to develop in a more structured way to build scalable, maintainable single-page Web apps.</p>
 
-<p>Supported (Tested) Browsers:</p>
+<p>Using <a href='http://knockoutjs.org'>Knockout</a> as a foundation, <strong>HelixJS</strong> offers an opinionated framework for building Web apps. Features include:</p>
+
+<ul>
+<li>Application semantics - extensions to Knockout binding handlers allows Web app composition using injectable regions</li>
+
+<li>Routing engine</li>
+
+<li>ViewModel lifecycle events</li>
+
+<li>Application modules, IoC container and dependency injection</li>
+
+<li>Extensible form validation framework</li>
+
+<li>Templating engine extensions</li>
+</ul>
+
+<h2 id='live_example'>Live Example</h2>
+
+<pre><code>/**
+ * SyntaxHighlighter
+ */
+function foo()
+{
+    if (counter &lt;= 10)
+        return;
+    // it works!
+}</code></pre>
+
+<h2 id='supported_tested_browsers'>Supported (Tested) Browsers</h2>
 
 <ul>
 <li>IE8+ (Yes, it&#8217;s time to drop support for IE7 and less)</li>
@@ -84,7 +121,24 @@
 </ul>
 
 <p>Other browsers that match the feature sets of Chrome and Firefox are likely to work as well as the other browsers, they are just not yet fully tested and supported.</p>
+
+<h2 id='license'>License</h2>
+
+<p>Code licensed under the <a href='http://www.opensource.org/licenses/mit-license.php'>The MIT license</a></p>
           </div>
+
+          <script type="syntaxhighlighter" class="brush: js"><![CDATA[
+            /**
+             * SyntaxHighlighter
+             */
+            function foo()
+            {
+                if (counter <= 10)
+                    return;
+                // it works!
+            }
+          ]]></script>
+
         </div>
       </div>
     </div>
@@ -105,5 +159,15 @@
     <!-- SCRIPTS -->
     <script src="scripts/lib/jquery-1.9.1.min.js"></script>    
     <script src="scripts/lib/bootstrap.min.js"></script>
+    <script src="scripts/lib/shCore.js"></script>
+    <script src="scripts/lib/shBrushJScript.js"></script>
+    <script src="scripts/lib/shBrushXml.js"></script>
+    <script src="scripts/lib/shBrushCss.js"></script>        
+    <script>
+      $(function() {
+        SyntaxHighlighter.defaults['gutter'] = false;
+        SyntaxHighlighter.all();
+      });
+    </script>
   </body>
 </html>

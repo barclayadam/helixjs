@@ -10,9 +10,11 @@
     <title>{{ page.title }}</title>
 
     <!-- STYLES -->
-    <link href="styles/bootstrap.min.css" rel="stylesheet" media="screen">
-    <link href="styles/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
-    <link href="styles/font-awesome.min.css" rel="stylesheet" media="screen">    
+    <link href="styles/lib/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="styles/lib/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
+    <link href="styles/lib/font-awesome.min.css" rel="stylesheet" media="screen">
+    <link href="styles/lib/shCore.css" rel="stylesheet" media="screen">
+    <link href="styles/lib/shThemeFadeToGrey.css" rel="stylesheet" media="screen">
     <link href="styles/main.css" rel="stylesheet" media="screen">
 
     <!--[if lt IE 9]>
@@ -31,11 +33,12 @@
       <img class="github-banner" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
     </a>
 
-    <!-- HEADER -->
-    <div role="main" class="container-fluid">
+    <div id="wrapper">
       <div class="row-fluid">
         <div class="span6 offset3">
-          <header>
+
+          <!-- HEADER -->
+          <header class="well well-large">
             <div class="row-fluid">
               <div class="span8 offset2">
                 <img src="images/logo.png" alt="HelixJS logo" />
@@ -46,6 +49,8 @@
               <div class="tagline-buttons">
                 <h2>DNA for web apps</h2>
 
+                <p><strong>HelixJS</strong> is a JavaScript library that provides a solid foundation for creating rich web applications, building on the <a href="http://knockoutjs.com">Knockout</a> library.</p>
+
                 <section class="github-links">
                   <a class="btn btn-large" type="button" href="https://github.com/barclayadam/helixjs">
                     <i class="icon-github"></i> View on GitHub</a>
@@ -53,24 +58,41 @@
                     <i class="icon-download"></i> Download</a>
                 </section>
               </div>
-            </div>
-
-             <div class="navbar navbar-inverse">
-               <div class="navbar-inner">
-                 <ul class="nav">
-                   <li class="active"><a href="#">Home</a></li>
-                   <li><a href="#">API</a></li>
-                   <li><a href="#">About</a></li>
-                 </ul>
-              </div>
-            </div>            
-
+            </div>         
           </header>
 
+          <!-- NAVIGATION -->
+          <div class="navbar navbar-inverse">
+            <div class="navbar-inner">
+              <nav>
+                <ul class="nav">
+                  <li class="active"><a href="#">Home</a></li>
+                  <li><a href="#">API</a></li>
+                  <li><a href="#">About</a></li>
+                  <li><a href="#">Docs</a></li>
+                  <li><a href="#">Blog</a></li>                                    
+                </ul>
+              </nav>
+            </div>
+          </div>
+
           <!-- MAIN CONTENT -->
-          <div class="content-wrapper">
+          <div class="content">
             {{ content }}
           </div>
+
+          <script type="syntaxhighlighter" class="brush: js"><![CDATA[
+            /**
+             * SyntaxHighlighter
+             */
+            function foo()
+            {
+                if (counter <= 10)
+                    return;
+                // it works!
+            }
+          ]]></script>
+
         </div>
       </div>
     </div>
@@ -91,5 +113,15 @@
     <!-- SCRIPTS -->
     <script src="scripts/lib/jquery-1.9.1.min.js"></script>    
     <script src="scripts/lib/bootstrap.min.js"></script>
+    <script src="scripts/lib/shCore.js"></script>
+    <script src="scripts/lib/shBrushJScript.js"></script>
+    <script src="scripts/lib/shBrushXml.js"></script>
+    <script src="scripts/lib/shBrushCss.js"></script>        
+    <script>
+      $(function() {
+        SyntaxHighlighter.defaults['gutter'] = false;
+        SyntaxHighlighter.all();
+      });
+    </script>
   </body>
 </html>
