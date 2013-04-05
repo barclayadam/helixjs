@@ -1,12 +1,33 @@
 (function() {
     hx.provide('$RegionManager', ['$injector', '$log'], function($injector, $log) {
         return (function () {
-
+ 
+            /**
+             * A `RegionManager` provides the management of a number of regions within a
+             * section of an application, typically with one per application using the
+             * implicit region manager provided by the `app` binding handler.
+             *
+             * A region manager maintains a key <-> view model mapping, with regions
+             * being updated either individually or all at once, typically with a
+             * route navigation event.
+             *
+             * @class RegionManager
+             */
             function RegionManager() {
                 this.defaultRegion = void 0;
                 this.regions = {};
             }
 
+            /**
+             * Shows a single view model, by either placing it in the single region that
+             * has been registered with this region manager, or putting it in the
+             * default region.
+             *
+             * If there are more than 1 regions registered, and no default has been specified
+             * then an error will be thrown.
+             *
+             * @param {object} viewModel The view model to be shown
+             */
             RegionManager.prototype.showSingle = function (viewModel) {
                 // If a single region has been set use whatever name was given.
                 if (_.keys(this.regions).length === 1) {
@@ -18,6 +39,25 @@
                 }
             };
 
+            /*
+             * Shows a number of view models, with the object being a mapping of region names
+             * to view models to be shown.
+             *
+             * Any regions that are not specified as changing in the specified view models
+             * parameter will *not* be changed.
+             *
+             * If a key exists in the object that is passed but no registered region has that
+             * name a `debug` level log message will be output to indiciate a potential problem.
+             *
+             * @example
+             *
+             * regionManager.show({
+             *      'navigation': new NavigationViewModel(), 
+             *      'main': new DashboardViewModel()
+             * });
+             *
+             * @param {object} viewModels The view models that will be shown
+             */
             RegionManager.prototype.show = function (viewModels) {
                 var regionKey, vm;
 
@@ -52,6 +92,8 @@
     var regionManagerContextKey = '$regionManager';
 
     /**
+     * @bindingHandler regionManager
+     *
      * A `regionManager` is a binding handler that is typically applied at the root
      * of a document structure to provide the necessary management of `regions` (of which
      * there may only be one, in many applications) within a `HelixJS` application.
@@ -83,6 +125,7 @@
 
     /**
      * @bindingHandler region
+     * @tagReplacement div
      *
      * # Overview
      *
@@ -97,19 +140,12 @@
      * A region is defined by a template (either named or anonymous) and a
      * `view model`, a view model being defined as nothing more than a 
      * simple object with optional methods and properties that can affect
-     * the rendering and hook in to simple lifecycle management.
+     * the rendering and hook in to lifecycle management events.
      *
      * A region takes a single parameter, which is the `view model` that is to
-     * be shown. If this property is an observable that if that observable is
+     * be shown. If this property is an observable then if that observable is
      * updated the binding handler will `hide` the currently bound view model
-     * and bind the new one and (optionally) switch out the template.
-     *
-     * ## Region Manager Integration
-     *
-     * Typically an app will use a `region manager` to manage the regions within the
-     * system, to provide further semantics on top of a `region` binding handler to integrate
-     * with the routing system and provide features such as checking for the dirty
-     * state of regions and managing multiple regions within an application.
+     * and bind the new one and switch out the template.
      *
      * ## Lifecycle
      *              ┌──────────────────────────────┐
@@ -140,6 +176,21 @@
      *    will be rendered, with the `view model` set as the data context. Once the
      *    template has been rendered by `knockout` the `show` function of the `view model`
      *    will be called.
+     *
+     * ## Region Manager Integration
+     *
+     * Typically an app will use a `region manager` to manage the regions within the
+     * system, to provide further semantics on top of a `region` binding handler to integrate
+     * with the routing system and provide features such as checking for the dirty
+     * state of regions and managing multiple regions within an application.
+     *
+     * When integrating with a region manager the region binding handler should not directly
+     * be given a view model, but instead the parameter will be the name of the region that
+     * will be registered with the parent view model to be bound later for display.
+     *
+     * If more than one region is bound a default can be selected that will be used when
+     * a single view model is shown without specifying the name. This is achieved by
+     * adding a data-default="true" attribute on the region.
      */
     hx.instantiate(['$ajax', '$injector'], function($ajax, $injector) {
         function getViewModel(valueAccessor) {
@@ -215,5 +266,4 @@
             }
         };
     });
-
 }())
