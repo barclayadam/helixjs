@@ -3,6 +3,10 @@ html, body {
 	height: 100%;
 }
 
+pre code {
+	color: #f8f8f2;
+}
+
 a {
 	color: #6600cc;
 }
@@ -18,32 +22,32 @@ a:hover, a:focus {
 	border: 0;
 }
 
-.github-links {
-	margin-top: 30px;
-}
-
 #wrapper {
 	min-height: 100%;
-	padding-top: 50px;
+	height: auto !important;
+	height: 100%;
+}
+
+#head-stuff {
+	padding-top: 20px;
 	border-top: 6px #6600cc solid;
+}
+
+#homepage-banner-well {
+	margin-bottom: 0px;
 }
 
 .center {
 	text-align: center;
 }
 
-.content {
-	padding: 10px;
+.github-links {
+	margin-top: 20px;
 }
 
-.syntaxhighlighter {
-	width: 680px;
-	overflow-x: auto;
-	margin-bottom: 1.8em;
+main[role="main"] {
 	padding: 10px;
-	-moz-border-radius: 0.5em;
-	-webkit-border-radius: 0.5em;
-	border-radius: 0.5em;
+	padding-bottom: 147px;
 }
 
 footer {
@@ -51,4 +55,6 @@ footer {
 	background-color: #1b1b1b;
 	color: white;
 	padding-bottom: 2em;
+
+	margin-top: -147px;
 }
