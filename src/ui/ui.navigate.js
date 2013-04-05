@@ -1,4 +1,4 @@
-hx.provide('$validationBindingHandlers', hx.instantiate(['$router'], function($router) {
+hx.instantiate(['$router'], function($router) {
 
 	koBindingHandlers.navigate = {
 		init: function(element, valueAccessor, allBindingsAccessor) {
@@ -23,4 +23,4 @@ hx.provide('$validationBindingHandlers', hx.instantiate(['$router'], function($r
 			element.setAttribute('href', url);
 		}
 	}
-}));
+});
