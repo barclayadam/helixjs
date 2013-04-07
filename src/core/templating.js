@@ -15,13 +15,12 @@ hx.provide('$templating', hx.instantiate(['$ajax'], function($ajax) {
 
     function ExternalTemplateSource(templateName) {
         this.templateName = templateName;
-        this.stringTemplateSource = new StringTemplateSource(this.templateName);
     }
 
     ExternalTemplateSource.prototype.text = function (value) {
         var loadingPromise, template;
 
-        if (templating.templates[this.templateName] === void 0) {
+        if (!templating.templates[this.templateName]) {
             template = ko.observable(templating.loadingTemplate);
             templating.set(this.templateName, template);
 
@@ -29,8 +28,8 @@ hx.provide('$templating', hx.instantiate(['$ajax'], function($ajax) {
 
             loadingPromise.done(template);
         }
-
-        return this.stringTemplateSource.text(arguments);
+    
+        return ko.utils.unwrapObservable(templating.templates[this.templateName]);    
     };
 
     /**
@@ -111,14 +110,8 @@ hx.provide('$templating', hx.instantiate(['$ajax'], function($ajax) {
         return $ajax.url(path).get();
     };
 
-    /**
-     Resets the templating support by removing all data and templates
-     that have been previously added.
-    */
-    templating.reset = function () {
-        templating.templates = {
-            _data: {}
-        };
+    templating.remove = function (name) {
+        templating.templates[name] = null;
     };
 
     /**
@@ -141,7 +134,9 @@ hx.provide('$templating', hx.instantiate(['$ajax'], function($ajax) {
         }
     };
 
-    templating.reset();
+    templating.templates = {
+        _data: {}
+    };
 
     return templating;
 }));

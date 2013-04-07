@@ -52,6 +52,10 @@ beforeEach(function () {
 
         toHaveNotBeenPublishedWith: function (args) {
             return publishSpy.neverCalledWith(this.actual, args);
+        },
+
+        toBeDisabled: function() {
+            return this.actual.disabled === true || this.actual.getAttribute('disabled') == 'disabled';
         }
     });
 });

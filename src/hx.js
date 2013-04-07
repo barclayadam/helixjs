@@ -58,5 +58,6 @@
         //= ui/ui.validation.js
 
         //= ui/ui.navigate.js
+        //= ui/ui.pager.js
     });
 })(window, document, window["jQuery"], window["ko"]);
