@@ -1,8 +1,8 @@
 describe('pager', function() {
     describe('individually provided observables', function() {
         beforeEach(function() {
-            this.pageCount = ko.observable(0);
             this.page = ko.observable(0);
+            this.pageCount = ko.observable(0);
 
             this.setHtmlFixture(
                 "<pager id='pager' data-option='{ pageCount: pageCount, page: page }' />");
@@ -236,6 +236,55 @@ describe('pager', function() {
                     expect(document.getElementsByClassName('hx-pager--page')[9]).toHaveText('14');
                 });
             });
+        })
+    })
+
+    describe('overriding template parts', function() {
+        beforeEach(function() {
+            this.page = ko.observable(1);
+            this.pageCount = ko.observable(1);
+
+            this.setHtmlFixture(
+                "<pager id='pager' data-option='{ pageCount: pageCount, page: page }'>" +
+                "  <part id='backward-links'>" +
+                "    <span id='overriden-backward-links' data-bind='text: page'>Some text<span>" +
+                "  </part>" +
+                "  <part id='page-links'>" +
+                "    <span id='overriden-page-links'>Some text<span>" +
+                "  </part>" +
+                "  <part id='forward-links'>" +
+                "    <span id='overriden-forward-links'>Some text<span>" +
+                "  </part>" +
+                "</pager>"
+                );
+
+            this.applyBindingsToFixture({
+                pageCount: this.pageCount,
+                page: this.page
+            });
+
+            this.pager = document.getElementById('pager')
+        })
+
+        it('should allow overriding backward-links', function() {
+            expect(document.getElementById('overriden-backward-links')).toExist()
+        })
+
+        it('should have pager model as binding context $data', function() {
+            expect(document.getElementById('overriden-backward-links')).toHaveText('1')
+        })
+
+        it('should allow overriding page-links', function() {
+            expect(document.getElementById('overriden-page-links')).toExist()
+        })
+
+        it('should allow overriding forward-links', function() {
+            expect(document.getElementById('overriden-forward-links')).toExist()
+        })
+
+        it('should support updating of values to re-render overriden part', function() {
+            this.page(5);
+            expect(document.getElementById('overriden-backward-links')).toHaveText('5')
         })
     })
 })
