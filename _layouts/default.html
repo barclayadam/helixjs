@@ -1,31 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="author" content="Mike Taylor">
-    <meta name="description" content="HelixJS - DNA for web apps" />
-
-    <title>{{ page.title }}</title>
-
-    <!-- STYLES -->
-    <link href="styles/lib/bootstrap.min.css" rel="stylesheet" media="screen">
-    <link href="styles/lib/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
-    <link href="styles/lib/font-awesome.min.css" rel="stylesheet" media="screen">
-    <link href="styles/lib/monokai.css" rel="stylesheet" media="screen">
-    <link href="styles/main.css" rel="stylesheet" media="screen">
-
-    <!--[if lt IE 9]>
-      <script src="scripts/lib/html5shiv.js"></script>
-    <![endif]-->
-
-    <link href="icons/apple-touch-icon-144-precomposed.png" rel="apple-touch-icon-precomposed" sizes="144x144">
-    <link href="icons/apple-touch-icon-114-precomposed.png" rel="apple-touch-icon-precomposed" sizes="114x114">
-    <link href="icons/apple-touch-icon-72-precomposed.png" rel="apple-touch-icon-precomposed" sizes="72x72">
-    <link href="icons/apple-touch-icon-57-precomposed.png" rel="apple-touch-icon-precomposed">
-    <link href="icons/favicon.png" rel="shortcut icon">
-  </head>
+  {% include header.html %}
 
   <body>
     <a href="https://github.com/barclayadam/helixjs">
@@ -33,7 +8,7 @@
     </a>
 
     <div id="wrapper">
-      <div id="head-stuff"></div>
+      <div id="banner-adjust"></div>
       <div class="row-fluid">
         <div class="span6 offset3">
 
@@ -41,23 +16,10 @@
           <header role="banner">
 
             <!-- NAVIGATION -->
-            <div class="navbar navbar-inverse">
-              <div class="navbar-inner">
-                <nav>
-                  <ul class="nav">
-                    <li class="active"><a href="index.html">Home</a></li>
-                    <li><a href="examples.html">Examples</a></li>
-                    <li><a href="#">About</a></li>
-                    <li><a href="#">API</a></li>
-                    <li><a href="#">Docs</a></li>
-                    <li><a href="#">Blog</a></li>                                    
-                  </ul>
-                </nav>
-              </div>
-            </div>
+            {% include navigation.html %}
 
             <div id="homepage-banner-well" class="well well-large">
-              HelixJS - DNA for web apps
+              {{ page.title }}
             </div>
           </header>
 
@@ -70,20 +32,9 @@
     </div>
 
     <!-- FOOTER  -->
-    <footer>
-      <div class="container-fluid">
-        <div class="row-fluid">
-          <div class="span6 offset3">
-            <p><a href="https://saucelabs.com/u/barclayadam"><img src="https://saucelabs.com/buildstatus/barclayadam" alt="SauceLabs Test Status"></a></p>
-            <p class="copyright"><strong>HelixJS</strong> is maintained by <a href="https://github.com/barclayadam">Adam Barclay</a> and supported by <a href="https://github.com/michaeldtaylor">Mike Taylor</a>.</p>
-            <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
-          </div>
-        </div>
-      </div>
-    </footer>
+    {% include footer.html %}
 
     <!-- SCRIPTS -->
-    <script src="scripts/lib/jquery-1.9.1.min.js"></script>    
-    <script src="scripts/lib/bootstrap.min.js"></script>
+    {% include page_scripts.html %}
   </body>
 </html>

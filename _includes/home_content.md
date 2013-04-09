@@ -1,7 +1,3 @@
----
-layout: home
-title: HelixJS - DNA for web apps
----
 
 ## Why HelixJS?
 
@@ -18,41 +14,15 @@ Using [Knockout](http://knockoutjs.org) as a foundation, **HelixJS** offers an o
 
 ## Live Example
 
-{% highlight html %}
-<body data-bind="app: true">
-  <div class="page">
-    <header>
-    <div id="title">
-      <h1>
-        <a href="/" title="Nerd Dinner" class="logo"></a>
-      </h1>
-    </div>
-
-    <div id="logindisplay">
-      [ <a href="/login">Log On</a> ]
-    </div>
-
-    <nav>
-      <ul id="menu">
-        <li><a href="/">Find Dinner</a></li>
-        <li><a href="/Dinners/Create">Host Dinner</a></li>
-        <li class="last"><a href="/Home/About">About</a></li>
-      </ul>
-    </nav>
-  </header>
-  
-    <region id="main" class="clearfix"></region>
-
-    <footer>
-      Copyright &copy; The HelixJS Team
-    </footer>
-  </div>
-</body>
+{% highlight javascript %}
+function Whatever() {
+  // do something
+}
 {% endhighlight %}
 
-## Supported (Tested) Browsers
+## Supported Browsers
 
-- IE8+ (Yes, it's time to drop support for IE7 and less)
+- IE8+ (Yes, it's time to drop support for IE7 and lower)
 - Chrome (Latest)
 - Firefox (Latest)
 
@@ -60,4 +30,4 @@ Other browsers that match the feature sets of Chrome and Firefox are likely to w
 
 ## License
 
-Code licensed under the [The MIT License (MIT)](http://www.opensource.org/licenses/mit-license.php).
+Code licensed under the [The MIT License (MIT)](http://www.opensource.org/licenses/mit-license.php)

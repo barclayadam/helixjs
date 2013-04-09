@@ -1,0 +1,15 @@
+<div class="navbar navbar-inverse">
+  <div class="navbar-inner">
+    <nav>
+      <ul class="nav">
+			  {% for node in site.navigation %}
+			    {% if page.url == node.url %}
+			      <li class="active"><a href="{{node.url}}">{{node.name}}</a></li>
+			    {% else %}
+			      <li><a href="{{node.url}}">{{node.name}}</a></li>
+			    {% endif %}
+			  {% endfor %}
+      </ul>
+    </nav>
+  </div>
+</div>

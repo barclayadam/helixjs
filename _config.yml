@@ -1,0 +1,5 @@
+navigation:
+- name: Home
+  url: /index.html
+- name: Examples
+  url: /examples.html
