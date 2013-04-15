@@ -1,4 +1,4 @@
-@echo OFF
+@echo off
 
 echo ========================================
 echo == HelixJS - Installing Node.js ==
@@ -18,3 +18,6 @@ PING 1.1.1.1 -n 1 -w 1000 >NUL
 echo The PATH environment variable was updated to include the location of Node.js. Broadcast the change to prevent reboot or sign out/sign in.
 
 @powershell -NoProfile -ExecutionPolicy Unrestricted -File "Invoke-WMSettingsChange.ps1"
+
+echo Complete
+pause

@@ -1,16 +1,14 @@
-@echo OFF
+@echo off
 
-echo ========================================
-echo == HelixJS - Installing dependencies  ==
-echo ========================================
+echo ============================================
+echo == HelixJS - Installing npm dependencies  ==
+echo ============================================
 
-echo This batch file will install any required 
-echo dependencies using npm
-echo.
+echo This batch file will install:
+echo  * HelixJS dependencies using npm.
 
 cd ..\
 npm install
 
-echo.
 echo Complete
 pause
