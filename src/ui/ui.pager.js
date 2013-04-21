@@ -2,21 +2,21 @@
     hx.instantiate('$templating', function($templating) {
         $templating.set('$hx-pager',
             ' <!-- ko if: pageCount() > 0 -->' +
-            '   <div data-bind="part: \'backward-links\'">' +
-            '    <a href="#" class="hx-pager--first" data-bind="enable: !isFirstPage(), click: goToFirstPage">First</a>' +
-            '    <a href="#" class="hx-pager--previous" data-bind="enable: !isFirstPage(), click: goToPreviousPage">Previous</a>' +
-            '   </div>' +
+            '   <part data-option="\'backward-links\'">' +
+            '    <a href="#" class="hx-pager--first" data-bind="enable: !isFirstPage(), click: firstPage">First</a>' +
+            '    <a href="#" class="hx-pager--previous" data-bind="enable: !isFirstPage(), click: previousPage">Previous</a>' +
+            '   </part>' +
             '' +
-            '   <div data-bind="part: \'page-links\'">' +
+            '   <part data-option="\'page-links\'">' +
             '    <ol class="hx-pager--pages" data-bind="foreach: pages">' +
-            '        <li data-bind="click: $parent.page, css: { \'is-selected\': $data == $parent.page(), \'hx-pager--page\': true }"><a href="#" data-bind="text: $data"></a></li>' +
+            '        <li class="hx-pager--page" data-bind="click: $parent.page, css: { \'is-selected\': $data == $parent.page() }"><a href="#" data-bind="text: $data"></a></li>' +
             '    </ol>' +
-            '   </div>' +
+            '   </part>' +
             '' +
-            '   <div data-bind="part: \'forward-links\'">' +
-            '    <a href="#" class="hx-pager--next" data-bind="enable: !isLastPage(), click: goToNextPage">Next</a>' +
-            '    <a href="#" class="hx-pager--last" data-bind="enable: !isLastPage(), click: goToLastPage">Last</a>' +
-            '   </div>' +
+            '   <part data-option="\'forward-links\'">' +
+            '    <a href="#" class="hx-pager--next" data-bind="enable: !isLastPage(), click: nextPage">Next</a>' +
+            '    <a href="#" class="hx-pager--last" data-bind="enable: !isLastPage(), click: lastPage">Last</a>' +
+            '   </part>' +
             ' <!-- /ko -->'
         );
     });
@@ -34,27 +34,24 @@
                 return data.page() === data.pageCount();
             }),
 
-            goToFirstPage: function() { data.page(1); },
-            goToPreviousPage: function() { data.page(data.page() - 1); },
+            firstPage: function() { data.page(1); },
+            previousPage: function() { data.page(data.page() - 1); },
 
-            goToNextPage: function() { return data.page(data.page() + 1); },
-            goToLastPage: function() { return data.page(data.pageCount()); },
+            nextPage: function() { return data.page(data.page() + 1); },
+            lastPage: function() { return data.page(data.pageCount()); },
 
             pages: ko.computed(function() {
                 var pageCount = data.pageCount(),
                     pageNumber = data.page(),
-                    maximumPages = data.maximumPages;
+                    maximumPages = data.maximumPages,
+                    startPage, endPage;
 
-                if (pageCount > 0) {
-                    var startPage = pageNumber - (maximumPages / 2);
-                    startPage = Math.max(1, Math.min(pageCount - maximumPages + 1, startPage));
+                startPage = pageNumber - (maximumPages / 2);
+                startPage = Math.max(1, Math.min(pageCount - maximumPages + 1, startPage));
 
-                    var endPage = Math.min(startPage + maximumPages, pageCount + 1);
+                endPage = Math.min(startPage + maximumPages, pageCount + 1);
 
-                    return _.range(startPage, endPage);
-                } else {
-                  return [];
-                }
+                return _.range(startPage, endPage);
             })
         }
     }
@@ -105,7 +102,7 @@
                 ko.utils.toggleDomNodeCssClass(element, 'no-pages', value.pageCount() == 0);
             })
 
-            koBindingHandlers.part.lookForOverrides(element, bindingContext);
+            koBindingHandlers.part.prepare(element, bindingContext);
 
             ko.renderTemplate('$hx-pager', bindingContext.createChildContext(createModel(value)), {}, element, 'replaceChildren');
 
@@ -131,15 +128,18 @@
      *
      * ###Widget template
      *
-     *  <div data-bind="part: 'header">
+     *  <part data-option="'header'">
      *   <h1>This is the widget heading by default</h1>
-     *  </div>
-     *
+     *  </part>
      *
      * ###Binding Handler
-
+     *
      * ko.bindingHandlers.myWidget = {
-     *      update: function() {
+     *      init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+     *          ko.bindingHandlers.part.prepare(element, bindingContext)
+     *      },
+     *
+     *      update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
      *          ko.renderTemplate('myWidgetTemplate', viewModel, {}, element, 'replaceChildren');
      *      }
      * }
@@ -153,7 +153,9 @@
      * </myWidget>
      */
     koBindingHandlers.part = {
-        lookForOverrides: function(element, bindingContext) {
+        tag: 'part',
+
+        prepare: function(element, bindingContext) {
             var child, nextChild = element.firstChild;
 
             while (child = nextChild) {
