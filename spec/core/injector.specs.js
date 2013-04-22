@@ -239,6 +239,21 @@ describe('injector', function() {
         })
     })
 
+    describe('with a registered singleton, as an object literal', function() {
+        beforeEach(function() {
+            // Dependent module
+            this.moduleReturn = { mainModuleProperty: 'The value' };
+
+            this.injector.singleton('$myTestModule', this.moduleReturn);
+        })
+
+        it('should return the same value on multiple invocations of creation', function() {
+            var result = this.injector.get('$myTestModule'),
+                result2 = this.injector.get('$myTestModule');
+
+            expect(result).toBe(result2);
+        })        
+    })
 
     describe('with registered module with multiple dependencies', function() {
         beforeEach(function() {
