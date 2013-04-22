@@ -3,3 +3,5 @@ npm-debug.log
 node_modules
 lib
 sauce_connect.log*
+.idea
+_site
