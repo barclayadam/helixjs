@@ -84,6 +84,8 @@ hx.utils = {
         
         if (_.isArray(value)) {
             return ko.observableArray(value);
+        } else if (_.isFunction(value)) {
+            return ko.computed(value);
         } else {
             return ko.observable(value);
         }
