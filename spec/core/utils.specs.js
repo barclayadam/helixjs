@@ -75,6 +75,14 @@ describe('utils', function () {
             expect(converted).toBeAnObservableArray();
             expect(converted()).toEqual(rawValue);
         });
+
+        it('should return an computed if it is a function', function () {
+            var converted, rawValue;
+            rawValue = function () { return "hello"; };
+            converted = hx.utils.asObservable(rawValue);
+            expect(converted).toBeObservable();
+            expect(converted()).toEqual("hello");
+        });
         
         it('should return an observable if it is not an array', function () {
             var converted, rawValue;

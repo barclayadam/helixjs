@@ -122,7 +122,11 @@ hx.Injector.prototype.get = function(optionsOrDependencies) {
 hx.Injector.prototype.instantiate = function(dependencies, func) {
     // No dependencies have been specified, just execute function.
     if(func == undefined) {
-        return dependencies();
+        if(typeof dependencies == "function") {
+            return dependencies();
+        } else {
+            return dependencies;
+        }
     }
 
     // Dependencies have been defined

@@ -240,13 +240,19 @@
                 lastViewModel = ko.utils.domData.get(element, '__region__currentViewModel');
 
                 if (lastViewModel && lastViewModel.hide) {
-                    lastViewModel.hide();
+                    lastViewModel.hide.apply(lastViewModel);
                 }
 
                 deferred = new $.Deferred();
 
+                if (regionViewModel.beforeShow != null) {                
+                    regionViewModel.beforeShow.apply(regionViewModel);
+                }
+
                 if (regionViewModel.show != null) {
-                    deferred = $ajax.listen(regionViewModel.show);
+                    deferred = $ajax.listen(function() {
+                        regionViewModel.show.apply(regionViewModel);
+                    });
                 } else {
                     // Resolve immediately, nothing to wait for
                     deferred.resolve();
@@ -258,7 +264,7 @@
                     koBindingHandlers.template.update(element, templateValueAccessor, allBindingsAccessor, viewModel, bindingContext);
 
                     if (regionViewModel.afterShow != null) {
-                        regionViewModel.afterShow();
+                        regionViewModel.afterShow.apply(regionViewModel);
                     }
 
                     ko.utils.domData.set(element, '__region__currentViewModel', regionViewModel);
