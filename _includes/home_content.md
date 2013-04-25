@@ -12,14 +12,6 @@ Using [Knockout](http://knockoutjs.org) as a foundation, **HelixJS** offers an o
 - Extensible form validation framework
 - Templating engine extensions
 
-## Live Example
-
-{% highlight javascript %}
-function Whatever() {
-  // do something
-}
-{% endhighlight %}
-
 ## Supported Browsers
 
 - IE8+ (Yes, it's time to drop support for IE7 and lower)
