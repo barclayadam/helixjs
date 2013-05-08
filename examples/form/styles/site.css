@@ -1,0 +1,61 @@
+label {
+    display: block;
+
+    padding-bottom: 5px;
+}
+
+label.required {
+    font-weight: bold;
+}
+
+textarea, input, select {
+    width: 100%;
+    max-width: 440px;
+    box-sizing: border-box;
+
+    margin-bottom: 35px;
+    
+    outline: none;
+
+    background: #F4F4F4;
+    border-radius: 4px;
+    border: 1px solid #A8A8A8;
+}
+
+textarea:focus, input:focus, select:focus {
+    border-color: #827DC3;
+    background: #FFF;
+}
+
+input, textarea, select {
+    padding: 10px;
+}
+
+textarea {
+    height: 150px;
+}
+
+input[type=search] {
+    box-sizing: border-box;
+
+    border: 0;
+    border-radius: 4px;
+}
+
+.validated[aria-invalid="true"] {
+    border: 1px solid #FB3203;
+}
+
+.validation-message  {
+    display: none;
+
+    font-size: 0.85em;
+    height: 2em;
+    margin-top: -28px;
+    font-style: italic;
+    color: #FB3203;
+}
+
+.validation-message.validated  {
+    display: block;
+}

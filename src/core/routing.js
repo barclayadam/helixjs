@@ -114,10 +114,10 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location'], function ($bus, $log, $
     // root = '/';
 
     /**
-     A route table that manages a number of routes, providing the ability
-     to get a route from a URL or creating a URL from a named route and
-     set of parameters.
-    */
+     * A route table that manages a number of routes, providing the ability
+     * to get a route from a URL or creating a URL from a named route and
+     * set of parameters.
+     */
     function RouteTable() {
         var _this = this;
         this._routes = {};
@@ -126,14 +126,14 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location'], function ($bus, $log, $
         // to indicate the URL has changed, that the user has navigated
         // to a new page (which is also raised on first load).
         $bus.subscribe('urlChanged:external', function (msg) {
-            var matchedRoute;
-            matchedRoute = _this.getRouteFromUrl(msg.url);
-            if (matchedRoute === void 0) {
-                return $bus.publish('routeNotFound', {
+            var matchedRoute = _this.getRouteFromUrl(msg.url);
+
+            if (!matchedRoute) {
+                $bus.publish('routeNotFound', {
                     url: msg.url
                 });
             } else {
-                return _this._doNavigate(msg.url, matchedRoute.route, matchedRoute.parameters);
+                _this._doNavigate(msg.url, matchedRoute.route, matchedRoute.parameters);
             }
         });
     }
@@ -155,17 +155,17 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location'], function ($bus, $log, $
             msg.options = route.callbackOrOptions;
         }
 
-        return $bus.publish("routeNavigated:" + route.name, msg);
+        $bus.publish("routeNavigated:" + route.name, msg);
     };
 
     /**
-     Adds the specified named route to this route table. If a route
-     of the same name already exists then it will be overriden
-     with the new definition.
-   
-     The URL *must* be a relative definition, the route table will
-     not take into account absolute URLs in any case.
-    */
+     * Adds the specified named route to this route table. If a route
+     * of the same name already exists then it will be overriden
+     * with the new definition.
+     *
+     * The URL *must* be a relative definition, the route table will
+     * not take into account absolute URLs in any case.
+     */
     RouteTable.prototype.route = function (name, url, callbackOrOptions, options) {
         if (options == null) {
             options = {
@@ -179,25 +179,25 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location'], function ($bus, $log, $
     };
 
     /**
-    Given a *relative* URL will attempt to find the
-    route that matches that URL, returning an object that represents
-    the found route with parameters as:
-   
-    {
-      `route`: The route object that matched the given URL
-      `parameters`: The parameters that were matched based on route, or
-         an empty object for no parameters.
-    }
-   
-    Routing will ignore preceeding and trailing slashes, treating
-    them as optional, meaning for the incoming URL and route definitions
-    the following are considered equal:
-   
-     * /Contact Us
-     * /Contact Us/
-     * Contact Us/
-     * Contact Us
-    */
+     * Given a *relative* URL will attempt to find the
+     * route that matches that URL, returning an object that represents
+     * the found route with parameters as:
+     * 
+     * {
+     *  `route`: The route object that matched the given URL
+     *  `parameters`: The parameters that were matched based on route, or
+     *     an empty object for no parameters.
+     * }
+     *
+     * Routing will ignore preceeding and trailing slashes, treating
+     * them as optional, meaning for the incoming URL and route definitions
+     * the following are considered equal:
+     *
+     * * /Contact Us
+     * * /Contact Us/
+     * * Contact Us/
+     * * Contact Us
+     */
     RouteTable.prototype.getRouteFromUrl = function (url) {
         var match, matchedParams, name, path, r, _ref;
 
@@ -223,9 +223,11 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location'], function ($bus, $log, $
     };
 
     /**
-     Gets the named route, or `undefined` if no such route
-     exists.
-    */
+     * Gets the named route, or `undefined` if no such route
+     * exists.
+     *
+     * @param {string} name The name of the route to get
+     */
     RouteTable.prototype.getNamedRoute = function (name) {
         return this._routes[name];
     };
@@ -235,12 +237,11 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location'], function ($bus, $log, $
             parameters = {};
         }
 
-        var route, 
-            url = this.buildUrl(name, parameters);
+        var url = this.buildUrl(name, parameters);
 
-        if (url != null) {
-            route = this.getNamedRoute(name);
-            this._doNavigate(url, route, parameters);
+        if (url) {
+            this._doNavigate(url, this.getNamedRoute(name), parameters);
+
             $location.routePath(url);
 
             return true;
@@ -250,19 +251,19 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location'], function ($bus, $log, $
     };
 
     /**
-     Builds a URL based on a named route and a set of parameters, or
-     `undefined` if no such route exists or the parameters do not
-     match.
-    */
+     * Builds a URL based on a named route and a set of parameters, or
+     * `undefined` if no such route exists or the parameters do not
+     * match.
+     */
     RouteTable.prototype.buildUrl = function (name, parameters) {
         var route = this.getNamedRoute(name),
             url = route != null ? route.buildUrl(parameters) : void 0;
 
-        if (route === void 0) {
+        if (!route) {
             $log.warn("The route '" + name + "' could not be found.");
         }
 
-        if (url === void 0) {
+        if (!url) {
             $log.warn("The parameters specified are not valid for the '" + name + "' route.");
         }
 

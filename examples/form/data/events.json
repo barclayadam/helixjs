@@ -1,0 +1,160 @@
+[{
+	"EventCode": "SP2007-SD-2",
+	"EventType": "Course",
+	"Title": "SharePoint Designer 2007",
+	"Overview": "This 2 day course is designed to give students the tools and knowledge to customize SharePoint sites without writing code, by using SharePoint Designer 2007 and in-browser customizations.",
+	"CourseLengthDays": 2,
+	"TotalPlaces": 10,
+	"PriceExVat": 1500.00,
+	"Instances": [{
+		"StartDate": "2013-02-12",
+		"Location": "Exeter",
+		"PlacesLeft": 0
+	},
+	{
+		"StartDate": "2013-03-12",
+		"Location": "Portsmouth",
+		"PlacesLeft": 0
+	}],
+	"WhoShouldAttend": "This course is for administrators or SharePoint administrators who will be responsible for customizing the SharePoint features of a SharePoint deployment and also providing additional bespoke functionality that is not possible by using browser customization options.",
+	"PreRequisites": "Delegates attending this course would need to know about lists, libraries, site columns, content types, Web Parts and how to administer a team site using the browser.",
+	"MaterialCovered": "<h4>Introduction to Windows SharePoint Designer 2007</h4><ul>    <li>SharePoint Designer Basics</li>    <li>Connect to an existing SharePoint site</li>    <li>Navigate within SharePoint Designer</li>    <li>SharePoint site folders</li>    <li>Create new pages and content</li>    <li>Editing features</li>    <li>Differentiation between editing publishing and non-publishing sites</li></ul><h4>Creating SharePoint Sites Using SharePoint Designer</h4><ul>    <li>Create a new site and publish the site to the existing site collection</li>    <li>Add new SharePoint content to the site including Web Parts, forms, and tables</li>    <li>Custom behaviours</li>    <li>Web components</li></ul><h4>Creating Workflow with Sharepoint Designer</h4><ul>    <li>Use the SharePoint Designer 2007 Workflow Designer Wizard to create custom workflows Location and composition of workflow files Deploy workflows created in SharePoint Designer 2007 to SharePoint document libraries and lists</li>    <li>Save and execute your workflow</li>    <li>Run the workflow and review workflow status in your SharePoint site</li>    <li>Review workflow log</li></ul><h4>Create and Configure Data Sources</h4><ul>    <li>Overview of each data source</li>    <li>Connect with external databases</li>    <li>Connect to another SharePoint library within your site collection</li>    <li>Link data sources</li></ul><h4>Data Views and Conditional Formatting</h4><ul>    <li>Create a data view</li>    <li>Import fields</li>    <li>Conditional formatting</li>    <li>Apply filtering and style</li>    <li>Edit, delete, and insert commands</li></ul><h4>Overview of Extending SharePoint Customization Using Visual Studio</h4><ul>    <li>Features</li>    <li>Solutions</li>    <li>Advanced Workflow</li></ul>",
+	"Technologies": [ "MOSS 2007", "SharePoint Designer" ],
+	"Tags": [ "SharePoint Server 2010", "SharePoint Server 2013", "Business User" ]
+},
+{
+	"EventCode": "SP2010-PU-2",
+	"EventType": "Course",
+	"Title": "Microsoft SharePoint Server 2010 Power User",
+	"Overview": "This 2 day course will allow the delegate to provide basic administration and customisation of SharePoint sites.",
+	"CourseLengthDays": 2,
+	"TotalPlaces": 10,
+	"PriceExVat": 1500.00,
+	"Instances": [{
+		"StartDate": "2013-04-15",
+		"Location": "Portsmouth",
+		"PlacesLeft": 10
+	}],
+	"WhoShouldAttend": "This course is for non-technical power users who are required to provide basic administration of SharePoint.",
+	"PreRequisites": "Delegates should have a good depth of knowledge of Internet Explorer 7.0 or later, and be familiar with basic Microsoft Office functionality.",
+	"MaterialCovered": "<h4>Creating and Managing Sites and Pages</h4><ul>    <li>Overview of sites and web pages</li>    <li>Creating sites and workspaces</li>    <li>Creating web pages</li>    <li>Deleting sites and workspaces</li>    <li>Using the Ribbon</li></ul><h4>Site Administration</h4><ul>    <li>Regional settings</li>    <li>Managing user alerts</li>    <li>Creating site templates</li>    <li>Customizing Navigation options</li>    <li>Using Site Themes</li></ul><h4>Site Customisation</h4><ul>    <li>Web Part Pages</li>    <li>Adding Web Parts</li>    <li>Managing Web Parts</li>    <li>Exporting and Importing Web Parts</li></ul><h4>Managing Site Security</h4><ul>    <li>Overview of permissions in SharePoint</li>    <li>Managing SharePoint groups</li>    <li>Changing permission inheritance</li>    <li>Managing Permission levels</li>    <li>Managing Site Collection administrators</li></ul><h4>Creating and Managing Lists and Libraries</h4><ul>    <li>Creating lists and libraries</li>    <li>Managing list and library settings</li>    <li>Creating and managing columns</li>    <li>Creating and managing views</li>    <li>Email enabling a list</li>    <li>Meeting and Document Workspaces</li>    <li>Introduction</li>    <li>Creating workspaces</li>    <li>Using workspaces</li></ul><h4>List and Library Items</h4><ul>    <li>Default views</li>    <li>Custom views</li>    <li>Datasheet view</li></ul><h4>List Management</h4><ul>    <li>Exporting list data to spreadsheets</li>    <li>Using column filters</li>    <li>Version history</li></ul><h4>Document Library Management</h4><ul>    <li>Adding and Modifying Content</li>    <li>Check Out/ Check In</li>    <li>Edit and view document properties</li>    <li>Version Control</li>    <li>Content Approval</li></ul><h4>Other Settings</h4><ul>    <li>Navigating and searching SharePoint Sites</li>    <li>Discussion Boards</li>    <li>Surveys</li>    <li>Use of recycle bin</li>    <li>Use and management of alerts</li>    <li>Understanding and using workflow</li></ul>",
+	"Technologies": [ "SharePoint Server 2010" ],
+	"Tags": [ "SharePoint Server 2013", "Business User" ]
+},
+{
+	"EventCode": "SP2013-DG-HALF",
+	"EventType": "Seminar",
+	"Title": "SharePoint 2013 for Executives",
+	"Overview": "Targeted at senior executives, the seminar will take a high-level view at how SharePoint 2013 can deliver measureable business benefits including a case study from our guest speaker, Qorus.",
+	"CourseLengthDays": 0.5,
+	"TotalPlaces": 10,
+	"Instances": [{
+		"StartDate": "2013-02-26",
+		"Location": "Portsmouth",
+		"PlacesLeft": 0,
+		"RegistrationUrl": "http://www.eventbrite.co.uk/event/5297771778",
+		"PartnerEventId": "5297771778"
+	},
+	{
+		"StartDate": "2013-03-07",
+		"Location": "Portsmouth",
+		"PlacesLeft": 0,
+		"RegistrationUrl": "http://www.eventbrite.co.uk/event/5302002432",
+		"PartnerEventId": "5302002432"
+	},
+	{
+		"StartDate": "2013-03-28",
+		"Location": "Microsoft Campus, Reading",
+		"PlacesLeft": 7,
+		"RegistrationUrl": "http://www.eventbrite.co.uk/event/5426550960",
+		"PartnerEventId": "5426550960"
+	}],
+	"WhoShouldAttend": "Senior executives and business decision makers.",
+	"PreRequisites": "None",
+	"MaterialCovered": "<h4>Questions</h4><ul>    <li>Are you struggling to deliver value from your current SharePoint deployments?</li>    <li>Are you questioning what SharePoint 2013 and Office 365 will deliver for your business?</li>    <li>Do you need to construct a strong business case for your SharePoint investments going forward?</li>    <li>Do you want to develop an effective business communication strategy with Microsoft technologies?</li>    <li>Does your SharePoint intranet have low user adoption?</li>    <li>Do you want to recognize what SharePoint governance is, and how to achieve it?</li></ul></p>    If the answer to one or all of the above is <em>yes</em>, then this is the perfect seminar for you.<p></p><h4>9:30 - Registration and Coffee</h4><h4>10:00 - 11:00 - Part 1 - SharePoint 2013</h4><ol>    <li>New features in SharePoint 2013 and how they can support business goals.</li>    <li>Delivering measureable business benefits from SharePoint investments against your strategic objectives.</li></ol><h4>11:15 - 12:15 - Part 2 - Qorus DocGeneration</h4><p>    Qorus Software is an innovative provider of document automation solutions that seamlessly integrate with Microsoft SharePoint, Microsoft Word and PowerPoint.</p><p>    Clients such as Vodafone, Exeter Friendly Society, Man Ltd., British Engines and Dimension Data use Qorus software to significantly reduce the time and effort required to customise and generate high value Word documents and PowerPoint presentations, such as sales proposals and presentations, financial reports, contracts, and advisory reports.</p><ul>    <li>Reduce time and effort required to generate client documents, e.g. contracts, proposals, advisory or financial reports</li>    <li>Reduce human error and formatting issues caused by <em>copy and paste</em></li>    <li>Reuse approved content stored in CRM, SharePoint and other systems</li></ul><p>    The presentation will highlight how Vodafone’s use of Qorus document automation and SharePoint enabled them to reduce their sales proposal generation time from an average of 20 hours to 1 minute.</p><h4>12:15 - 12:30 - Part 3 - Questions and Answers</h4><h4>12:30 - Buffet Lunch</h4>",
+	"Technologies": [ "SharePoint Server 2013", "Qorus DocGeneration" ],
+	"Tags": [ "SharePoint Server 2010", "Office 365", "Business Decision Maker" ]
+},
+{
+	"EventCode": "SP2013-USAIP-3",
+	"EventType": "Course",
+	"Title": "SharePoint 2013 - Updating Skills for Administrators",
+	"Overview": "Designed for administrators who have either been involved with SharePoint 2010 already or just want to get an idea of what's new in this version.",
+	"CourseLengthDays": 3,
+	"TotalPlaces": 10,
+	"PriceExVat": 1200.00,
+	"Instances": [{
+		"StartDate": "2013-03-25",
+		"Location": "London",
+		"PlacesLeft": 10
+	},
+	{
+		"StartDate": "2013-04-30",
+		"Location": "Midlands",
+		"PlacesLeft": 10
+	},
+	{
+		"StartDate": "2013-06-25",
+		"Location": "London",
+		"PlacesLeft": 10
+	}],
+	"WhoShouldAttend": "SharePoint 2010 administrators and IT professionals",
+	"PreRequisites": "Delegates should have a good depth of knowledge and experience performing SharePoint 2010 administration.",
+	"MaterialCovered": "<h4>Module 1 - Introduction</h4><p>A quick high level overview into the progression of SharePoint 2013 and what to expect in the modules during this course.</p><h4>Module 2 - Architecture</h4><p>With so many changes in many components in SharePoint 2013 we will spend considerable time looking at the new architectural pieces of SharePoint 2013 and understanding how it all fits together.</p><h4>Module 3 - Hardware and Installation</h4><p>This module will look at the new hardware requirements and minimum / recommended hardware configurations. It will also go through a step by step installation including a tour of the new components in Central Administration and key components that need to be setup after installation is complete.</p><h4>Module 4 - Web Applications</h4><p>In this module we will explore the new changes to Web Applications and discover the creation and management of them in both Central Administration and PowerShell.</p><h4>Module 5 - Site Collections</h4><p>There have been many new improvements in the hosting and management of Site collections and in this module we will explore those new options in both the user interface and in PowerShell.</p><h4>Module 6 - Service Applications</h4><p>In this module we will look at what is new, changed and depreciated in SharePoint 2013 and the architecture behind some of these core services. You will also learn how to work with multiple farm scenarios and how to scale the services.</p><h4>Module 7 - Application Management</h4><p>A brand new Service to SharePoint 2013 that allows SharePoint 2013 Administrators to setup their own on premise marketplace hub and maintain control of the Apps stored in it and those subscribed to from the Internet Marketplace. In this module we will go through setup and configuration and publish Apps into your SharePoint farm.</p><h4>Module 8 - Social and the User profile Application</h4><p>Microsoft has invested a lot of time into the social arena in SharePoint 2013 and this module will show the new architecture and how the new features are setup and used. We will dive into the various components of social plus look at how this profile information can be now replicated to multiple farms using the new built in replication engine.</p><h4>Module 9 - Search</h4><p>This module will dive into the new architecture of the Search Service and discover how the new components are configured and managed. You will be learning about the crawl and query capabilities in SharePoint 2013 as well as the changes from a user’s perspective. Finally you will learn about Search scalability and how it now integrates with other services in SharePoint 2013.</p><h4>Module 10 - Enterprise Content Management</h4><p>A lot of investment has been made into the document management and lifecycle process of items in SharePoint 2013 and in this module you will learn what is changed, what is new and considerations for your internal business processes. You will also be introduced to the new features and components behind Web Content Management and discover what SharePoint 2013 provides for the internet facing scenario's.</p><h4>Module 11 - Upgrade</h4><p>This module is concentrating on the options available for upgrading from previous versions of SharePoint and some of the key design and planning elements that need to be considered before starting an upgrade process. There are new components to upgrade that make the process much better from an end users perspective and will also be covered in this module.<p>There will be a lot of hands on labs in this class to enable you to get the most out of this updating skills class and each student will have their own lab environment throughout the class.</p>",
+	"Partner": "Combined Knowledge",
+	"Technologies": [ "SharePoint Server 2013" ],
+	"Tags": [ "SharePoint Server 2010", "Office 365", "Technical specialist" ]
+},
+{
+	"EventCode": "SP2013-USD-3",
+	"EventType": "Course",
+	"Title": "SharePoint 2013 - Updating Skills for Developers",
+	"Overview": "Designed for developers who have either been involved with SharePoint 2010 already or just want to get an idea of what's new in this version.",
+	"CourseLengthDays": 3,
+	"TotalPlaces": 10,
+	"PriceExVat": 1200.00,
+	"Instances": [{
+		"StartDate": "2013-02-25",
+		"Location": "London",
+		"PlacesLeft": 10
+	},
+	{
+		"StartDate": "2013-05-20",
+		"Location": "London",
+		"PlacesLeft": 10
+	}],
+	"WhoShouldAttend": "SharePoint 2010 developers",
+	"PreRequisites": "Delegates should have a good depth of knowledge and experience developing for SharePoint 2010.",
+	"MaterialCovered": "<h4>Visual Studio SharePoint Tools - Project/Feature/Package properties, New Deployment Options, SPApp Packaging</h4><p>Visual Studio 2012 includes new Item Templates for developing against SharePoint 2013, including SharePoint Applications (SPApps). This module explores the new tooling and overall enhancements to the developer IDE.</p><h4>SharePoint Applications (SPApps) - SharePoint-Hosted</h4><h4>SharePoint Applications (SPApps) - Azure-Hosted Auto-provisioned (Client Web Part)</h4><h4>Developer-Hosted (Chrome Control, OAuth)</h4><p>SharePoint 2013 introduces both a corporate and a public Marketplace (App Catalog). Finally! In short, you can now write applications for SharePoint (SPApps) that extend SharePoint sites using the new SharePoint App Model. This module covers everything you will need to know about the three models for developing SharePoint Apps and potentially monetizing your SPApp by deploying it to the Marketplace.</p><h4>Client-side Object Model (CSOM) - Managed-code contexts; greatly expanded, far more than SharePoint Lists</h4><h4>JavaScript Object Model (JSOM) - JavaScript contexts (cross domain)</h4><h4>SharePoint REST - Greatly expanded, far more than SharePoint Lists</h4><p>SharePoint 2013 is all about hosting external application functionality in a SharePoint context. Those external applications (SPApps) will often need to interact with the SharePoint environment. This module illustrates how to leverage each of the various client object models implementations in SharePoint projects to access SharePoint data from the app server.</p><h4>Remote Event Receivers</h4><p>Traditionally, event receivers ran imperative logic on the SharePoint server. SharePoint 2013 adds remote event receivers to handle events that occur on a list item, a list, or a web in a SPApp. Additionally, SPApp event receivers handle events involving the app itself, such as when it's installed or deleted.</p><h4>Business Connectivity Services - ECT/External List via OData</h4><h4>Business Connectivity Services - External List Event Receivers, Alerts, and CRUD</h4><p>Information is frequently not confined entirely to SharePoint databases. This module focuses on consuming and interacting with external data sources using a custom .NET Assembly Connector. Creating BCS-enabled SharePoint Apps, the new remote callouts, the extended client-side object model are explored as well.</p><h4>Workflow New Windows Azure Workflow (AppFabric Workflow model, remote Web Services, dynamic values, stages, etc.)</h4><p>In SharePoint 2013, Windows Azure Workflow (WAW) Services isolates logic into a service that is independent of SharePoint. This module demonstrates how to create custom workflows using either SharePoint Designer 2013 or Visual Studio 2012.</p><h4>Search - Redesigned, incorporates FAST capabilities</h4><p>SharePoint 2013 unifies FAST search capabilities into a single powerful API that even the built-in List View Web Part uses to retrieve information from the SharePoint Content Database. In fact, search can be configured to be aware of everything that is happening within SharePoint. In a way, SharePoint Search is a super performant, all-knowing SharePoint developer's friend. This module illustrates how to simultaneously retrieve information from multiple contexts in sub-seconds using SharePoint Search.</p><h4>Design Manager - Bring your own web design tool</h4><p>SharePoint 2013 includes a new browser-based Design Manager in the top-level Site in any Publishing Site Collection for managing all aspects of branding a SharePoint site. This module boosts your existing HTML, CSS, and JavaScript expertise to design custom Master Pages and Page Layouts that reflect your brand in SharePoint using any HTML editor.</p><h4>Windows 8 Metro style app - Interacts with SharePoint</h4><p>Metro style apps are the focal point of the user experience on Windows 8 Release Preview, and great Metro style apps share an important set of traits that provide a consistent, elegant, and compelling user experience.</p><h4>Word/Excel/Outlook Agave - Host external functionality within an Office application</h4><p>Replacing Office Add-ins, Agave's allow the developer to create an Office App that hosts external functionality as a Task Pane or Content Agave. This module facilitates an interface between an external application that can consume and manipulate the content within the Office application.</p>",
+	"Partner": "Combined Knowledge",
+	"Technologies": [ "SharePoint Server 2013" ],
+	"Tags": [ "SharePoint Server 2010", "Office 365", "Technical specialist" ]
+},
+{
+	"EventCode": "SP2013-O365SOL-1",
+	"EventType": "Seminar",
+	"Title": "Sol-Tec Ltd and AMT Evolve present: Office 365 and SharePoint 2013",
+	"Overview": "These workshops will be dedicated to IT professionals and Business leaders who are considering deploying Office 365 products and solutions or SharePoint Online and wish to find out more about how their businesses can benefit.",
+	"CourseLengthDays": 1,
+	"TotalPlaces": 25,
+	"Instances": [{
+		"StartDate": "2013-05-08",
+		"Location": "Microsoft Campus, London",
+		"PlacesLeft": 25,
+		"RegistrationUrl": "http://www.eventbrite.co.uk/event/5533386508",
+		"PartnerEventId": "5533386508"
+	},
+	{
+		"StartDate": "2013-05-15",
+		"Location": "Microsoft Campus, Reading",
+		"PlacesLeft": 25,
+		"RegistrationUrl": "http://www.eventbrite.co.uk/event/5408751722",
+		"PartnerEventId": "5408751722"
+	}],
+	"WhoShouldAttend": "Academic, Business Analyst, Deployment Specialist",
+	"PreRequisites": "None",
+	"MaterialCovered": "<p>Sol-Tec and AMT Evolve have collaborated to offer joint workshops in May 2013 focusing on the implementation of Office 365 and SharePoint 2013.</p><p>These workshops will be dedicated to IT professionals and Business leaders who are considering deploying Office 365 products and solutions or SharePoint Online and wish to find out more about how their businesses can benefit.</p><p>Agenda:</p><ul><li>09.00 - 09.30 - Registration</li><li>09.30 - 09.45 - Introduction</li><li>09.45 - 10.30 - Office 365 Challenges and Migration Tools - Sol-Tec Ltd</li><li>10.30 - 10.45 - Break</li><li>10.45 - 11.15 - Data Security - Symantec</li><li>11.15 - 12.00 - SharePoint Integration - AMT Evolve</li><li>12.00 - 12.30 - Q&A</li><li>12.30 - 13.15 - Lunch</li><li>13.15 - 15.00 - Breakout Sessions focusing on SharePoint</li></ul><p>Timings and order may change without notice.</p><p><a href=\"http://www.sol-tec.com\">Sol-Tec</a> and <a href=\"http://www.amtevolve.com\">AMT Evolve</a> are collaborating on these workshops to bring Office 365 and SharePoint solutions for the modern corporate IT environment. </p><p><a href=\"http://www.sol-tec.com\">Sol-Tec Ltd</a> - From our headquarters in Reading, Berkshire, Sol-Tec's highly accredited technical support team provides nationwide IT support and Europe-wide value-added IT procurement services for hundreds of businesses. A Cloud Accelerate and Gold Hosting Microsoft Partner, Sol-Tec provide solutions and services within a cloud environment. </p><p><a href=\"http://www.amtevolve.com\">AMT Evolve</a> - Based in the South of England, AMT Evolve are a leading Microsoft SharePoint, Business Intelligence and HTML 5 consultancy. AMT provide consultancy, development, training and support to clients across a range of industry sectors including Utilities, Automotive, Manufacturing and Engineering.</p>",
+	"Partner": "Sol-Tec",
+	"Technologies": [ "SharePoint Server 2013", "Office 365", "Word", "Windows Server 2008" ],
+	"Tags": [ "Academic", "Business Analyst", "Deployment Specialist", "IT Implem_App/LOB Spec", "IT Implem_Desktop/EndUser Spec", "IT Implem_Infrastructure Spec", "IT Manager", "Tech Influencing BDM" ]
+}]

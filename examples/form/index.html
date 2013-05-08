@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <title>Form Example</title>
+
+	  <!-- Lib Files -->
+	  <script type="text/javascript" src='/ext/jquery.js'></script>
+	  <script type="text/javascript" src='/ext/underscore.js'></script>
+	  <script type="text/javascript" src='/ext/knockout.js'></script>
+    <script type="text/javascript" src='/lib/hx.js'></script>
+	  
+	  <!-- Source Files -->  
+    <script type="text/javascript" src='js/app.js'></script>
+
+	  <!-- Styles -->
+	  <link rel="stylesheet" type="text/css" href="styles/site.css" />
+  </head>
+
+  <body data-bind="app: true">
+	  <div class="page">
+        <header>
+          <h1>Training Events Management</h1>
+        </header>
+        
+        <part id="main" data-option="'eventsEditor'">
+          <form data-bind="submit: save" novalidate>
+            <ul data-bind="foreach: events">
+              <li>            
+                <h2 data-bind="text: Title, click: toggleExpansion"></h2>
+
+                <div data-bind="if: expanded">                  
+                  <label for="Title">Title</label>
+                  <input id="Title" name="Title" data-bind="value: Title" type="text" /> 
+                  <validationMessage data-option="Title"></validationMessage>
+
+                  <label for="EventType">Type</label>
+                  <select id="EventType" name="EventType" data-bind="value: EventType">
+                    <option>Course</option>
+                    <option>Seminar</option>
+                  </select>
+                  <validationMessage data-option="EventType"></validationMessage>
+
+                  <label for="EventCode">Code</label>
+                  <input id="EventCode" name="EventCode" data-bind="value: EventCode" type="text" /> 
+                  <validationMessage data-option="EventCode"></validationMessage>
+                  
+                  <label for="Overview">Overview</label>
+                  <textarea id="Overview" name="Overview" data-bind="value: Overview"></textarea>
+                  <validationMessage data-option="Overview"></validationMessage>
+                  
+                  <label for="CourseLengthDays">Days</label>
+                  <input id="CourseLengthDays" name="CourseLengthDays" data-bind="value: CourseLengthDays" type="number" step="any" /> 
+                  <validationMessage data-option="CourseLengthDays"></validationMessage>
+                  
+                  <label for="TotalPlaces">Total Places</label>
+                  <input id="TotalPlaces" name="TotalPlaces" data-bind="value: TotalPlaces" type="number" />
+                  <validationMessage data-option="TotalPlaces"></validationMessage>
+                  
+                  <label for="PriceExVat">Price (Exc. Vat)</label>
+                  <input id="PriceExVat" name="PriceExVat" data-bind="value: PriceExVat" type="text" /> 
+                  <validationMessage data-option="PriceExVat"></validationMessage>
+                  
+                  <label for="WhoShouldAttend">Who Should Attend?</label>
+                  <textarea id="WhoShouldAttend" name="WhoShouldAttend" data-bind="value: WhoShouldAttend"></textarea>
+                  <validationMessage data-option="WhoShouldAttend"></validationMessage>
+                  
+                  <label for="PreRequisites">Pre Requisites</label>
+                  <textarea id="PreRequisites" name="PreRequisites" data-bind="value: PreRequisites"></textarea>
+                  <validationMessage data-option="PreRequisites"></validationMessage>
+                  
+                  <label for="MaterialCovered">Material Covered</label>
+                  <textarea id="MaterialCovered" name="MaterialCovered" data-bind="value: MaterialCovered"></textarea>
+                  <validationMessage data-option="MaterialCovered"></validationMessage>
+
+                  <label for="Partner">Partner</label>
+                  <input id="Partner" name="Partner" data-bind="value: Partner" type="text" /> 
+                  <validationMessage data-option="Partner"></validationMessage>
+
+                  <label>Instances</label>
+                  <ul data-bind="foreach: Instances">
+                    <li>
+                      <label for="StartDate">Start Date</label>
+                      <input id="StartDate" name="StartDate" data-bind="value: StartDate" type="date" /> 
+                      <validationMessage data-option="StartDate"></validationMessage>
+
+                      <label for="Location">Location</label>
+                      <input id="Location" name="Location" data-bind="value: Location" type="text" /> 
+                      <validationMessage data-option="Location"></validationMessage>
+
+                      <label for="PlacesLeft">Places Left</label>
+                      <input id="PlacesLeft" name="PlacesLeft" data-bind="value: PlacesLeft" type="number" /> 
+                      <validationMessage data-option="PlacesLeft"></validationMessage>
+
+                      <label for="RegistrationUrl">Registration Url</label>
+                      <input id="RegistrationUrl" name="RegistrationUrl" data-bind="value: RegistrationUrl" type="text" /> 
+                      <validationMessage data-option="RegistrationUrl"></validationMessage>
+
+                      <label for="PartnerEventId">Event Code</label>
+                      <input id="PartnerEventId" name="PartnerEventId" data-bind="value: PartnerEventId" type="text" /> 
+                      <validationMessage data-option="PartnerEventId"></validationMessage>
+                    </li>
+                  </div>
+                </ul>
+              </li>
+            </ul>
+
+            <button type="submit">Save</button>
+          </form>
+        </part>
+
+        <footer>
+            Copyright &copy; The HelixJS Team
+        </footer>
+    </div>
+  </body>
+</html>
