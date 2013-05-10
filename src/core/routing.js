@@ -261,10 +261,12 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location'], function ($bus, $log, $
 
         if (!route) {
             $log.warn("The route '" + name + "' could not be found.");
+            return;
         }
 
         if (!url) {
             $log.warn("The parameters specified are not valid for the '" + name + "' route.");
+            return;
         }
 
         return url;
