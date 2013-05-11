@@ -46,6 +46,37 @@ describe('region manager', function () {
         });
     });
 
+    describe('nested regions', function () {
+        beforeEach(function () {
+            this.regionManager = new $RegionManager();
+
+            // Typically, a region manager would be the root `app` on the
+            // body, but it is not a requirement.
+            this.setHtmlFixture("<div id='body' data-bind='regionManager: regionManager'>" +
+                                "    <header id='header'>This is the header</header>" + 
+                                "    <region id='my-main-region' class='region'></region>" +
+                                "    <footer id='footer'>This is the footer</footer>" + 
+                                "</div>");
+            
+            this.applyBindingsToFixture({
+                regionManager: this.regionManager
+            });
+
+            // Now show contents of region manager and ensure a child region can be shown
+
+            $templating.set('main-region-template', '<region data-option="\'child-region\'"></region>');
+            hx.provide('child-region', { templateName: 'child-region-template'});
+
+            $templating.set('child-region-template', '<span id="child-region-span">This is the child contents</span>');
+            
+            this.regionManager.show({ 'my-main-region': { templateName: 'main-region-template' }})
+        });
+
+        it('should render the child contents, instead of registering with the highest level region manager', function () {
+            expect(document.getElementById("child-region-span")).toHaveText("This is the child contents");
+        });
+    });
+
     describe('multiple regions with a default set', function () {
         beforeEach(function () {
             this.regionManager = new $RegionManager();
@@ -79,8 +110,7 @@ describe('region manager', function () {
                     templateName: 'myViewModelTemplateName'
                 };
 
-                this.regionManager.showSingle(this.viewModel);
-            });
+                this.regionManager.showSingle(this.viewModel);            });
 
             it('should set the view model to the default region', function () {
                 expect(document.getElementById("main")).toHaveText('This is the main template');

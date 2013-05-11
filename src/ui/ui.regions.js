@@ -192,7 +192,7 @@
      * a single view model is shown without specifying the name. This is achieved by
      * adding a data-default="true" attribute on the region.
      */
-    hx.instantiate(['$ajax', '$injector'], function($ajax, $injector) {
+    hx.instantiate(['$log', '$ajax', '$injector'], function($log, $ajax, $injector) {
         function getViewModel(valueAccessor) {
             return $injector.get(ko.utils.unwrapObservable(valueAccessor()))
         }
@@ -212,12 +212,14 @@
             init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
                 var regionManager = bindingContext[regionManagerContextKey],
                     viewModel = getViewModel(valueAccessor),
-                    templateValueAccessor = createTemplateValueAccessor(viewModel);
+                    templateValueAccessor = createTemplateValueAccessor(viewModel),
+                    regionId = element.id || 'main';
 
                 if (regionManager) {
-                    regionManager.register(element.id || 'main', (element.getAttribute('data-default')) === 'true');
+                    $log.debug('Registering region "' + regionId + '" with parent region manager.');
+                    regionManager.register(regionId, (element.getAttribute('data-default')) === 'true');
                 } else if(!viewModel) {
-                    throw new Error('A null or undefined view model cannot be passed to a region binding handler');                    
+                    throw new Error('A null or undefined view model cannot be passed to a region binding handler without a parent region manager (or app)');                    
                 }
 
                 return koBindingHandlers.template.init(element, templateValueAccessor);
@@ -225,15 +227,19 @@
 
             update: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
                 var deferred, lastViewModel, regionViewModel,
-                    regionManager = bindingContext[regionManagerContextKey];
+                    regionManager = bindingContext[regionManagerContextKey],
+                    regionId = element.id || 'main';
 
                 if(regionManager) {
+                    $log.debug('Getting view model from the "' + regionId + '" region from parent region manager to render.');
                     regionViewModel = regionManager.get(element.id || 'main');
                 } else {
+                    $log.debug('Getting view model with module name "' + valueAccessor() + '"');
                     regionViewModel = getViewModel(valueAccessor);
                 }
 
                 if (!regionViewModel) {
+                    $log.info('Cannot find region view model.')
                     return;
                 }
 
@@ -259,9 +265,14 @@
                 }
 
                 deferred.done(function () {
-                    var templateValueAccessor = createTemplateValueAccessor(regionViewModel);
+                    var templateValueAccessor = createTemplateValueAccessor(regionViewModel),
+                        innerBindingContext = bindingContext.extend();
 
-                    koBindingHandlers.template.update(element, templateValueAccessor, allBindingsAccessor, viewModel, bindingContext);
+                    // Children should not inherit the region manager - else any child regions will attempt to register
+                    // with it.
+                    innerBindingContext[regionManagerContextKey] = null;
+
+                    koBindingHandlers.template.update(element, templateValueAccessor, allBindingsAccessor, viewModel, innerBindingContext);
 
                     if (regionViewModel.afterShow != null) {
                         regionViewModel.afterShow.apply(regionViewModel);

@@ -11,7 +11,7 @@ describe('region binding handler', function () {
         it('should throw an exception', function () {
             expect(function() {
                 this.applyBindingsToFixture({ viewModel: undefined });
-            }.bind(this)).toThrow('A null or undefined view model cannot be passed to a region binding handler');
+            }.bind(this)).toThrow('A null or undefined view model cannot be passed to a region binding handler without a parent region manager (or app)');
         });
     });
 
