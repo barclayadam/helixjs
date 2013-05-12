@@ -24,7 +24,7 @@ describe('validation - ui', function() {
                                     " <textarea id='validated-textarea' type='text' data-bind='value: validated'></textarea>" +
                                     "</div>");
 
-                this.validatedObservable = ko.observable('a value').addValidationRules({ required: true });
+                this.validatedObservable = ko.observable('a value').addValidationRules({ required: true, requiredMessage: 'This is my message' });
                 this.spy(hx.validation.rules.required, 'modifyElement');
 
                 this.applyBindingsToFixture({

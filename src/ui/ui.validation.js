@@ -26,8 +26,10 @@ hx.instantiate(function() {
 
             if (value && value.validationRules) {
                 _.each(value.validationRules(), function(options, key) {
-                    if(hx.validation.rules[key].modifyElement) {
-                        hx.validation.rules[key].modifyElement(element, options);
+                    var rule = hx.validation.rules[key];
+
+                    if(rule && rule.modifyElement) {
+                        rule.modifyElement(element, options);
                     }
                 })
             }
