@@ -1,20 +1,16 @@
-(function(window, document, $, ko) {
+(function(window, document) {
     (function(factory) {
-        // Support three module loading scenarios
-        if (typeof require === "function" && typeof exports === "object" && typeof module === "object") {
-            // [1] CommonJS/Node.js
-            factory(module["exports"] || exports);
-        } else if (typeof define === "function" && define["amd"]) {
+        if (typeof define === "function" && define["amd"]) {
             // [2] AMD anonymous module
-            define(["exports"], factory);
+            define(["jquery", "underscore", "knockout", "exports"], factory);
         } else {
             // [3] No module loader (plain <script> tag) - put directly in global namespace
-            factory(window["hx"] = {});
+            factory(window.jQuery, window._, window.ko, window.hx = {});
         }
-    })(function(hxExports) {
-        if (ko === void 0) {
-            throw new Error('knockout must be included before HelixJS.');
-        }
+    })(function($, _, ko, hxExports) {
+        if ($ === void 0) { throw new Error('jquery must be included before HelixJS.'); }
+        if (_ === void 0) { throw new Error('underscore must be included before HelixJS.'); }
+        if (ko === void 0) { throw new Error('knockout must be included before HelixJS.'); }
 
         // Declare some common variables used throughout the library
         // to help reduce minified size.
@@ -60,4 +56,4 @@
         //= ui/ui.navigate.js
         //= ui/ui.pager.js
     });
-})(window, document, window["jQuery"], window["ko"]);
+})(window, document);
