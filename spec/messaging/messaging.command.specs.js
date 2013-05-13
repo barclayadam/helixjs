@@ -4,7 +4,7 @@ describe('Messaging - Commands', function () {
     describe('Executing a command (low-level)', function () {
         beforeEach(function () {
             $command.commandUrlTemplate = 'ExecuteCommand/{name}';
-            this.promise = $command.command('My Command', {
+            this.promise = $command.execute('My Command', {
                 id: 3456
             });
 

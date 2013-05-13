@@ -1,12 +1,12 @@
 /**
- * @class $EventBus
+ * @class $EventEmitter
  */
 
-hx.provide('$EventBus', ['$log'], function($log) {
-    var _subscribers = {};
+hx.provide('$EventEmitter', ['$log'], function($log) {
+    var subscribers = {};
     
     function clearAll() {
-        _subscribers = {};
+        subscribers = {};
     };
 
     /**
@@ -28,24 +28,20 @@ hx.provide('$EventBus', ['$log'], function($log) {
      * @memberOf $EventBus#
      */
     function subscribe(messageName, callback) {
-        var message, newToken, _i, _len;
-
         if (_.isArray(messageName)) {
-            for (_i = 0, _len = messageName.length; _i < _len; _i++) {
-                message = messageName[_i];
-                subscribe(message, callback);
+            for (var i = 0; i < messageName.length; i++) {
+                subscribe(messageName[i], callback);
             }
         } else {
-            if (_subscribers[messageName] === void 0) {
-                _subscribers[messageName] = {};
-            }
+            subscriberList = subscribers[messageName] = subscribers[messageName] || { length: 0 };
+            subscriberList.length = subscriberList.length + 1;
 
-            newToken = _.size(_subscribers[messageName]);
-            _subscribers[messageName][newToken] = callback;
+            var newToken = subscriberList.length;
+            subscriberList[newToken] = callback;
           
             return {
                 unsubscribe: function() {
-                    return delete _subscribers[messageName][newToken];
+                    return delete subscriberList[newToken];
                 }
             };
         }
@@ -67,28 +63,26 @@ hx.provide('$EventBus', ['$log'], function($log) {
      * @memberOf $EventBus#
     */
     function publish(messageName, args) {
-        var indexOfSeparator, messages, msg, subscriber, t, _i, _len, _ref;
-
-        if (args == null) {
-            args = {};
-        }
+        if (args == null) { args = {}; }
 
         $log.debug("Publishing " + messageName, args);
         
-        indexOfSeparator = -1;
-        messages = [messageName];
+        var indexOfSeparator = -1,
+            messages = [messageName];
         
         while (messageName = messageName.substring(0, messageName.lastIndexOf(':'))) {
             messages.push(messageName);
         }
         
-        for (_i = 0, _len = messages.length; _i < _len; _i++) {
-            msg = messages[_i];
-            _ref = _subscribers[msg] || {};
+        for (var i = 0; i < messages.length; i++) {
+            var msg = messages[i],
+                subscriberList = subscribers[msg] || {};
         
-            for (t in _ref) {
-                subscriber = _ref[t];
-                subscriber.call(this, args);
+            for (var token in subscriberList) {
+                if (token != 'length') {
+                    subscriber = subscriberList[token];
+                    subscriber.call(this, args);
+                }
             }
         }
     };
@@ -96,8 +90,12 @@ hx.provide('$EventBus', ['$log'], function($log) {
     return {
         clearAll: clearAll,
         subscribe: subscribe,
-        publish: publish
+        publish: publish,
+
+        mixin: function(obj) {
+            obj.subscribe = subscribe
+        }
     };
 });
 
-hx.provide('$bus', hx.get('$EventBus'));
+hx.provide('$bus', hx.get('$EventEmitter'));

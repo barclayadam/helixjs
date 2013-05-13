@@ -26,7 +26,7 @@
 
         //= core/log.js
 
-        //= core/bus.js
+        //= core/eventEmitter.js
         //= core/uri.js
         //= core/ajax.js
         //= core/sorting.js
