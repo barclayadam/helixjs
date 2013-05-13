@@ -8,7 +8,6 @@
     hx.provide = injector.provide.bind(injector);
     hx.singleton = injector.singleton.bind(injector); 
     hx.get = injector.get.bind(injector);
-    hx.instantiate = injector.instantiate.bind(injector);
 
     /**
      * A simple no-op function that can be used in places where a function is expected
@@ -27,6 +26,13 @@
         configBlocks.push(injector.annotate(blockOrDependencies, block));
     };
 
+    hx.runConfigBlocks = function() {
+        for (var i = 0; i < configBlocks.length; i++) {
+            // create will execute our config block
+            configBlocks[i]();
+        }
+    }
+
     function startApp() {
         var $log = hx.get('$log'),
             $location = hx.get('$location'),
@@ -36,10 +42,7 @@
         var appRegionManager = new $RegionManager();
         hx.provide('$appRegionManager', appRegionManager);
 
-        for (var i = 0; i < configBlocks.length; i++) {
-            // create will execute our config block
-            configBlocks[i]();
-        }
+        hx.runConfigBlocks();
 
         // Tie together routing with the application's main region manager
         $bus.subscribe('routeNavigated', function(msg) {

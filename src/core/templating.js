@@ -1,4 +1,4 @@
-hx.provide('$templating', hx.instantiate(['$ajax'], function($ajax) {
+hx.singleton('$templating', ['$ajax'], function($ajax) {
     var templating = {};
 
     /**
@@ -40,11 +40,13 @@ hx.provide('$templating', hx.instantiate(['$ajax'], function($ajax) {
       template source (see `hx.templating.isExternal`) or falls back 
       to the original method if not.
     */
-    function createCustomEngine(templateEngine) {
+    templating.createEngine = function(templateEngine) {
         var originalMakeTemplateSource = templateEngine.makeTemplateSource;
 
         templateEngine.makeTemplateSource = function (template, templateDocument) {
             var templateElement;
+
+    debugger
 
             if (templating.templates[template] != null) {
                 return new StringTemplateSource(template);
@@ -65,8 +67,6 @@ hx.provide('$templating', hx.instantiate(['$ajax'], function($ajax) {
 
         return templateEngine;
     };
-
-    ko.setTemplateEngine(createCustomEngine(new ko.nativeTemplateEngine()));
 
     /**
      The public API of the custom templating support built on-top of the
@@ -139,4 +139,8 @@ hx.provide('$templating', hx.instantiate(['$ajax'], function($ajax) {
     };
 
     return templating;
-}));
+});
+
+hx.config(['$templating'], function($templating) {    
+    ko.setTemplateEngine($templating.createEngine(new ko.nativeTemplateEngine()));
+})

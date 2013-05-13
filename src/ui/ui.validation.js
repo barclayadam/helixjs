@@ -1,4 +1,4 @@
-hx.instantiate(function() {
+hx.config(function() {
     /**
      * A binding handler that is not designed to be used directly but instead will attach itself
      * to form input elements (input, select, textarea) and, if a `value` binding has been specified

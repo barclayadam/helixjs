@@ -1,33 +1,36 @@
 if(!document.getElementsByClassName) {
-
     document.getElementsByClassName = function(className, parentElement) {
-      if (typeof parentElement == 'string'){
-        parentElement = document.getElementById(parentElement);
-      } else if (typeof parentElement != 'object' || typeof parentElement.tagName != 'string') {
-        parentElement = document.body;
-      }
-      debugger
-      var children = parentElement.getElementsByTagName('*');
-      var re = new RegExp('\\b' + className + '\\b');
-      var element, elements = [];
-      var i = 0;
-      while ( (element = children[i++]) ){
-        if ( ellement.className && re.test(element.className)){
-          elements.push(element);
+        if (typeof parentElement == 'string'){
+            parentElement = document.getElementById(parentElement);
+        } else if (typeof parentElement != 'object' || typeof parentElement.tagName != 'string') {
+            parentElement = document.body;
         }
-      }
-      return elements;
-    }
+
+        var children = parentElement.getElementsByTagName('*');
+        var re = new RegExp('\\b' + className + '\\b');
+        var element, elements = [];
+        var i = 0;
+
+        while ((element = children[i++])) {
+            if (element.className && re.test(element.className)) {
+                elements.push(element);
+            }
+        }
+
+        return elements;
+    };
 }
 
 beforeEach(function () {
+    hx.runConfigBlocks();
+
     window.sinonSandbox = sinon.sandbox.create(sinon.getConfig({
         injectInto: this,
         useFakeTimers: false
     }));
 
+    debugger
     hx.get('$bus').clearAll();
-    hx.get('$hxBindingsProvider').configure();
 
     window.sessionStorage.clear();
     window.localStorage.clear();

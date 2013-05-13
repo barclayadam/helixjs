@@ -1,5 +1,5 @@
 (function() {
-    hx.instantiate('$templating', function($templating) {
+    hx.config('$templating', function($templating) {
         $templating.set('$hx-pager',
             ' <!-- ko if: pageCount() > 0 -->' +
             '   <part data-option="\'backward-links\'">' +

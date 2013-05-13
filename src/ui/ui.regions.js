@@ -188,7 +188,7 @@
      * a single view model is shown without specifying the name. This is achieved by
      * adding a data-default="true" attribute on the region.
      */
-    hx.instantiate(['$log', '$ajax', '$injector'], function($log, $ajax, $injector) {
+    hx.config(['$log', '$ajax', '$injector'], function($log, $ajax, $injector) {
         function getViewModel(valueAccessor) {
             var viewModel = ko.utils.unwrapObservable(valueAccessor());
 

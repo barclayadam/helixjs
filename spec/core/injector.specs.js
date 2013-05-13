@@ -303,24 +303,4 @@ describe('injector', function() {
             expect(this.nonDependentModuleStub).toHaveBeenCalled()
         })
     })
-
-    describe('directly creating with dependencies', function() {
-        beforeEach(function() {
-            // Dependency A
-            this.dependencyAReturn = { property: 'A Value'};
-            this.injector.provide('$dependencyA', this.dependencyAReturn);
-
-            // Dependent module
-            this.dependentModuleReturn = { mainModuleProperty: 'The value' };
-            this.dependentModuleStub = this.stub().returns(this.dependentModuleReturn);
-        });
-
-        it('should execute function with fulfilled dependencies', function() {
-            var ret = this.injector.instantiate(['$dependencyA'], this.dependentModuleStub);
-
-            expect(ret).toBe(this.dependentModuleReturn);
-            expect(this.dependentModuleStub).toHaveBeenCalledWith(this.dependencyAReturn)
-        })
-
-    })
 })

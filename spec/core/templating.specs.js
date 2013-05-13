@@ -1,5 +1,7 @@
 describe('templating', function () {
-    var $templating = hx.get('$templating');
+    beforeEach(function() {
+        this.$templating = hx.get('$templating');
+    });
     
     describe('when using built-in template binding handler with anonymous template', function () {
         beforeEach(function () {
@@ -16,7 +18,7 @@ describe('templating', function () {
     describe('string templates', function () {
         describe('when a named template is added', function () {
             beforeEach(function () {
-                $templating.set('myNamedTemplate', 'A Cool Template');
+                this.$templating.set('myNamedTemplate', 'A Cool Template');
                 this.setHtmlFixture("<div id=\"templated\" data-bind=\"template: 'myNamedTemplate'\"></div>");
                 this.applyBindingsToFixture({});
                 this.wrapper = document.getElementById('templated');
@@ -29,8 +31,8 @@ describe('templating', function () {
 
         describe('when a named template is set twice', function () {
             beforeEach(function () {
-                $templating.set('myNamedTemplate', 'A Cool Template');
-                $templating.set('myNamedTemplate', 'A Cool Template 2');
+                this.$templating.set('myNamedTemplate', 'A Cool Template');
+                this.$templating.set('myNamedTemplate', 'A Cool Template 2');
                 this.setHtmlFixture("<div id=\"templated\" data-bind=\"template: 'myNamedTemplate'\"></div>");
                 this.applyBindingsToFixture({});
                 this.wrapper = document.getElementById('templated');
@@ -44,14 +46,14 @@ describe('templating', function () {
         describe('when a named template is an observable', function () {
             beforeEach(function () {
                 this.template = ko.observable('A Cool Template');
-                $templating.set('myObservableNamedTemplate', this.template);
+                this.$templating.set('myObservableNamedTemplate', this.template);
                 this.setHtmlFixture("<div id=\"templated\" data-bind=\"template: 'myObservableNamedTemplate'\"></div>");
                 this.applyBindingsToFixture({});
                 this.wrapper = document.getElementById('templated');
             });
 
             afterEach(function() {
-                $templating.remove('myObservableNamedTemplate')
+                this.$templating.remove('myObservableNamedTemplate')
             })
 
             it('should render the template', function () {
@@ -69,7 +71,7 @@ describe('templating', function () {
 
             describe('that is set again', function () {
                 beforeEach(function () {
-                    $templating.set('myObservableNamedTemplate', 'Explicitly set template again');
+                    this.$templating.set('myObservableNamedTemplate', 'Explicitly set template again');
                 });
                 it('should re-render the template', function () {
                     expect(this.wrapper).toHaveText('Explicitly set template again');
@@ -83,7 +85,7 @@ describe('templating', function () {
             beforeEach(function () {
                 this.templateText = "A cool external template";
                 
-                $templating.externalPath = '/Get/Template/{name}';
+                this.$templating.externalPath = '/Get/Template/{name}';
                 this.respondWithTemplate('/Get/Template/myExternalTemplateSingleLoad', this.templateText);
                 this.setHtmlFixture("<div id='one' data-bind=\"template: 'myExternalTemplateSingleLoad'\"></div>\n<div id='two' data-bind=\"template: 'myExternalTemplateSingleLoad'\"></div>");
                 
@@ -96,19 +98,19 @@ describe('templating', function () {
             });
 
             afterEach(function() {
-                $templating.remove('myExternalTemplateSingleLoad');
+                this.$templating.remove('myExternalTemplateSingleLoad');
             })
 
-            it('should immediately render the loading template ($templating.loadingTemplate)', function () {
-                expect(this.wrapperOne).toHaveHtml($templating.loadingTemplate);
-                expect(this.wrapperTwo).toHaveHtml($templating.loadingTemplate);
+            it('should immediately render the loading template (this.$templating.loadingTemplate)', function () {
+                expect(this.wrapperOne).toHaveHtml(this.$templating.loadingTemplate);
+                expect(this.wrapperTwo).toHaveHtml(this.$templating.loadingTemplate);
             });
 
             it('should only attempt one load of the document from the server', function () {
                 expect(this.ajaxSpy).toHaveBeenCalledOnce();
             });
 
-            describe('when template is successfully loaded using $templating.externalPath', function () {
+            describe('when template is successfully loaded using this.$templating.externalPath', function () {
                 beforeEach(function () {
                     this.server.respond();
                 });

@@ -1,4 +1,4 @@
-hx.instantiate(['$router'], function($router) {
+hx.config(['$router'], function($router) {
 
     /**
      * @bindingHandler navigate
