@@ -14,7 +14,7 @@ hx.singleton('$command', ['$log', '$ajax'], function($log, $ajax) {
 
      This method returns a promise that will resolve with the value of the AJAX call.
     */
-    ret.command = function (commandName, values) {
+    ret.execute = function (commandName, values) {
         if (values == null) {
             values = {};
         }
@@ -57,7 +57,7 @@ hx.singleton('$command', ['$log', '$ajax'], function($log, $ajax) {
             this.validate();
 
             if (this.isValid()) {
-                return ret.command(this.__name, this);
+                return ret.execute(this.__name, this);
             } else {
                 // If not valid then a promise that never resolves is returned.
                 // TODO: Is this the correct thing to do?
