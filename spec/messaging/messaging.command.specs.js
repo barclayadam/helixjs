@@ -88,6 +88,9 @@ describe('Messaging - Commands', function () {
 
         describe('that fails validation', function () {
             beforeEach(function () {
+                this.submittingEventSpy = this.spy();
+                this.command.subscribe('submitting', this.submittingEventSpy);
+
                 this.command.id(void 0);
 
                 this.promise = this.command.execute();
@@ -107,6 +110,10 @@ describe('Messaging - Commands', function () {
                 expect(this.failureCallback).toHaveNotBeenCalled();
             });
 
+            it('should not raise a submitting event', function () {
+                expect(this.submittingEventSpy).toHaveNotBeenCalled();
+            });
+
             it('validate properties', function () {
                 expect(this.command.id.isValid()).toBe(false);
             });
@@ -116,6 +123,9 @@ describe('Messaging - Commands', function () {
             beforeEach(function () {
                 this.succeededEventSpy = this.spy();
                 this.command.subscribe('succeeded', this.succeededEventSpy);
+
+                this.submittingEventSpy = this.spy();
+                this.command.subscribe('submitting', this.submittingEventSpy);
 
                 this.promise = this.command.execute();
                 this.promise.then(this.successCallback);
@@ -132,6 +142,10 @@ describe('Messaging - Commands', function () {
                 expect(this.successCallback).toHaveBeenCalledWith({
                     resultProperty: 5
                 });
+            });
+
+            it('should raise a submitting event, before succeeded', function () {
+                expect(this.submittingEventSpy).toHaveBeenCalledBefore(this.succeededEventSpy);
             });
 
             it('should raise a succeeded event', function () {
@@ -164,6 +178,9 @@ describe('Messaging - Commands', function () {
                 this.failedEventSpy = this.spy();
                 this.command.subscribe('failed', this.failedEventSpy);
 
+                this.submittingEventSpy = this.spy();
+                this.command.subscribe('submitting', this.submittingEventSpy);
+
                 this.promise = this.command.execute();
                 
                 this.promise.then(this.successCallback);
@@ -178,6 +195,10 @@ describe('Messaging - Commands', function () {
 
             it('should reject the promise', function () {
                 expect(this.failureCallback).toHaveBeenCalled();
+            });
+
+            it('should raise a submitting event, before failed', function () {
+                expect(this.submittingEventSpy).toHaveBeenCalledBefore(this.failedEventSpy);
             });
 
             it('should raise a failed event', function () {

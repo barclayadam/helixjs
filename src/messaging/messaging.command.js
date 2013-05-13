@@ -30,6 +30,8 @@ hx.singleton('$Command', ['$log', '$ajax', '$EventEmitter'], function($log, $aja
         this.validate();
 
         if (this.isValid()) {
+            $EventEmitter.publish('submitting');
+
             var executionPromise = Command.execute(this.__name, this);
 
             executionPromise.then(function() {
