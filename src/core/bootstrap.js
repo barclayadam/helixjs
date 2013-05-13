@@ -1,8 +1,7 @@
 (function() {
     // The main injector into which all modules will be loaded via calls to hx.provide,
     // or created by hx.create
-    var injector = new hx.Injector(),
-        configBlocks = [];
+    var injector = new hx.Injector();
 
     // Expose methods of the single internal injector as 'globals'.
     hx.provide = injector.provide.bind(injector);
@@ -23,14 +22,13 @@
      * @param {function|array}
      */
     hx.config = function(blockOrDependencies, block) {
-        configBlocks.push(injector.annotate(blockOrDependencies, block));
+        injector.provide('$configBlocks', blockOrDependencies, block);
     };
 
     hx.runConfigBlocks = function() {
-        for (var i = 0; i < configBlocks.length; i++) {
-            // create will execute our config block
-            configBlocks[i]();
-        }
+        // By getting the config blocks they will be executed, with dependencies
+        // injected, therefore no further work is required here
+        injector.get('$configBlocks');
     }
 
     function startApp() {

@@ -270,37 +270,25 @@ describe('injector', function() {
         })
     })
 
-    describe('annotating a function', function() {
+    describe('registering multiple of the same dependency', function() {
         beforeEach(function() {
             // Dependency A
             this.dependencyAReturn = { property: 'A Value'};
             this.injector.provide('$dependencyA', this.dependencyAReturn);
 
+            // Dependency A 2
+            this.dependencyAReturn2 = { property: 'Another Value'};
+            this.injector.provide('$dependencyA', this.dependencyAReturn2);
+
             // Dependent module
-            this.dependentModuleReturn = { mainModuleProperty: 'The value' };
-            this.dependentModuleStub = this.stub().returns(this.dependentModuleReturn);
-
-            this.dependentWithDependencyAnnotated = this.injector.annotate(['$dependencyA'], this.dependentModuleStub);
-
-            // Non-Dependent module
-            this.nonDependentModuleReturn = { mainModuleProperty: 'The value' };
-            this.nonDependentModuleStub = this.stub().returns(this.nonDependentModuleReturn);
-
-            this.withoutDependencyAnnotated = this.injector.annotate(this.nonDependentModuleStub);
+            this.dependentModuleStub = this.stub();
+            this.dependent = this.injector.provide('dependent', [['$dependencyA']], this.dependentModuleStub);
         });
 
-        it('should register dependencies to be fulfilled on creation / get', function() {
-            var ret = this.dependentWithDependencyAnnotated();
+        it('should return an array of dependencies', function() {
+            this.injector.get('dependent');
 
-            expect(ret).toBe(this.dependentModuleReturn);
-            expect(this.dependentModuleStub).toHaveBeenCalledWith(this.dependencyAReturn)
-        })
-
-        it('should work correctly with no dependencies', function() {
-            var ret = this.withoutDependencyAnnotated();
-
-            expect(ret).toBe(this.nonDependentModuleReturn);
-            expect(this.nonDependentModuleStub).toHaveBeenCalled()
+            expect(this.dependentModuleStub).toHaveBeenCalledWith([this.dependencyAReturn, this.dependencyAReturn2])
         })
     })
 })

@@ -29,7 +29,6 @@ beforeEach(function () {
         useFakeTimers: false
     }));
 
-    debugger
     hx.get('$bus').clearAll();
 
     window.sessionStorage.clear();

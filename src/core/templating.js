@@ -46,8 +46,6 @@ hx.singleton('$templating', ['$ajax'], function($ajax) {
         templateEngine.makeTemplateSource = function (template, templateDocument) {
             var templateElement;
 
-    debugger
-
             if (templating.templates[template] != null) {
                 return new StringTemplateSource(template);
             } else if (template.nodeType === 1 || template.nodeType === 8) {

@@ -22,10 +22,33 @@
         }
 
         var arguments = _.map(dependencies, function(d) {
-                return injector.get(d)
+                if(_.isArray(d)) {
+                    var instantiatedModules = injector.get(d[0]);
+
+                    return _.isArray(instantiatedModules) ? instantiatedModules : [instantiatedModules];
+                } else {
+                    return injector.get(d)
+                }
             });
 
         return func.apply(null, arguments);
+    };
+
+    function annotate(injector, funcOrDependencies, func) {
+        if(!func) {
+            func = funcOrDependencies;
+            funcOrDependencies = undefined;
+        }
+
+        if(_.isFunction(func)) {
+            return function() {
+                return instantiate(injector, funcOrDependencies, func);
+            }
+        } else {
+            return function() {
+                return func;
+            }
+        }
     };
 
     /**
@@ -53,25 +76,6 @@
         throw new Error("Cannot find module with the name '" + name + "'.");
     };
 
-    hx.Injector.prototype.annotate = function(funcOrDependencies, func) {
-        var injector = this;
-
-        if(!func) {
-            func = funcOrDependencies;
-            funcOrDependencies = undefined;
-        }
-
-        if(_.isFunction(func)) {
-            return function() {
-                return instantiate(injector, funcOrDependencies, func);
-            }
-        } else {
-            return function() {
-                return func;
-            }
-        }
-    };
-
     /**
      * Registers ('provides') a new module, which is defined by a name (which must be unique), 
      * a 'creator' and some optional dependencies.
@@ -96,7 +100,18 @@
     hx.Injector.prototype.provide = function(name, creatorOrDependencies, creator) {
         name = ko.utils.stringTrim(name);
 
-        this.modules[name] = this.annotate(creatorOrDependencies, creator);
+        var annotatedCreator = annotate(this, creatorOrDependencies, creator),
+            currentModule = this.modules[name];
+
+        if(currentModule) {
+            if(_.isArray(currentModule)) {
+                currentModule.push(annotatedCreator)
+            } else {
+                this.modules[name] = [currentModule, annotatedCreator]
+            }
+        } else {
+            this.modules[name] = annotatedCreator;
+        }
     };
 
     /**
@@ -110,10 +125,9 @@
      *  dependencies once on first creation.
      */
     hx.Injector.prototype.singleton = function(name, dependencies, creator) {
-        var injector = this,
-            created = false,
+        var created = false,
             moduleReturn = undefined,
-            creator = injector.annotate(dependencies, creator);
+            creator = annotate(this, dependencies, creator);
 
         this.provide(name, function() {
             if(!created) {
@@ -132,6 +146,12 @@
      * @param {string} moduleName - A named module to create
      */
     hx.Injector.prototype.get = function(moduleName) {
-        return this.find(moduleName)();
+        var module = this.find(moduleName);
+
+        if(_.isArray(module)) {
+            return _.map(module, function(m) { return m(); });
+        } else {
+            return module();
+        }
     };
 }());
