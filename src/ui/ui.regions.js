@@ -59,15 +59,11 @@
              * @param {object} viewModels The view models that will be shown
              */
             RegionManager.prototype.show = function (viewModels) {
-                var regionKey, vm;
-
-                for (regionKey in viewModels) {
-                    vm = $injector.get(viewModels[regionKey]);
-
+                for (var regionKey in viewModels) {
                     if (this.regions[regionKey] === void 0) {
                         $log.debug("This region manager does not have a '" + regionKey + "' region");
                     } else {
-                        this.regions[regionKey](vm);
+                        this.regions[regionKey](viewModels[regionKey]);
                     }
                 }
             };
@@ -194,7 +190,9 @@
      */
     hx.instantiate(['$log', '$ajax', '$injector'], function($log, $ajax, $injector) {
         function getViewModel(valueAccessor) {
-            return $injector.get(ko.utils.unwrapObservable(valueAccessor()))
+            var viewModel = ko.utils.unwrapObservable(valueAccessor());
+
+            return _.isString(viewModel) ? $injector.get(viewModel) : viewModel;
         }
 
         function createTemplateValueAccessor(viewModel) {

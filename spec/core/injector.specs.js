@@ -16,30 +16,6 @@ describe('injector', function() {
         expect(throwingFunction).toThrow("Cannot find module with the name 'aDependenyThatDoesNotExist'.");
     })
 
-    describe('creating non-named items with no dependencies', function() {
-        it('should execute function passed in', function() {
-            var expectedResult = "This is the result",
-                result = this.injector.get(function() {
-                    return expectedResult;
-                });
-
-            expect(result).toBe(expectedResult);
-        })
-
-        it('should return object passed in', function() {
-            var expectedResult = { value: "This is the result" },
-                result = this.injector.get(expectedResult);
-
-            expect(result).toBe(expectedResult);
-        })
-
-        it('should return null if null passed in', function() {
-            var result = this.injector.get(null);
-
-            expect(result).toBeNull();
-        })
-    })
-
     describe('with a single module registered as a function, with no dependencies', function() {
         beforeEach(function() {
             var moduleReturnValue = this.moduleReturnValue = {
@@ -314,14 +290,14 @@ describe('injector', function() {
         });
 
         it('should register dependencies to be fulfilled on creation / get', function() {
-            var ret = this.injector.get(this.dependentWithDependencyAnnotated);
+            var ret = this.dependentWithDependencyAnnotated();
 
             expect(ret).toBe(this.dependentModuleReturn);
             expect(this.dependentModuleStub).toHaveBeenCalledWith(this.dependencyAReturn)
         })
 
         it('should work correctly with no dependencies', function() {
-            var ret = this.injector.get(this.withoutDependencyAnnotated);
+            var ret = this.withoutDependencyAnnotated();
 
             expect(ret).toBe(this.nonDependentModuleReturn);
             expect(this.nonDependentModuleStub).toHaveBeenCalled()

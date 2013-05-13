@@ -30,7 +30,6 @@ hx.Injector.prototype.annotate = function(funcOrDependencies, func) {
         return function() {
             return injector.instantiate(funcOrDependencies, func);
         }
-
     } else {
         return funcOrDependencies;
     }
@@ -89,27 +88,13 @@ hx.Injector.prototype.singleton = function(name, dependencies, creator) {
 }
 
 /**
- * Creates a module given the specified options, which can be a string to create a named
- * and registered module, a function with optional dependencies, or a static object that
- * will be immediately returned.
+ * Creates a module given the specified module name, throwing an error in the case that
+ * no such module has been previously registered.
  *
- * @param {string|object|function} optionsOrDependencies - A named module 
- *   to create, a static object to be immediately returned or a function with optional dependencies to execute, *or*
- *   an array of dependencies to inject
+ * @param {string} moduleName - A named module to create
  */
-hx.Injector.prototype.get = function(optionsOrDependencies) {
-    if(typeof optionsOrDependencies == "function") {
-        // We are providing a function, with optional dependencies attached. If the function
-        // has previously been annotated (as is the case with any registered directly with this
-        // injector), then it will be executed with loaded dependencies
-        return optionsOrDependencies();
-    } else if(typeof optionsOrDependencies == "string") {
-        // We are asking for a module by name
-        return this.get(this.find(optionsOrDependencies));
-    } else {
-        // We have an object, just return as-is
-        return optionsOrDependencies;
-    }
+hx.Injector.prototype.get = function(moduleName) {
+    return this.instantiate(this.find(moduleName));
 };
 
 /**
