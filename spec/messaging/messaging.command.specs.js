@@ -1,10 +1,11 @@
 describe('Messaging - Commands', function () {
-    var $command = hx.get('$command');
+    var $Command = hx.get('$Command');
     
     describe('Executing a command (low-level)', function () {
         beforeEach(function () {
-            $command.commandUrlTemplate = 'ExecuteCommand/{name}';
-            this.promise = $command.execute('My Command', {
+            $Command.urlTemplate = 'ExecuteCommand/{name}';
+
+            this.promise = $Command.execute('My Command', {
                 id: 3456
             });
 
@@ -43,9 +44,10 @@ describe('Messaging - Commands', function () {
             });
         });
     });
+
     describe('Manipulating a Command', function () {
         beforeEach(function () {
-            this.command = new $command.Command('My Command', {
+            this.command = new $Command('My Command', {
                 id: 3456,
                 name: 'My Name'
             });
@@ -72,9 +74,9 @@ describe('Messaging - Commands', function () {
 
     describe('Executing a Command', function () {
         beforeEach(function () {
-            $command.commandUrlTemplate = 'ExecuteCommand/{name}';
+            $Command.urlTemplate = 'ExecuteCommand/{name}';
 
-            this.command = new $command.Command('My Command', {
+            this.command = new $Command('My Command', {
                 id: ko.observable(3456).addValidationRules({
                     required: true
                 })
@@ -96,6 +98,7 @@ describe('Messaging - Commands', function () {
                     200, {
                         "Content-Type": "application/json"
                     }, '{ "resultProperty": 5}']);
+
                 this.server.respond();
             });
 
@@ -111,7 +114,34 @@ describe('Messaging - Commands', function () {
 
         describe('that succeeds', function () {
             beforeEach(function () {
+                this.succeededEventSpy = this.spy();
+                this.command.subscribe('succeeded', this.succeededEventSpy);
+
                 this.promise = this.command.execute();
+                this.promise.then(this.successCallback);
+                this.promise.fail(this.failureCallback);
+
+                this.server.respondWith("POST", "ExecuteCommand/My Command", [
+                    200, {
+                        "Content-Type": "application/json"
+                    }, '{ "resultProperty": 5}']);
+                this.server.respond();
+            });
+
+            it('should resolve the promise with the result, using URL with replaced name', function () {
+                expect(this.successCallback).toHaveBeenCalledWith({
+                    resultProperty: 5
+                });
+            });
+
+            it('should raise a succeeded event', function () {
+                expect(this.succeededEventSpy).toHaveBeenCalled();
+            });
+        });
+
+        describe('that is executed under a different context', function () {
+            beforeEach(function () {
+                this.promise = this.command.execute.call(this);
                 this.promise.then(this.successCallback);
                 this.promise.fail(this.failureCallback);
 
@@ -131,6 +161,9 @@ describe('Messaging - Commands', function () {
 
         describe('that fails', function () {
             beforeEach(function () {
+                this.failedEventSpy = this.spy();
+                this.command.subscribe('failed', this.failedEventSpy);
+
                 this.promise = this.command.execute();
                 
                 this.promise.then(this.successCallback);
@@ -145,6 +178,10 @@ describe('Messaging - Commands', function () {
 
             it('should reject the promise', function () {
                 expect(this.failureCallback).toHaveBeenCalled();
+            });
+
+            it('should raise a failed event', function () {
+                expect(this.failedEventSpy).toHaveBeenCalled();
             });
         });
     });
