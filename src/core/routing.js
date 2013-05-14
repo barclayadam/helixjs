@@ -114,26 +114,28 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location'], function ($bus, $log, $
     // root = '/';
 
     /**
-     * A route table that manages a number of routes, providing the ability
+     * A route table manages a number of routes, providing the ability
      * to get a route from a URL or creating a URL from a named route and
      * set of parameters.
+     *
+     * @class $RouteTable
      */
     function RouteTable() {
-        var _this = this;
+        var self = this;
         this._routes = {};
 
         // Handle messages that are raised by the location component
         // to indicate the URL has changed, that the user has navigated
         // to a new page (which is also raised on first load).
         $bus.subscribe('urlChanged:external', function (msg) {
-            var matchedRoute = _this.getRouteFromUrl(msg.url);
+            var matchedRoute = self.getRouteFromUrl(msg.url);
 
             if (!matchedRoute) {
                 $bus.publish('routeNotFound', {
                     url: msg.url
                 });
             } else {
-                _this._doNavigate(msg.url, matchedRoute.route, matchedRoute.parameters);
+                self._doNavigate(msg.url, matchedRoute.route, matchedRoute.parameters);
             }
         });
     }
@@ -165,6 +167,8 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location'], function ($bus, $log, $
      *
      * The URL *must* be a relative definition, the route table will
      * not take into account absolute URLs in any case.
+     *
+     * @member route
      */
     RouteTable.prototype.route = function (name, url, callbackOrOptions, options) {
         if (options == null) {
@@ -197,6 +201,8 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location'], function ($bus, $log, $
      * * /Contact Us/
      * * Contact Us/
      * * Contact Us
+     *
+     * @member getRouteFromUrl
      */
     RouteTable.prototype.getRouteFromUrl = function (url) {
         var match, matchedParams, name, path, r, _ref;
@@ -226,6 +232,8 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location'], function ($bus, $log, $
      * Gets the named route, or `undefined` if no such route
      * exists.
      *
+     * @member getNamedRoute
+     *
      * @param {string} name The name of the route to get
      */
     RouteTable.prototype.getNamedRoute = function (name) {
@@ -254,6 +262,8 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location'], function ($bus, $log, $
      * Builds a URL based on a named route and a set of parameters, or
      * `undefined` if no such route exists or the parameters do not
      * match.
+     *
+     * @member buildUrl
      */
     RouteTable.prototype.buildUrl = function (name, parameters) {
         var route = this.getNamedRoute(name),

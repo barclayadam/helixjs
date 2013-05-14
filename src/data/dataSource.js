@@ -1,5 +1,7 @@
 hx.provide('$DataSource', function() {
-    /** @class $DataSource */
+    /** 
+     * @class $DataSource 
+     */
     function DataSource(provider) {
         if(_.isFunction(provider)) {
             // Ensure if a function is supplied as a provider it conforms to
@@ -30,8 +32,6 @@ hx.provide('$DataSource', function() {
         this.$$parameters = {};
 
         /**
-         * @observable
-         *
          * Stores the data that has been loaded by this data source, which will be an array
          * of (optionally) mapped items.
          *
@@ -39,27 +39,32 @@ hx.provide('$DataSource', function() {
          * it is meant to be consumed outside of the data source as a simple array of objects,
          * other metadata such as total counts (when paging) are provided on the data source
          * instance. 
+         *
+         * @observable
+         * @property data
          */
         this.data = ko.observable();
 
         /**
-         * @observable
-         *
          * The total count of items, as set the last time this data source was loaded.
          *
          * If this data source has been paged then the totalCount represents the number
          * of items represented by the query, *before* paging, otherwise it is the same
          * as `data().length`.
+         *
+         * @observable
+         * @property totalCount
          */
         this.totalCount = ko.observable();
 
         /**
-         * @observable
-         *
          * The number of pages that are represented by the query this data source has been
          * configured for.
          *
-         * If no paging has been specified for this data source this value will be 1
+         * If no paging has been specified for this data source this value will be 1.
+         *
+         * @observable
+         * @property pageCount
          */
         this.pageCount = ko.observable();
     }
@@ -81,6 +86,7 @@ hx.provide('$DataSource', function() {
      * be called with a single parameter of an item (called once per item) and must return
      * a boolean value to indicate whether that item should be included in the result set.
      *
+     * @method where
      * @param {function} whereFn - The function applied to filter out results.
      * @return {DataSource} - Returns this data source, to allow chaining further calls.
      */
@@ -91,6 +97,7 @@ hx.provide('$DataSource', function() {
      * data source, to allow for arbritary options and parameters that providers
      * can decide what to do with at load time.
      *
+     * @method params
      * @param {object|observable<object>} params - The parameters to pass through.
      * @return {DataSource} - Returns this data source, to allow chaining further calls.
      */
@@ -100,6 +107,7 @@ hx.provide('$DataSource', function() {
      * A property that the data should be ordered by, as a string, or undefined to
      * remove any previous order by clause.
      *
+     * @method orderBy
      * @param {string} orderBy - The property to order the data by.
      * @return {DataSource} - Returns this data source, to allow chaining further calls.
      */
@@ -111,6 +119,7 @@ hx.provide('$DataSource', function() {
      * values of the grouped property being keys and the values being a list of
      * items within that group.
      *
+     * @method groupBy
      * @param {string} groupBy - The property to group results by, or undefined to remove
      *   any previous group by clauses.
      * @return {DataSource} - Returns this data source, to allow chaining further calls.
@@ -122,6 +131,7 @@ hx.provide('$DataSource', function() {
      * set of 100 and a parameter of 10, only 10 items will be stored within this
      * data source, starting at an offset specified by the {@link skip} property.
      *
+     * @method take
      * @param {integer} take - The number of items to be returned.
      * @return {DataSource} - Returns this data source, to allow chaining further calls.
      */
@@ -131,6 +141,7 @@ hx.provide('$DataSource', function() {
      * Specifies the number of items to skip from the start before returning any values. This
      * property, when combined with the {@link take} property can be used to implement paging.
      *
+     * @method skip
      * @param {integer} skip - The number of items to skip before returning data.
      * @return {DataSource} - Returns this data source, to allow chaining further calls.
      */
@@ -140,6 +151,7 @@ hx.provide('$DataSource', function() {
      * Specifies the page (1-based) of items to fetch from the dataSource, to be used in conjunction
      * with the {@link pageSize} option to provide paging semantics over the data from the provider.
      *
+     * @method page
      * @param {integer} page - The current page to retrieve.
      * @return {DataSource} - Returns this data source, to allow chaining further calls.
      */
@@ -148,6 +160,7 @@ hx.provide('$DataSource', function() {
     /**
      * Specifies the page size that should be fetched from the data provider.
      *
+     * @method pageSize
      * @param {integer} pageSize - The size of the page to retrieve
      * @return {DataSource} - Returns this data source, to allow chaining further calls.
      */
@@ -158,6 +171,7 @@ hx.provide('$DataSource', function() {
      * loaded to allow mapping from the raw data representation to another model more suited for
      * display and manipulation purposes.
      *
+     * @method map
      * @param {function} mapFn - The mapping function to use.
      * @return {DataSource} - Returns this data source, to allow chaining further calls.
      */
@@ -170,6 +184,8 @@ hx.provide('$DataSource', function() {
      * 
      * Once the load method has been called once any subsequent change that is detected 
      * in any properties that are observables.
+     *
+     * @method load
      */
     DataSource.prototype.load = function() {
         if(!this.$$initialisedProvider) {
@@ -214,6 +230,12 @@ hx.provide('$DataSource', function() {
     }
 
     return {
+        /**
+         * Creates a new $DataSource, using the given provider
+         *
+         * @method from
+         * @static
+         */
         from: function(provider) {
             return new DataSource(provider);
         }

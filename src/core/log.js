@@ -1,5 +1,8 @@
-/** @namespace $log */
-hx.singleton('$log', function() {
+/** 
+ * @class $Log 
+ * @static
+ */
+hx.singleton('$Log', function() {
     var console = window.console || {},
         logger = {
             enabled: false
@@ -15,47 +18,31 @@ hx.singleton('$log', function() {
     }
 
     /**
-     * @name debug
-     * @memberOf $log#
-     * @function
+     * Logs a debug-level message to the log.
      *
-     * @description
-     * Logs a debug-level message to the log
-     *
-     * @param {string[]} args The values to log
+     * @method debug
+     * @param {object} args* The values to log
      */
 
     /**
-     * @name info
-     * @memberOf $log#
-     * @function
+     * Logs a info-level message to the log.
      *
-     * @description
-     * Logs an info-level message to the log
-     *
-     * @param {string[]} args The values to log
+     * @method info
+     * @param {object} args* The values to log
      */
 
     /**
-     * @name warn
-     * @memberOf $log#
-     * @function
+     * Logs a warn-level message to the log.
      *
-     * @description
-     * Logs a warn-level message to the log
-     *
-     * @param {string[]} args The values to log
+     * @method warn
+     * @param {object} args* The values to log
      */
 
     /**
-     * @name error
-     * @memberOf $log#
-     * @function
+     * Logs a error-level message to the log.
      *
-     * @description
-     * Logs an error-level message to the log
-     *
-     * @param {string[]} args The values to log
+     * @method error
+     * @param {object} args* The values to log
      */
 
     'debug info warn error'.replace(/\w+/g, function (n) {        

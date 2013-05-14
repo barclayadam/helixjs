@@ -1,7 +1,24 @@
 /**
+ * Provides eventing / messaging semantics that is exposed as a global `$bus` module, in addition
+ * to being available as a mixin to provide local eventing semantics.
+ *
+ * If an object requires the ability to raise local events that can be subscribed to they
+ * should depend on an `$EventEmitter` and then uses its `mixin` function:
+ *
+ *     hx.provide('MyClass', ['$eventEmitter'], function($eventEmitter) {
+ *         function MyClass() {
+ *             $eventEmitter.mixin(this);
+ *         }
+ *
+ *         MyClass.prototype.doSomething = function(arg1, arg2) {
+ *             this.publish('anInterestingEvent', { arg1: arg1, arg2: arg2 });  
+ *         }    
+ *          
+ *          return MyClass;     
+ *     })
+ *
  * @class $EventEmitter
  */
-
 hx.provide('$EventEmitter', ['$log'], function($log) {
     var subscribers = {};
     
@@ -25,7 +42,7 @@ hx.provide('$EventEmitter', ['$log'], function($log) {
      * @param {function} callback The function to be executed when a message of
      * the specified name is published
      *
-     * @memberOf $EventBus#
+     * @method subscribe
      */
     function subscribe(messageName, callback) {
         if (_.isArray(messageName)) {
@@ -49,23 +66,22 @@ hx.provide('$EventEmitter', ['$log'], function($log) {
 
     /**
      * Publishes the given named message to any subscribed listeners, passing 
-     * the `messageData` argument on to each subscriber as an arguments to the 
+     * the `payload` argument on to each subscriber as an argument to the 
      * subscription call.
      * 
-     * (e.g. 
-     *   subscribe "My Event", (messageData) ->
-     *   publish   "My Event", messageData
-     * )
+     * @example 
+     *     myEventEmitter.subscribe("My Event", function (payload) {});
+     *     myEventEmitter.publish("My Event", { aProperty: 'A Value' });
      * 
      * @param {string} messageName The name of the message to publish
-     * @param {object} args The arguments that should be passed to any subscribers
+     * @param {object} payload The message payload that should be passed to any subscribers
      *
-     * @memberOf $EventBus#
-    */
-    function publish(messageName, args) {
-        if (args == null) { args = {}; }
+     * @method publish
+     */
+    function publish(messageName, payload) {
+        if (payload == null) { payload = {}; }
 
-        $log.debug("Publishing " + messageName, args);
+        $log.debug("Publishing " + messageName, payload);
         
         var indexOfSeparator = -1,
             messages = [messageName];
@@ -81,7 +97,7 @@ hx.provide('$EventEmitter', ['$log'], function($log) {
             for (var token in subscriberList) {
                 if (token != 'length') {
                     subscriber = subscriberList[token];
-                    subscriber.call(this, args);
+                    subscriber.call(this, payload);
                 }
             }
         }
@@ -92,6 +108,15 @@ hx.provide('$EventEmitter', ['$log'], function($log) {
         subscribe: subscribe,
         publish: publish,
 
+        /**
+         * Mixes in a `subscribe` method to the specified object, which will
+         * allow clients to subscribe to events that are subsequently published to
+         * this instance of an event emitter.
+         * 
+         * @param {object} obj The method to mixin the subscribe method to
+         *
+         * @method mixin
+         */
         mixin: function(obj) {
             obj.subscribe = subscribe
         }

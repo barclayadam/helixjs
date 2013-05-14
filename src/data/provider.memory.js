@@ -1,5 +1,7 @@
 hx.provide('$InMemoryProvider', function() {
-    /** @class $InMemoryProvider */
+    /** 
+     * @class $InMemoryProvider 
+     */
     function $InMemoryProvider(options) {
         this.options = options;
     }
@@ -23,6 +25,8 @@ hx.provide('$InMemoryProvider', function() {
      * Initialises this provider by setting up auto-load that requests
      * a data load from the dataSource if the data this provider
      * represents is updated (assuming it is observable).
+     *
+     * @method initialise
      */
     $InMemoryProvider.prototype.initialise = function(dataSource) {
         if(ko.isObservable(this.options.data)){

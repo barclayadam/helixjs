@@ -1,15 +1,15 @@
-/** @namespace $notifier */
-hx.singleton('$notifier', '$bus', function($bus) {
+/**
+ * @class $Notifier
+ * @static
+ */
+hx.singleton('$Notifier', '$bus', function($bus) {
     var notifications = {};
 
     /**
-     * @name success
-     * @memberOf $notifier#
-     * @function
-     *
-     * @description
      * Raises a success level notification
      *
+     * @member success
+
      * @param {string} text The text to include in the notification
      * @param {object} options Options to pass as part of the notification, free-form
      *
@@ -17,13 +17,10 @@ hx.singleton('$notifier', '$bus', function($bus) {
      */
 
     /**
-     * @name warning
-     * @memberOf $notifier#
-     * @function
-     *
-     * @description
      * Raises a warning level notification
      *
+     * @member warning
+
      * @param {string} text The text to include in the notification
      * @param {object} options Options to pass as part of the notification, free-form
      *
@@ -31,13 +28,10 @@ hx.singleton('$notifier', '$bus', function($bus) {
      */
 
     /**
-     * @name error
-     * @memberOf $notifier#
-     * @function
-     *
-     * @description
      * Raises an error level notification
      *
+     * @member error
+
      * @param {string} text The text to include in the notification
      * @param {object} options Options to pass as part of the notification, free-form
      *
@@ -62,16 +56,12 @@ hx.singleton('$notifier', '$bus', function($bus) {
     });
 
     /**
-     * @name send
-     * @memberOf $notifier#
-     * @function
-     *
-     * @description
-     *
      * Raises a notification message, a message that can be standardised across
      * an application to provide a standard means of displaying notifications to
      * the user, for example to indicate a remote operation has succeeded or
      * failed.
+
+     * @member send
      *
      * @param {string} level The level of the notification (e.g. success, or warning)
      * @param {string} text The text to include in the notification

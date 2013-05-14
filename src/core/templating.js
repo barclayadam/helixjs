@@ -2,9 +2,11 @@ hx.singleton('$templating', ['$ajax'], function($ajax) {
     var templating = {};
 
     /**
-      A `template source` that will use the `hx.templating.templates` object
-      as storage of a named template.
-    */
+     * A `template source` that will use the `hx.templating.templates` object
+     * as storage of a named template.
+     *
+     * @class StringTemplateSource
+     */
     function StringTemplateSource(templateName) {
         this.templateName = templateName;
     }

@@ -1,4 +1,7 @@
-/** @namespace */
+/** 
+ * @class utils 
+ * @static
+ */
 hx.utils = {
     toTitleCase: function (str) {
         if (str != null) {
@@ -76,6 +79,11 @@ hx.utils = {
      * * If `value` is already an observable (`ko.isObservable`), return it directly
      * * If `value` is an array, return a `ko.observableArray` initialised with the value
      * * For all other cases (including `undefined` or `null` values) return a `ko.observable` initialised with the value
+     *
+     * @method asObservable
+     * @static
+     *
+     * @param {any} value The value to be converted to an observable
      */
     asObservable: function (value) {
         if (ko.isObservable(value)) {
@@ -97,7 +105,11 @@ hx.utils = {
      * handle both a static return value and promise-based returns, and returning
      * existing promises / deferred as-is.
      *
+     * @method asPromise
+     * @static
+     *
      * @param {any} value - The value to convert to a promise.
+     *
      * @return {promise} - A promise, either the one passed in or an already resolved one
      *  that has been resolved with the given static value
      */

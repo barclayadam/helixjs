@@ -78,6 +78,11 @@ module.exports = function (grunt) {
             serve: {
                 files: ['src/**/*.*', 'spec/**/*.*'],
                 tasks: ['rig', 'livereload']
+            },
+
+            docs: {
+                files: ['src/**/*.*'],
+                tasks: ['yuidoc']
             }
         },
 

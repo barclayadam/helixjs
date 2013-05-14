@@ -1,5 +1,7 @@
 hx.provide('$OdataProvider', ['$ajax'], function($ajax) {
-    /** @class $OdataProvider */
+    /**
+     * @class $OdataProvider 
+     */
     function $OdataProvider(options) {
         this.options = options;
     }
@@ -55,7 +57,8 @@ hx.provide('$OdataProvider', ['$ajax'], function($ajax) {
      * If an OData-formatted result set is not returned then no processing will occur, allowing an 
      * endpoint to accept OData querying abilities without conforming to the complete OData protocol.
      *
-     * @param {Mixed} result The result to be processed
+     * @method processResult
+     * @param {mixed} result The result to be processed
      * @param {object} loadOptions The options used to generate the given result, ignored.
      */
     $OdataProvider.prototype.processResult = function(result, loadOptions) {

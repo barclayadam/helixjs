@@ -52,11 +52,11 @@
     };
 
     /**
-     * An injector provides very simply IoC semantics that allow for the registering of
+     * An injector provides simple IoC semantics that allow for the registering of
      * 'modules', such that these moduels can be dependended on my other modules and they
      * will be injected as dependencies when that module is created.
      *
-     * @constructor
+     * @class hx.Injector
      */
     hx.Injector = function() {
         this.modules = {};
@@ -88,9 +88,10 @@
      *
      * If a module is defined as having dependencies, by passing in an array of modules names as
      * the second parameter, then when this module is `created` those modules will be created and passed
-     * to the modules `creator` function in the order of the dependencies. Note that dependencies
-     * will be added to the `creator` as a property using the key `$dependencies$.
-     *
+     * to the modules `creator` function in the order of the dependencies. 
+     * 
+     * @method provide
+
      * @param {string} name - The name of the module
      * @param {array|object|function} - An array of dependencies, or the creator of this module, 
      *   either a singleton object or a function
@@ -118,6 +119,8 @@
      * Registers a 'singleton', a module that will be created once on the first creation ({@link injector.create}),
      * and then have its return value subsequently returned on all further creations.
      *
+     * @method singleton
+     *
      * @param {string} name - The name of the module
      * @param {array|object|function} - An array of dependencies, or the creator of this module, 
      *   either a singleton object or a function
@@ -142,6 +145,8 @@
     /**
      * Creates a module given the specified module name, throwing an error in the case that
      * no such module has been previously registered.
+     *
+     * @method get
      *
      * @param {string} moduleName - A named module to create
      */
