@@ -26,7 +26,7 @@ describe('region manager', function () {
             expect(document.getElementById("my-main-region").tagName.toLowerCase()).toEqual("div");
         });
 
-        it('should place no content in region if no view model has been set ', function () {
+        it('should place no content in region if no view model has been set', function () {
             expect(document.getElementById("my-main-region")).toBeEmpty();
         });
 
@@ -97,12 +97,12 @@ describe('region manager', function () {
             expect(document.getElementById("help")).toExist();
         });
 
-        it('should place no content in regions if no view model has been set ', function () {
+        it('should place no content in regions if no view model has been set', function () {
             expect(document.getElementById("main")).toBeEmpty();
             expect(document.getElementById("help")).toBeEmpty();
         });
 
-        describe('show', function () {
+        describe('showSingle', function () {
             beforeEach(function () {
                 $templating.set('myViewModelTemplateName', 'This is the main template');
 
@@ -110,7 +110,22 @@ describe('region manager', function () {
                     templateName: 'myViewModelTemplateName'
                 };
 
-                this.regionManager.showSingle(this.viewModel);            });
+                this.regionManager.showSingle(this.viewModel);
+            });
+
+            it('should set the view model to the default region', function () {
+                expect(document.getElementById("main")).toHaveText('This is the main template');
+            });
+        });
+
+        describe('showSingle - with IoC-provided viewModel', function () {
+            beforeEach(function () {
+                $templating.set('myViewModelTemplateName', 'This is the main template');
+
+                hx.provide('myViewModel', { templateName: 'myViewModelTemplateName' })
+
+                this.regionManager.showSingle('myViewModel');
+            });
 
             it('should set the view model to the default region', function () {
                 expect(document.getElementById("main")).toHaveText('This is the main template');

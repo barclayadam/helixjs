@@ -189,10 +189,10 @@
      * adding a data-default="true" attribute on the region.
      */
     hx.config(['$log', '$ajax', '$injector'], function($log, $ajax, $injector) {
-        function getViewModel(valueAccessor) {
-            var viewModel = ko.utils.unwrapObservable(valueAccessor());
+        function getViewModel(viewModelOrName) {
+            viewModelOrName = ko.utils.unwrapObservable(viewModelOrName);
 
-            return _.isString(viewModel) ? $injector.get(viewModel) : viewModel;
+            return _.isString(viewModelOrName) ? $injector.get(viewModelOrName) : viewModelOrName;
         }
 
         function createTemplateValueAccessor(viewModel) {
@@ -209,7 +209,7 @@
 
             init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
                 var regionManager = bindingContext[regionManagerContextKey],
-                    viewModel = getViewModel(valueAccessor),
+                    viewModel = getViewModel(valueAccessor()),
                     templateValueAccessor = createTemplateValueAccessor(viewModel),
                     regionId = element.id || 'main';
 
@@ -226,15 +226,16 @@
             update: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
                 var deferred, lastViewModel, regionViewModel,
                     regionManager = bindingContext[regionManagerContextKey],
-                    regionId = element.id || 'main';
+                    regionId = element.id || 'main',
+                    viewModelName = valueAccessor();
 
                 if(regionManager) {
                     $log.debug('Getting view model from the "' + regionId + '" region from parent region manager to render.');
-                    regionViewModel = regionManager.get(element.id || 'main');
-                } else {
-                    $log.debug('Getting view model with module name "' + valueAccessor() + '"');
-                    regionViewModel = getViewModel(valueAccessor);
-                }
+                    viewModelName = regionManager.get(element.id || 'main');
+                } 
+                
+                $log.debug('Getting view model with module name "' + viewModelName + '"');
+                regionViewModel = getViewModel(viewModelName);
 
                 if (!regionViewModel) {
                     $log.info('Cannot find region view model.')
