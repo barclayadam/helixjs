@@ -17,7 +17,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-livereload');
     grunt.loadNpmTasks('grunt-contrib-connect');
-    grunt.loadNpmTasks('grunt-jsdoc');
+    grunt.loadNpmTasks('grunt-contrib-yuidoc');
 
     grunt.loadNpmTasks('grunt-regarde');
     grunt.loadNpmTasks('grunt-saucelabs');
@@ -34,12 +34,16 @@ module.exports = function (grunt) {
                     '*/\n'
         },
 
-        jsdoc : {
+        yuidoc : {
             dist : {
-                src: ['src/**/*.js'], 
+                name: '<%= pkg.name %>',
+                description: '<%= pkg.description %>',
+                version: '<%= pkg.version %>',
+                url: '<%= pkg.homepage %>',
 
                 options: {
-                    destination: 'doc'
+                    paths: 'src/', 
+                    outdir: 'docs/'
                 }
             }
         },
