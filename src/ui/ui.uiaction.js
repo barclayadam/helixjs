@@ -104,13 +104,28 @@ hx.UiAction = function (funcOrOptions) {
  * of the ui action's enabled observable. If the action is enabled then no
  * attribute will be set, if disabled the 'disabled' attribute will have its
  * set to 'disabled', which can be targetted by CSS by using attribute selectors
- * (e.g. a[disabled] { color: red; })
+ * (e.g. a[disabled] { color: red; }).
+ *
+ * The default behaviour of just adding the disabled attribute can be supplemented
+ * with the ability to hide the element when it is no longer enabled (setting the CSS
+ * `display` property to `none`) by adding another bindingHandler of `onDisabled` with
+ * an argument of `'hide'`:
+ *
+ * @example
+ *     <a id='action-link' data-bind='action: action, onDisabled: "hide"'>Execute Action</a>
  */
 koBindingHandlers.action = {
-    init: function(element, valueAccessor) {
+    init: function(element, valueAccessor, allBindingsAccessor) {
+        var shouldHide = allBindingsAccessor()['onDisabled'] === 'hide';
+
         ko.utils.registerEventHandler(element, 'click', function() {
             valueAccessor().execute();
         })
+
+        if(shouldHide) {
+            ko.utils.domData.set(element, '__original_display', element.style.display);
+        }
+
     },
 
     update: function(element, valueAccessor, allBindingsAccessor) {
@@ -126,9 +141,8 @@ koBindingHandlers.action = {
 
         if(shouldHide) {
             if(isEnabled) {
-                element.style.display = ko.utils.domData.get(element, '__old_display') || '';
+                element.style.display = ko.utils.domData.get(element, '__original_display') || '';
             } else {
-                ko.utils.domData.set(element, '__old_display', element.style.display);
                 element.style.display = "none";
             }
         } 

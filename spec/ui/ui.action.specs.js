@@ -82,6 +82,20 @@ describe('action binding handler', function() {
                 // When no styling originally applied, display property would be empty
                 expect(document.getElementById('action-link').style.display).toEqual("");
             })
+
+            it('should set display attribute back to original when updated multiple times with enabled == false, then re-enabled', function() {
+                this.enabled(false)
+                // Force an update. This scenario happens with computed that depend on multiple items, 
+                // so even though the value does not change on multiple executions subscribers are
+                // still notified
+                this.enabled.valueHasMutated()
+                this.enabled(true)
+
+                expect(document.getElementById('action-link')).not.toBeHidden()
+
+                // When no styling originally applied, display property would be empty
+                expect(document.getElementById('action-link').style.display).toEqual("");
+            })
         })
     })
 
