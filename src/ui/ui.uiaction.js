@@ -5,7 +5,7 @@
  *
  * A UI action provides a number of benefits over just a simple function:
  *
- * * An action can have an associated 'enabled' status that determines whether an action
+ * * An action can have an associated `enabled` status that determines whether an action
  *   will be executed or not without having to wire this functionality in everytime. The
  *   `action` binding handler will automatically apply attributes to the attached element
  *   to allow UI feedback on the enabled status.
@@ -14,10 +14,11 @@
  *   shown to the user visually as an `executing` observable exists that keeps track of
  *   the execution status of the action.
  *
- * A UI action can mark itself as a 'disableDuringExecution' action, meaning that if the
+ * A UI action can mark itself as a `disableDuringExecution` action, meaning that if the
  * action is asynchrounous the user can not execute the action multiple times in parallel,
  * which is particularly useful when submitting forms to the server.
  *
+ * @class UiAction
  * @constructor
  *
  * @param {object|function} funcOrOptions - The function to execute, or an options object
@@ -26,6 +27,8 @@
  *    be used to determine whether this action is enabled or not
  * @param {bool} funcOrOptions.disableDuringExecution - Determines whether or not
  *    to disable this action during execution, default to `true`
+ * @param {any} funcOrOptions.context - The context (`this` value) the enabled (if supplied) and 
+ * action functions will be bound to.
  */
 hx.UiAction = function (funcOrOptions) {
     var action, disableDuringExecution, enabled, executing;
@@ -44,7 +47,10 @@ hx.UiAction = function (funcOrOptions) {
      * Determines whether or not this action is enabled, that when {@link execute} is called
      * it will be executed. 
      *
-     * @type {observable<bool>}
+     * @property enabled
+     * @type bool
+     * @default true
+     * @observable
      */
     this.enabled = enabled;
 
@@ -53,7 +59,9 @@ hx.UiAction = function (funcOrOptions) {
      * action to be able to provide feedback to the user and to stop them attempting to execute
      * this action again.
      *
-     * @type {observable<bool>}
+     * @property executing
+     * @type bool
+     * @observable
      */
     this.executing = ko.observable(false);
 
@@ -62,13 +70,16 @@ hx.UiAction = function (funcOrOptions) {
      * executing the action again during an execution (async) will result in no processing
      * and an immediate return.
      *
-     * @type {bool}
+     * @property disableDuringExecution
+     * @type bool
+     * @default false
      */
     this.disableDuringExecution = disableDuringExecution;
 
     /**
      * Executes this UiAction.
      *
+     * @method execute
      * @return {any} The result of executing this action
      */
     this.execute = function () {
