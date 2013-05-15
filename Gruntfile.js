@@ -30,7 +30,7 @@ module.exports = function (grunt) {
                     ' <%= pkg.name %> - v<%= pkg.version %>\n' +
                     ' Copyright (c) <%= grunt.template.today("yyyy") %> Adam Barclay.\n' + 
                     ' Distributed under MIT license\n' + 
-                    ' http://github.com/barclayadam/HelixJS\n' +
+                    ' https://github.com/barclayadam/helixjs\n' +
                     '*/\n'
         },
 
@@ -40,8 +40,10 @@ module.exports = function (grunt) {
                 description: '<%= pkg.description %>',
                 version: '<%= pkg.version %>',
                 url: '<%= pkg.homepage %>',
+                logo: 'http://www.helixjs.org/images/logo-small.png',
 
                 options: {
+                    linkNatives: true,
                     paths: 'src/', 
                     outdir: 'docs/'
                 }

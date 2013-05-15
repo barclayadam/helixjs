@@ -2,7 +2,7 @@
   "name": "HelixJS",
   "description": "Lightning-fast web development with knockout.js at its core.",
   "version": "0.0.1",
-  "homepage": "https://github.com/barclayadam/HelixJS",
+  "homepage": "https://github.com/barclayadam/helixjs",
   "keywords": [
     "knockout",
     "plugin",
@@ -15,7 +15,7 @@
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/barclayadam/HelixJS/blob/master/license.txt"
+      "url": "https://github.com/barclayadam/helixjs/blob/master/license.txt"
     }
   ],
   "author": {
@@ -23,13 +23,13 @@
     "email": "barclay.adam@gmail.com"
   },
   "bugs": {
-    "web": "https://github.com/barclayadam/HelixJS/issues"
+    "web": "https://github.com/barclayadam/helixjs/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/barclayadam/HelixJS.git"
+    "url": "https://github.com/barclayadam/helixjs.git"
   },
-  "github": "https://github.com/barclayadam/HelixJS",
+  "github": "https://github.com/barclayadam/helixjs",
   "scripts": {
     "start": "grunt",
     "test": "grunt test"
