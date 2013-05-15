@@ -50,6 +50,39 @@ describe('UIAction', function () {
         });
     })
 
+    describe('basic action with context provide', function () {
+        beforeEach(function () {
+            this.context = { aProperty: 'A value' };
+            this.contextsRecorded = contextsRecorded = {};
+
+            this.actionOptions = {
+                enabled: function() {
+                    contextsRecorded['enabled'] = this;
+
+                    return true
+                },
+
+                action: function() {
+                    contextsRecorded['action'] = this;
+                },
+
+                context: this.context
+            };
+
+            this.action = new hx.UiAction(this.actionOptions);
+            this.action.execute();
+        });
+
+        it('should call enabled function with context set', function () {
+            expect(this.contextsRecorded['enabled']).toBe(this.context);
+        });
+
+        it('should call action function with context set', function () {
+            expect(this.contextsRecorded['action']).toBe(this.context);
+        });
+    })
+
+
     describe('basic action with enabled observable passed', function () {
         beforeEach(function () {
             var _this = this;

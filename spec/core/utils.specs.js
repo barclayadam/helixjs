@@ -107,6 +107,17 @@ describe('utils', function () {
             expect(converted).toBeObservable();
             expect(converted).toEqual(rawValue);
         });
+
+        it('should use context if given a function', function () {
+            var context = { prop: 'value' },
+                recordedContext,
+                rawValue = function () { recordedContext = this; return "hello"; },
+                converted = hx.utils.asObservable(rawValue, context);
+
+            expect(converted).toBeObservable();
+            expect(converted()).toEqual("hello");
+            expect(recordedContext).toBe(context);
+        });
     });
 
     describe('When converting to a promise', function() {

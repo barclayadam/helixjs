@@ -35,7 +35,7 @@ hx.UiAction = function (funcOrOptions) {
         action = funcOrOptions;
         disableDuringExecution = false;
     } else {
-        enabled = hx.utils.asObservable(funcOrOptions.enabled != null ? funcOrOptions.enabled : true);
+        enabled = hx.utils.asObservable(funcOrOptions.enabled != null ? funcOrOptions.enabled : true, funcOrOptions.context || this);
         disableDuringExecution = funcOrOptions.disableDuringExecution != null ? funcOrOptions.disableDuringExecution : false;
         action = funcOrOptions.action;
     }
@@ -77,7 +77,7 @@ hx.UiAction = function (funcOrOptions) {
         if (this.enabled() && (!this.disableDuringExecution || !this.executing())) {
             this.executing(true);
 
-            ret = action.apply(this, arguments);
+            ret = action.apply(funcOrOptions.context || this, arguments);
 
             hx.utils.asPromise(ret).then(function () {
                 self.executing(false);

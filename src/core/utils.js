@@ -85,7 +85,7 @@ hx.utils = {
      *
      * @param {any} value The value to be converted to an observable
      */
-    asObservable: function (value) {
+    asObservable: function (value, context) {
         if (ko.isObservable(value)) {
             return value;
         }
@@ -93,7 +93,7 @@ hx.utils = {
         if (_.isArray(value)) {
             return ko.observableArray(value);
         } else if (_.isFunction(value)) {
-            return ko.computed(value);
+            return ko.computed(value.bind(context || this));
         } else {
             return ko.observable(value);
         }
