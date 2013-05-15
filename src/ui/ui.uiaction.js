@@ -113,15 +113,25 @@ koBindingHandlers.action = {
         })
     },
 
-    update: function(element, valueAccessor) {
+    update: function(element, valueAccessor, allBindingsAccessor) {
         var isEnabled = valueAccessor().enabled(),
-            isExecuting = valueAccessor().executing();
+            isExecuting = valueAccessor().executing(),
+            shouldHide = allBindingsAccessor()['onDisabled'] === 'hide';
 
         if(isEnabled) {
             element.removeAttribute('disabled');
         } else {
             element.setAttribute('disabled', 'disabled')
         }
+
+        if(shouldHide) {
+            if(isEnabled) {
+                element.style.display = ko.utils.domData.get(element, '__old_display') || '';
+            } else {
+                ko.utils.domData.set(element, '__old_display', element.style.display);
+                element.style.display = "none";
+            }
+        } 
 
         ko.utils.toggleDomNodeCssClass(element, 'is-executing', isExecuting);
     }

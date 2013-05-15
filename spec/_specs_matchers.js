@@ -56,6 +56,10 @@ beforeEach(function () {
 
         toBeDisabled: function() {
             return this.actual.disabled === true || this.actual.getAttribute('disabled') == 'disabled';
+        },
+
+        toBeHidden: function() {
+            return this.actual.style.display == 'none';
         }
     });
 });
