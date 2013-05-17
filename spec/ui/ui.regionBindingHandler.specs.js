@@ -265,5 +265,41 @@ describe('region binding handler', function () {
                 expect(this.hideThisContextValue).toEqual(this.viewModelOne);
             });            
         });
+
+        describe('view model that updates observables in lifecycle methods', function () {
+            beforeEach(function () {
+                $templating.set('myNamedPartTemplate', 'This is the template');
+
+                this.showObservable = showObservable = ko.observable();
+                this.afterShowObservable = afterShowObservable = ko.observable();
+
+                this.viewModel = {
+                    show: this.spy(function() {
+                        // Attach dependency
+                        showObservable();
+                    }),
+
+                    afterShow: this.spy(function() {
+                        // Attach dependency
+                        afterShowObservable();
+                    })
+                };
+
+                this.setHtmlFixture("<div id=\"fixture\" data-bind=\"region: viewModel\"></div>");
+                this.applyBindingsToFixture({ viewModel: this.viewModel });
+            });
+
+            it('should not re-render when observable in "show" method is updated', function () {
+                this.showObservable('A new value');
+
+                expect(this.viewModel.show).toHaveBeenCalledOnce()
+            });
+
+            it('should not re-render when observable in "afterShow" method is updated', function () {
+                this.afterShowObservable('A new value');
+
+                expect(this.viewModel.afterShow).toHaveBeenCalledOnce()
+            });
+        });
     });
 });

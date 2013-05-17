@@ -242,43 +242,45 @@
                     return;
                 }
 
-                lastViewModel = ko.utils.domData.get(element, '__region__currentViewModel');
+                ko.dependencyDetection.ignore(function() {
+                    lastViewModel = ko.utils.domData.get(element, '__region__currentViewModel');
 
-                if (lastViewModel && lastViewModel.hide) {
-                    lastViewModel.hide.apply(lastViewModel);
-                }
-
-                deferred = new $.Deferred();
-
-                if (regionViewModel.beforeShow != null) {                
-                    regionViewModel.beforeShow.apply(regionViewModel);
-                }
-
-                if (regionViewModel.show != null) {
-                    deferred = $ajax.listen(function() {
-                        regionViewModel.show.apply(regionViewModel);
-                    });
-                } else {
-                    // Resolve immediately, nothing to wait for
-                    deferred.resolve();
-                }
-
-                deferred.done(function () {
-                    var templateValueAccessor = createTemplateValueAccessor(regionViewModel),
-                        innerBindingContext = bindingContext.extend();
-
-                    // Children should not inherit the region manager - else any child regions will attempt to register
-                    // with it.
-                    innerBindingContext[regionManagerContextKey] = null;
-
-                    koBindingHandlers.template.update(element, templateValueAccessor, allBindingsAccessor, viewModel, innerBindingContext);
-
-                    if (regionViewModel.afterShow != null) {
-                        regionViewModel.afterShow.apply(regionViewModel);
+                    if (lastViewModel && lastViewModel.hide) {
+                        lastViewModel.hide.apply(lastViewModel);
                     }
 
-                    ko.utils.domData.set(element, '__region__currentViewModel', regionViewModel);
-                });
+                    deferred = new $.Deferred();
+
+                    if (regionViewModel.beforeShow != null) {                
+                        regionViewModel.beforeShow.apply(regionViewModel);
+                    }
+
+                    if (regionViewModel.show != null) {
+                        deferred = $ajax.listen(function() {
+                            regionViewModel.show.apply(regionViewModel);
+                        });
+                    } else {
+                        // Resolve immediately, nothing to wait for
+                        deferred.resolve();
+                    }
+
+                    deferred.done(function () {
+                        var templateValueAccessor = createTemplateValueAccessor(regionViewModel),
+                            innerBindingContext = bindingContext.extend();
+
+                        // Children should not inherit the region manager - else any child regions will attempt to register
+                        // with it.
+                        innerBindingContext[regionManagerContextKey] = null;
+
+                        koBindingHandlers.template.update(element, templateValueAccessor, allBindingsAccessor, viewModel, innerBindingContext);
+
+                        if (regionViewModel.afterShow != null) {
+                            regionViewModel.afterShow.apply(regionViewModel);
+                        }
+
+                        ko.utils.domData.set(element, '__region__currentViewModel', regionViewModel);
+                    });
+                })
             }
         };
     });
