@@ -216,6 +216,7 @@ hx.validation.rules = rules = {
             return "This field must be on or before " + options[0];
         }
     },
+    
     minDate: {
         validator: function (value, options) {
             return (emptyValue(value)) || (parseDate(value) >= parseDate(options));

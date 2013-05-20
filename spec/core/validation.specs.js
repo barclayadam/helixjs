@@ -49,13 +49,33 @@ describe('validation', function () {
                 beforeEach(function () {
                     this.property('My Required Value');
                 });
+
                 it('should remove any errors to the errors property', function () {
                     expect(this.property.errors().length).toEqual(0);
                 });
+
                 it('should mark the property as valid', function () {
                     expect(this.property.isValid()).toEqual(true);
                 });
             });
+        });
+    });
+
+    describe('when observable wrapped in another observable', function () {
+        beforeEach(function() {
+            this.property = ko.observable();
+            this.property.addValidationRules({
+                equalTo: 'value' // Pick a validator that depends on the 'real' value
+            });
+        })
+
+        it('should add an isValid observable immediately set to correct state by unwrapping all children of observable', function () {
+            var setObservableAsValue = function () {
+                debugger
+                this.property(ko.observable('value'))
+            }.bind(this);
+
+            expect(setObservableAsValue).toThrow('Cannot set an observable value as the value of a validated observable');
         });
     });
 

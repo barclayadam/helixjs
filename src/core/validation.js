@@ -71,7 +71,7 @@ function validateModel (model) {
         // Need to ensure that children are also validated, either
         // child properties (this is a 'model'), or an array (which
         // may also have its own validation rules).
-        while(ko.isObservable(model)) {
+        while (ko.isObservable(model)) {
           model = model.peek();
         }
         
@@ -254,6 +254,10 @@ ko.extenders.validationRules = function (target, validationRules) {
     target.serverErrors = ko.observable([]);
     
     function validate () {
+        if (ko.isObservable(target.peek())) {
+            throw new Error('Cannot set an observable value as the value of a validated observable');
+        }
+
         // When this value is changed the server errors will be removed, as
         // there would be no way to identify whether they were still accurate
         // or not until re-submitted, so for user-experience purposes these
