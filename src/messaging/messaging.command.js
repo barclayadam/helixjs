@@ -30,16 +30,16 @@ hx.singleton('$Command', ['$log', '$ajax', '$EventEmitterFactory'], function($lo
         this.validate();
 
         if (this.isValid()) {
-            this.$publish('submitting');
+            this.$publish('submitting', { command: this });
 
             var executionPromise = Command.execute(this.__name, this);
 
-            executionPromise.then(function() {
-                this.$publish('succeeded');
+            executionPromise.then(function(data) {
+                this.$publish('succeeded', { command: this, data: data });
             }.bind(this));
 
-            executionPromise.fail(function() {
-                this.$publish('failed');
+            executionPromise.fail(function(data) {
+                this.$publish('failed', { command: this, data: data });
             }.bind(this));
 
             return executionPromise;
