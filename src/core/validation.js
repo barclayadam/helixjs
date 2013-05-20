@@ -59,8 +59,8 @@ function getErrors (observableValue) {
 // If the model has `validationRules` defined (e.g. a `validatable` observable) 
 // will validate those values.
 function validateModel (model) {
-    var item, propName, propValue, unwrapped, valid, _i, _len;
-    valid = true;
+    var valid = true;
+
     if (model != null) {
         // We have reached a property that has been marked as `validatable`
         if ((model.validate != null) && (model.validationRules != null)) {
@@ -71,30 +71,27 @@ function validateModel (model) {
         // Need to ensure that children are also validated, either
         // child properties (this is a 'model'), or an array (which
         // may also have its own validation rules).
-        if (ko.isObservable(model)) {
-            unwrapped = model.peek();
-        } else {
-            unwrapped = model;
+        while(ko.isObservable(model)) {
+          model = model.peek();
         }
         
-        if (_.isObject(unwrapped)) {
-            for (propName in unwrapped) {
-                if (!__hasProp.call(unwrapped, propName)) continue;
+        if (_.isObject(model)) {
+            for (var propName in model) {
+                if (!__hasProp.call(model, propName)) continue;
 
-                propValue = unwrapped[propName];
-                valid = (validateModel(propValue)) && valid;
+                valid = (validateModel(model[propName])) && valid;
             }
         }
 
-        if (_.isArray(unwrapped)) {
-            for (_i = 0, _len = unwrapped.length; _i < _len; _i++) {
-                item = unwrapped[_i];
-                valid = (validateModel(item)) && valid;
+        if (_.isArray(model)) {
+            for (var i = 0; i < model.length; i++) {
+                valid = (validateModel(model[i])) && valid;
             }
         }
     }
+    
     return valid;
-};
+}
 
 /**
  Exposed as `hx.validation.mixin`

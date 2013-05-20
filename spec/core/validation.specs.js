@@ -141,6 +141,26 @@ describe('validation', function () {
                 return model;
             };
 
+            describe('when observable wrapped in another observable', function () {
+                beforeEach(function() {
+                    this.realProperty = ko.observable().addValidationRules({
+                            required: true,
+                            requiredMessage: 'This is a custom message'
+                        });
+
+                    this.model = {
+                        wrapper: ko.observable(this.realProperty)
+                    };
+
+                    hx.validation.mixin(this.model);
+                    this.model.validate();
+                })
+
+                it('should keep unwrapping until reaches real observable value', function() {
+                    expect(this.realProperty.isValid()).toBe(false)
+                })
+            });
+
             describe('when all properties are valid', function () {
                 beforeEach(function () {
                     this.model = createModel({
