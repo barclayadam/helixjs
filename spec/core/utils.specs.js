@@ -29,6 +29,36 @@ describe('utils', function () {
         });
     });
 
+    describe('When converting to camel case', function () {
+        it('should handle non-string values by calling toString', function () {
+            expect(hx.utils.toCamelCase(void 0, false)).toBeUndefined();
+        });
+
+        it('should uppercase the first character of subsequent words in the string', function () {
+            expect(hx.utils.toCamelCase('myElephant', false)).toEqual('myElephant');
+        });
+
+        it('should handle long strings', function () {
+            expect(hx.utils.toCamelCase('ThisIsMyVeryLargeVIPElephant', false)).toEqual('thisIsMyVeryLargeVIPElephant');
+        });
+
+        it('should keep acronyms upper cased', function () {
+            expect(hx.utils.toCamelCase('MyVIPElephant', false)).toEqual('myVIPElephant');
+        });
+
+        it('should split numbers from words', function () {
+            expect(hx.utils.toCamelCase('AddressLine1', false)).toEqual('addressLine1');
+        });
+
+        it('should handle multiple acronyms', function () {
+            expect(hx.utils.toCamelCase('My PIN Number hasLeakedOMG', false)).toEqual('my PIN Number HasLeakedOMG');
+        });
+
+        it('should convert words as part of a larger sentence', function () {
+            expect(hx.utils.toCamelCase('This is MY VeryLargeVIPElephant', false)).toEqual('this Is MY VeryLargeVIPElephant');
+        });
+    });
+
     describe('When converting to sentence case', function () {
         it('should return undefined for an undefined value being passed', function () {
             expect(hx.utils.toSentenceCase(void 0)).toBeUndefined();

@@ -3,8 +3,10 @@
  * @static
  */
 hx.utils = {
-    toTitleCase: function (str) {
+    toTitleCase: function (str, insertSpaces) {
         if (str != null) {
+            var spaceDelimiter = insertSpaces !== false ? ' ' : '';
+
             function convertWord(match) {
                 // If 'word' matched is only an acronym perform no processing
 
@@ -13,12 +15,12 @@ hx.utils = {
                 } else {
                     // insert a space between lower & upper / numbers
                     match = match.replace(/([a-z])([A-Z0-9])/g, function (_, one, two) {
-                        return one + " " + two;
+                        return one + spaceDelimiter + two;
                     }); 
 
                     // space before last upper in a sequence followed by lower
                     match = match.replace(/\b([A-Z]+)([A-Z])([a-z])/, function (_, one, two, three) {
-                        return one + " " + two + three;
+                        return one + spaceDelimiter + two + three;
                     });
 
                     // uppercase the first character
@@ -29,6 +31,14 @@ hx.utils = {
             };
 
             return str.toString().replace(/\b[a-zA-Z0-9]+\b/g, convertWord);
+        }
+    },
+
+    toCamelCase: function (str, insertSpaces) {
+        if (str != null) {
+            return hx.utils.toTitleCase(str, insertSpaces).replace(/^./, function (s) {
+                return s.toLowerCase();
+            });
         }
     },
 
