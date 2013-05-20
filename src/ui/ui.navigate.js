@@ -40,7 +40,7 @@ hx.config(['$router'], function($router) {
                 parameters = allBindingsAccessor()['parameters'];
                 url = $router.buildUrl(routeName, parameters);
 
-            element.setAttribute('href', url);
+            element.setAttribute('href', url || '#');
         }
     }
 });

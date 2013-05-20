@@ -5,6 +5,18 @@ describe('ui - navigation', function() {
         this.stub(router, 'navigateTo');        
     })
 
+    describe('missing route', function() {
+        beforeEach(function() {
+
+            this.setHtmlFixture("<a id='my-page-link' data-bind=\"navigate: 'A route that does not exist'\">A Link</a>");
+            this.applyBindingsToFixture({});
+        })
+
+        it('set href to hash symbol (#)', function() {
+            expect(document.getElementById('my-page-link')).toHaveAttr('href', '#');
+        })
+    })
+
     describe('route with no parameters', function() {
         beforeEach(function() {
             router.route('My Page', '/my-page', this.spy());
