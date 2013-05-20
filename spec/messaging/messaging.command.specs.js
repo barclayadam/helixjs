@@ -205,5 +205,27 @@ describe('Messaging - Commands', function () {
                 expect(this.failedEventSpy).toHaveBeenCalled();
             });
         });
+
+        describe('multiple commands with subscriptions', function () {
+            beforeEach(function () {
+
+                this.command1 = new $Command('My Command 1', {});
+                this.command2 = new $Command('My Command 2', {});
+
+                this.submittingEventSpy1 = this.spy();
+                this.submittingEventSpy2 = this.spy();
+
+                this.command1.subscribe('submitting', this.submittingEventSpy1);
+                this.command2.subscribe('submitting', this.submittingEventSpy2);
+
+                this.promise = this.command1.execute();
+            });
+
+            it('should not raise events to other instances', function () {
+                expect(this.submittingEventSpy1).toHaveBeenCalled();
+                expect(this.submittingEventSpy2).toHaveNotBeenCalled();
+            });
+        });
+
     });
 });

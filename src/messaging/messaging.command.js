@@ -1,4 +1,4 @@
-hx.singleton('$Command', ['$log', '$ajax', '$EventEmitter'], function($log, $ajax, $EventEmitter) {
+hx.singleton('$Command', ['$log', '$ajax', '$EventEmitterFactory'], function($log, $ajax, $EventEmitterFactory) {
     
     /**
      Initialises a new instance of the `hx.messaging.Command` class with the
@@ -20,7 +20,7 @@ hx.singleton('$Command', ['$log', '$ajax', '$EventEmitter'], function($log, $aja
         }
 
         hx.validation.mixin(this);
-        $EventEmitter.mixin(this);
+        $EventEmitterFactory.mixin(this);
 
         this.execute = this.execute.bind(this);
         this.toJSON = this.toJSON.bind(this);
@@ -30,17 +30,17 @@ hx.singleton('$Command', ['$log', '$ajax', '$EventEmitter'], function($log, $aja
         this.validate();
 
         if (this.isValid()) {
-            $EventEmitter.publish('submitting');
+            this.$publish('submitting');
 
             var executionPromise = Command.execute(this.__name, this);
 
             executionPromise.then(function() {
-                $EventEmitter.publish('succeeded');
-            });
+                this.$publish('succeeded');
+            }.bind(this));
 
             executionPromise.fail(function() {
-                $EventEmitter.publish('failed');
-            });
+                this.$publish('failed');
+            }.bind(this));
 
             return executionPromise;
         } else {

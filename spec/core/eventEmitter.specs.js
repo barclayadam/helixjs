@@ -1,7 +1,7 @@
 describe('EventEmitter', function () {
     describe('Given a new EventEmitter', function () {
         beforeEach(function () {
-            this.eventEmitter = hx.get('$EventEmitter');
+            this.eventEmitter = hx.get('$EventEmitterFactory')();
         });
 
         it('Allows subscribing to named event', function () {
@@ -142,13 +142,13 @@ describe('EventEmitter', function () {
 
         describe('local eventing', function() {
             beforeEach(function() {
-                var eventEmitter = this.eventEmitter;
+                var EventEmitterFactory = hx.get('$EventEmitterFactory');
 
                 function OtherModel() {
-                    eventEmitter.mixin(this);
+                    EventEmitterFactory.mixin(this);
 
                     this.raiseEvent = function() {
-                        eventEmitter.publish('anEvent', this);
+                        this.$publish('anEvent', this);
                     }
                 }
 
