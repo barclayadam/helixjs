@@ -44,6 +44,8 @@ hx.singleton('$Command', ['$log', '$ajax', '$EventEmitterFactory'], function($lo
 
             return executionPromise;
         } else {
+            this.$publish('validationFailed', { command: this });
+            
             // If not valid then a promise that never resolves is returned.
             // TODO: Is this the correct thing to do?
             return jQuery.Deferred();

@@ -88,6 +88,9 @@ describe('Messaging - Commands', function () {
 
         describe('that fails validation', function () {
             beforeEach(function () {
+                this.validationFailedEventSpy = this.spy();
+                this.command.subscribe('validationFailed', this.validationFailedEventSpy);
+
                 this.submittingEventSpy = this.spy();
                 this.command.subscribe('submitting', this.submittingEventSpy);
 
@@ -116,6 +119,10 @@ describe('Messaging - Commands', function () {
 
             it('validate properties', function () {
                 expect(this.command.id.isValid()).toBe(false);
+            });
+
+            it('should raise a validationFailed event', function () {
+                expect(this.validationFailedEventSpy).toHaveBeenCalledWith( { command: this.command });
             });
         });
 
