@@ -260,6 +260,7 @@ describe('Routing:', function () {
             });
         });
     });
+
     describe('Multiple, different, routes', function () {
         beforeEach(function () {
             this.contactUsRouteNavigatedStub = this.stub();
@@ -440,6 +441,30 @@ describe('Routing:', function () {
         });
 
         describe('navigateTo route', function () {
+            describe('with observable parameters passed', function() {
+                beforeEach(function () {
+                    this.routeNavigatedStub = this.stub();
+                    $bus.subscribe('routeNavigated', this.routeNavigatedStub);
+
+                    this.routePathStub = this.stub(hx.get('$location'), 'routePath');
+
+                    this.router.navigateTo('Contact Us', {
+                        category: ko.observable('A Category')
+                    });
+                });
+
+                afterEach(function () {
+                    document.title = this.currentTitle;
+                });
+
+                it('should set currentParameters property to contain unwrapped route parameters', function () {
+                    expect(this.router.currentParameters).toEqual({
+                        category: 'A Category'
+                    });
+                });
+
+            })
+
             describe('twice consecutively with same parameters', function () {
                 beforeEach(function () {
                     this.routeNavigatedStub = this.stub();
@@ -475,6 +500,7 @@ describe('Routing:', function () {
                 it('should set currentRoute property', function () {
                     expect(this.router.currentRoute).toBe(this.contactUsRoute);
                 });
+
                 it('should set currentParameters property to contain route parameters', function () {
                     expect(this.router.currentParameters).toEqual({
                         category: 'A Category'
@@ -657,6 +683,7 @@ describe('Routing:', function () {
             });
         });
     });
+
     describe('Single one-param catch-all route', function () {
         beforeEach(function () {
             this.router.route('File', '/File/{*path}');

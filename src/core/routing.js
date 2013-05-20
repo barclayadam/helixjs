@@ -144,7 +144,7 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location'], function ($bus, $log, $
         var msg;
         this.currentUrl = url;
         this.currentRoute = route;
-        this.currentParameters = _.extend(parameters, new hx.Uri(url).variables);
+        this.currentParameters = ko.toJS(_.extend(parameters, new hx.Uri(url).variables));
 
         msg = {
             route: route,
