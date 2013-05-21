@@ -32,33 +32,35 @@ hx.singleton('$ajax', ['$bus'], function($bus) {
             method: httpMethod
         });
 
-        ajaxRequest.done(function(response) {
-              $bus.publish("ajaxResponseReceived:success:" + requestBuilder.url, {
-                    path: requestBuilder.url,
-                    method: httpMethod,
-                    response: response,
-                    status: 200,
-                    success: true
-              });
+        ajaxRequest.done(function (response, textStatus, jqXHR) {
+            $bus.publish("ajaxResponseReceived:success:" + requestBuilder.url, {
+                path: requestBuilder.url,
+                method: httpMethod,
+                response: response,
+                status: 200,
+                success: true,
+                xhr: jqXHR
+            });
 
-              return getDeferred.resolve(response);
+            return getDeferred.resolve(response);
         });
 
-        ajaxRequest.fail(function(response) {
+        ajaxRequest.fail(function (response) {
             var failureMessage = {
                 path: requestBuilder.url,
                 method: httpMethod,
                 responseText: response.responseText,
                 status: response.status,
-                success: false
+                success: false,
+                xhr: response
             };
 
             $bus.publish("ajaxResponseReceived:failure:" + requestBuilder.url, failureMessage);
-            
+
             if (!failureHandlerRegistered) {
                 $bus.publish("ajaxResponseFailureUnhandled:" + requestBuilder.url, failureMessage);
             }
-            
+
             return getDeferred.reject(response);
         });
 
