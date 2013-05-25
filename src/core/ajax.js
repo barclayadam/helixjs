@@ -8,6 +8,31 @@ hx.singleton('$ajax', ['$bus'], function($bus) {
     var requestDetectionFrame = [],
         listening = false;
 
+    function parseResponseHeaders(headerStr) {
+        if (!headerStr) {
+            return {};
+        }
+
+        var headers = {},
+            headerPairs = headerStr.split('\u000d\u000a');
+
+        for (var i = 0; i < headerPairs.length; i++) {
+            var headerPair = headerPairs[i];
+
+            // Can't use split() here because it does the wrong thing
+            // if the header value has the string ": " in it.
+            var index = headerPair.indexOf('\u003a\u0020');
+
+            if (index > 0) {
+              var key = headerPair.substring(0, index);
+              var val = headerPair.substring(index + 2);
+              headers[key] = val;
+            }
+        }
+
+        return headers;
+    }
+
     function doCall(httpMethod, requestBuilder) {
         /*
             TODO: Extract extension of deferred to give non-failure
@@ -33,13 +58,14 @@ hx.singleton('$ajax', ['$bus'], function($bus) {
         });
 
         ajaxRequest.done(function (response, textStatus, jqXHR) {
+            debugger
             $bus.publish("ajaxResponseReceived:success:" + requestBuilder.url, {
                 path: requestBuilder.url,
                 method: httpMethod,
                 response: response,
                 status: 200,
                 success: true,
-                xhr: jqXHR
+                headers: parseResponseHeaders(jqXHR.getAllResponseHeaders())
             });
 
             return getDeferred.resolve(response);
@@ -52,7 +78,7 @@ hx.singleton('$ajax', ['$bus'], function($bus) {
                 responseText: response.responseText,
                 status: response.status,
                 success: false,
-                xhr: response
+                headers: parseResponseHeaders(response.getAllResponseHeaders())
             };
 
             $bus.publish("ajaxResponseReceived:failure:" + requestBuilder.url, failureMessage);

@@ -49,7 +49,8 @@ function basicMethodTests(methodName, httpMethod) {
                     method: httpMethod,
                     response: this.response,
                     status: 200,
-                    success: true
+                    success: true,
+                    headers: { 'Content-Type': 'text/html' }
                 });
             });
 
@@ -194,7 +195,8 @@ function basicMethodTests(methodName, httpMethod) {
                     method: httpMethod,
                     responseText: this.response,
                     status: 500,
-                    success: false
+                    success: false,
+                    headers: { 'Content-Type': 'text/html' }
                 });
             });
 
@@ -244,7 +246,8 @@ function basicMethodTests(methodName, httpMethod) {
                     method: httpMethod,
                     responseText: this.response,
                     status: 500,
-                    success: false
+                    success: false,
+                    headers: { 'Content-Type': 'text/html' }
                 });
             });
 
@@ -278,7 +281,8 @@ function basicMethodTests(methodName, httpMethod) {
                     method: httpMethod,
                     responseText: this.response,
                     status: 500,
-                    success: false
+                    success: false,
+                    headers: { 'Content-Type': 'text/html' }
                 });
             });
         });
