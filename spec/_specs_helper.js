@@ -21,6 +21,8 @@ if(!document.getElementsByClassName) {
     };
 }
 
+jasmine.slow.enable(); 
+
 beforeEach(function () {
     hx.runConfigBlocks();
 
