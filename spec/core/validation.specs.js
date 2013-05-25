@@ -71,7 +71,6 @@ describe('validation', function () {
 
         it('should add an isValid observable immediately set to correct state by unwrapping all children of observable', function () {
             var setObservableAsValue = function () {
-                debugger
                 this.property(ko.observable('value'))
             }.bind(this);
 

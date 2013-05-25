@@ -58,7 +58,6 @@ hx.singleton('$ajax', ['$bus'], function($bus) {
         });
 
         ajaxRequest.done(function (response, textStatus, jqXHR) {
-            debugger
             $bus.publish("ajaxResponseReceived:success:" + requestBuilder.url, {
                 path: requestBuilder.url,
                 method: httpMethod,
