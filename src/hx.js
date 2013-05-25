@@ -20,6 +20,7 @@
         var hx = hxExports != null ? hxExports : {};
 
         //= core/utils.js
+        //= core/observableReadEvent.js
 
         //= core/injector.js
         //= core/bootstrap.js
@@ -37,6 +38,7 @@
         //= core/validation.rules.js
         //= core/location.js
         //= core/routing.js
+
                 
         //= core/tagBindingsProvider.js
         //= core/viewModel.js
