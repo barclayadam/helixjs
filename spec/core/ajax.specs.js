@@ -294,7 +294,6 @@ describe('ajax', function () {
     basicMethodTests('post', 'POST');
     basicMethodTests('put', 'PUT');
     basicMethodTests('delete', 'DELETE');
-    basicMethodTests('head', 'HEAD');
     
     describe('POST specific', function () {
         var $ajax = hx.get('$ajax');

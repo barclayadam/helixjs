@@ -160,13 +160,6 @@ hx.singleton('$ajax', ['$bus'], function($bus) {
         return doCall('DELETE', this);
     };
 
-    /**
-     * Performs a HEAD request. 
-     */
-    RequestBuilder.prototype.head = function() {
-        return doCall('HEAD', this);
-    };
-
     /** @namespace $ajax  */
     return {
         /**
