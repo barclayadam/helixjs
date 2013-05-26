@@ -36,7 +36,6 @@ describe('region binding handler', function () {
             });
 
             this.wrapper = document.getElementById("fixture");
-            this.viewModel.anObservableProperty('A New Value');
         });
 
         it('should set view model as context when rendering template', function () {
@@ -45,7 +44,9 @@ describe('region binding handler', function () {
             expect(ko.bindingHandlers.test1.init.args[0][1]()).toBe(this.viewModel.anObservableProperty);
         });
 
-        it('should not re-render the whole view when a property of the view model changes', function () {
+        it('should not re-render the whole view when a property of the view model changes', function () {            
+            this.viewModel.anObservableProperty('A New Value');
+
             // Init for first rendering, update for first rendering an update of
             // property.
             expect(ko.bindingHandlers.test1.init).toHaveBeenCalledOnce();
@@ -55,10 +56,19 @@ describe('region binding handler', function () {
 
     describe('binding a plain object with named view', function () {
         beforeEach(function () {
-            $templating.set('myNamedPartTemplate', 'This is the template');
+            $templating.set('myNamedPartTemplate', '<span id=plain-text>This is the template.</span> <span data-bind=\"test1: anObservableProperty\">');
+
+            ko.bindingHandlers.test1 = {
+                init: this.spy(),
+
+                update: this.spy(function (element, valueAccessor) {
+                    ko.utils.unwrapObservable(valueAccessor()); // Ensure a subscription exists
+                })
+            };
 
             this.viewModel = {
-                templateName: 'myNamedPartTemplate'
+                templateName: 'myNamedPartTemplate',
+                anObservableProperty: ko.observable('')
             };
 
             this.setHtmlFixture("<div id=\"fixture\" data-bind=\"region: viewModel\"></div>");
@@ -72,7 +82,16 @@ describe('region binding handler', function () {
         it('should use the named template', function () {
             // Just check that when binding directly to a property of the view model 
             // binding handlers are getting called with it (a little brittle!)
-            expect(this.wrapper).toHaveText('This is the template');
+            expect(document.getElementByIf('plain-text').toHaveText('This is the template');
+        });
+
+        it('should not re-render the whole view when a property of the view model changes', function () {            
+            this.viewModel.anObservableProperty('A New Value');
+
+            // Init for first rendering, update for first rendering an update of
+            // property.
+            expect(ko.bindingHandlers.test1.init).toHaveBeenCalledOnce();
+            expect(ko.bindingHandlers.test1.update).toHaveBeenCalledTwice();
         });
     });
 

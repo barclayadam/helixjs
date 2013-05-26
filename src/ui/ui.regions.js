@@ -234,15 +234,15 @@
                     viewModelName = regionManager.get(element.id || 'main');
                 } 
                 
-                $log.debug('Getting view model with module name "' + viewModelName + '"');
-                regionViewModel = getViewModel(viewModelName);
-
-                if (!regionViewModel) {
-                    $log.info('Cannot find region view model.')
-                    return;
-                }
-
                 ko.dependencyDetection.ignore(function() {
+                    $log.debug('Getting view model with module name "' + viewModelName + '"');
+                    regionViewModel = getViewModel(viewModelName);
+
+                    if (!regionViewModel) {
+                        $log.info('Cannot find region view model.')
+                        return;
+                    }
+
                     lastViewModel = ko.utils.domData.get(element, '__region__currentViewModel');
 
                     if (lastViewModel && lastViewModel.hide) {
