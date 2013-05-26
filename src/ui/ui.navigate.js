@@ -1,5 +1,4 @@
 hx.config(['$router'], function($router) {
-
     ko.utils.registerEventHandler(document, 'click', function(event) {
         if(event.target.tagName === 'A') {
             var element = event.target,
@@ -38,20 +37,6 @@ hx.config(['$router'], function($router) {
      * <a data-bind="navigate: 'View User', parameters: { userId: 4 }>View User 4</a>"
      */
     koBindingHandlers.navigate = {
-        /*init: function(element, valueAccessor, allBindingsAccessor) {
-            var routeName = ko.utils.unwrapObservable(valueAccessor()),
-                parameters = allBindingsAccessor()['parameters'];
-
-            ko.utils.registerEventHandler(element, 'click', function(event) {
-                $router.navigateTo(routeName, parameters);
-
-                if (event.preventDefault)
-                    event.preventDefault();
-                else
-                    event.returnValue = false;
-            })
-        },*/
-
         update: function(element, valueAccessor, allBindingsAccessor) {
             var routeName = ko.utils.unwrapObservable(valueAccessor()),
                 parameters = allBindingsAccessor()['parameters'];
