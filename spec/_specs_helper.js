@@ -21,6 +21,26 @@ if(!document.getElementsByClassName) {
     };
 }
 
+var fixtureId = 'hx-fixture';
+
+function getFixtureNode() {
+    return document.getElementById(fixtureId);
+}
+
+function setFixtures(html) {
+    var container= document.getElementById(fixtureId);
+
+    if (!container) {
+      var container = document.createElement('div');
+      container.style.display = "none";
+      container.id = fixtureId;
+
+      document.body.appendChild(container);
+    }
+
+    container.innerHTML = html;
+}
+
 jasmine.slow.enable(); 
 
 beforeEach(function () {
@@ -37,7 +57,7 @@ beforeEach(function () {
     window.localStorage.clear();
 
     this.getFixtureTextContent = function() {
-        return document.getElementById(jasmine.getFixtures().containerId).innerText || document.getElementById(jasmine.getFixtures().containerId).textContent;
+        return getFixtureNode().innerText || getFixtureNode().textContent;
     };
 
     this.setHtmlFixture = function (html) {
@@ -45,7 +65,7 @@ beforeEach(function () {
     };
 
     this.applyBindingsToFixture = function (viewModel) {
-        ko.applyBindings(viewModel, document.getElementById(jasmine.getFixtures().containerId));
+        ko.applyBindings(viewModel, getFixtureNode());
     };
 
     this.respondWithTemplate = function (path, body) {
@@ -59,4 +79,8 @@ beforeEach(function () {
 
 afterEach(function () {
     window.sinonSandbox.restore();
+
+    if(getFixtureNode()) {
+        ko.cleanNode(getFixtureNode());
+    }
 });

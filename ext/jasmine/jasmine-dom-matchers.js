@@ -196,7 +196,3 @@ jasmine.DOM.matchers = {};
 beforeEach(function() {
   this.addMatchers(jasmine.DOM.matchers);
 });
-
-afterEach(function() {
-  jasmine.getFixtures().cleanUp();
-});
