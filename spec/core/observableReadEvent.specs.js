@@ -20,7 +20,7 @@ describe('readInterceptor observable extender', function() {
         basicTests(ko.observable('My initial value'), 'My initial value')
     })
 
-    describe('ko.observable', function() {        
+    describe('ko.observableArray', function() {        
         basicTests(ko.observableArray(['My initial value']), ['My initial value'])
     })
 })
