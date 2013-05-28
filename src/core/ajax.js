@@ -128,7 +128,7 @@ hx.singleton('$ajax', ['$bus'], function($bus) {
      * of key-value pairs that will be sent with the request.
      */
     RequestBuilder.prototype.data = function(data) {
-        this.properties.data = ko.toJSON(data);
+        this.properties.$data = data;
         return this;
     };
 
@@ -136,6 +136,7 @@ hx.singleton('$ajax', ['$bus'], function($bus) {
      * Performs a GET request. 
      */
     RequestBuilder.prototype.get = function() {
+        this.properties.data = this.properties.$data;
         return doCall('GET', this);
     };
 
@@ -143,6 +144,7 @@ hx.singleton('$ajax', ['$bus'], function($bus) {
      * Performs a POST request. 
      */
     RequestBuilder.prototype.post = function() {
+        this.properties.data = ko.toJSON(this.properties.$data);
         return doCall('POST', this);
     };
 
@@ -150,6 +152,7 @@ hx.singleton('$ajax', ['$bus'], function($bus) {
      * Performs a PUT request. 
      */
     RequestBuilder.prototype.put = function() {
+        this.properties.data = ko.toJSON(this.properties.$data);
         return doCall('PUT', this);
     };
 
@@ -157,6 +160,7 @@ hx.singleton('$ajax', ['$bus'], function($bus) {
      * Performs a DELETE request. 
      */
     RequestBuilder.prototype["delete"] = function() {
+        this.properties.data = ko.toJSON(this.properties.$data);
         return doCall('DELETE', this);
     };
 
