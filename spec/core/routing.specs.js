@@ -32,7 +32,7 @@ describe('Routing:', function () {
             });
 
             it('should return undefined', function () {
-                expect(this.matchedRoute).toBeUndefined;
+                expect(this.matchedRoute).toBeUndefined();
             });
         });
 
@@ -64,13 +64,9 @@ describe('Routing:', function () {
 
     describe('Single no-param route', function () {
         beforeEach(function () {
-            this.routeNavigatedStub = this.stub();
-            this.router.route('Contact Us', '/Contact Us', this.routeNavigatedStub);
+            this.contactUsOptions = { anOptions: 'A Value' };
+            this.router.route('Contact Us', '/Contact Us', this.contactUsOptions);
             this.contactUsRoute = this.router.getNamedRoute('Contact Us');
-        });
-
-        it('should default title of route to the name', function () {
-            expect(this.contactUsRoute.title).toEqual('Contact Us');
         });
 
         describe('getting the route by name', function () {
@@ -90,10 +86,6 @@ describe('Routing:', function () {
                     url: '/Contact Us',
                     external: true
                 });
-            });
-
-            it('should call registered callback with parameters', function () {
-                expect(this.routeNavigatedStub).toHaveBeenCalledWith({});
             });
 
             it('should publish a routeNavigated message', function () {
@@ -149,16 +141,8 @@ describe('Routing:', function () {
                     this.router.navigateTo('Contact Us');
                 });
 
-                afterEach(function () {
-                    document.title = this.currentTitle;
-                });
-
                 it('should use history manager to push a built URL', function () {
                     expect(this.routePathStub).toHaveBeenCalledWith('/Contact Us');
-                });
-
-                it('should call registered callback with parameters', function () {
-                    expect(this.routeNavigatedStub).toHaveBeenCalledWith({});
                 });
 
                 it('should publish a routeNavigated message', function () {
@@ -178,10 +162,6 @@ describe('Routing:', function () {
 
                     this.router.navigateTo('Contact Us');
                     this.router.navigateTo('Contact Us');
-                });
-
-                afterEach(function () {
-                    document.title = this.currentTitle;
                 });
 
                 it('should change location.routePath twice', function () {
@@ -236,12 +216,12 @@ describe('Routing:', function () {
         });
     });
 
-    describe('Single no-param route, with object as callback', function () {
+    describe('Single no-param route, with options', function () {
         beforeEach(function () {
-            this.callbackOptions = {
+            this.options = {
                 anOption: 'some text'
             };
-            this.router.route('Contact Us', '/Contact Us', this.callbackOptions);
+            this.router.route('Contact Us', '/Contact Us', this.options);
             this.contactUsRoute = this.router.getNamedRoute('Contact Us');
         });
 
@@ -254,8 +234,7 @@ describe('Routing:', function () {
             it('should publish a routeNavigated message with options included', function () {
                 expect("routeNavigated:Contact Us").toHaveBeenPublishedWith({
                     route: this.contactUsRoute,
-                    parameters: {},
-                    options: this.callbackOptions
+                    parameters: {}
                 });
             });
         });
@@ -263,14 +242,14 @@ describe('Routing:', function () {
 
     describe('Multiple, different, routes', function () {
         beforeEach(function () {
-            this.contactUsRouteNavigatedStub = this.stub();
-            this.aboutUsRouteNavigatedStub = this.stub();
+            this.contactUsOptions = {};
+            this.aboutUsOptions = {};
 
-            this.router.route('Contact Us', '/Contact Us', this.contactUsRouteNavigatedStub);
-            this.router.route('About Us', '/About Us', this.aboutUsRouteNavigatedStub);
+            this.router.route('Contact Us', '/Contact Us', this.contactUsOptions);
+            this.router.route('About Us', '/About Us', this.aboutUsOptions);
 
             this.contactUsRoute = this.router.getNamedRoute('Contact Us');
-             this.aboutUsRoute = this.router.getNamedRoute('About Us');
+            this.aboutUsRoute = this.router.getNamedRoute('About Us');
         });
 
         describe('URL changed externally to one matching route', function () {
@@ -281,12 +260,8 @@ describe('Routing:', function () {
                 });
             });
 
-            it('should call registered callback with parameters', function () {
-                expect(this.contactUsRouteNavigatedStub).toHaveBeenCalledWith({});
-            });
-
             it('should not call registered callbacks of other routes', function () {
-                expect(this.aboutUsRouteNavigatedStub).toHaveNotBeenCalled();
+                expect("routeNavigated:About Us").toHaveNotBeenPublished();
             });
 
             it('should publish a routeNavigated message', function () {
@@ -320,10 +295,6 @@ describe('Routing:', function () {
                     this.router.navigateTo('Contact Us');
                     this.router.navigateTo('About Us');
                     this.router.navigateTo('Contact Us');
-                });
-
-                afterEach(function () {
-                    document.title = this.currentTitle;
                 });
 
                 it('should change location.routePath all three times', function () {
@@ -414,12 +385,6 @@ describe('Routing:', function () {
                 });
             });
 
-            it('should call registered callback with parameters', function () {
-                expect(this.routeNavigatedStub).toHaveBeenCalledWith({
-                    category: 'A Category'
-                });
-            });
-
             it('should publish a routeNavigated message', function () {
                 expect("routeNavigated:Contact Us").toHaveBeenPublishedWith({
                     route: this.contactUsRoute,
@@ -453,10 +418,6 @@ describe('Routing:', function () {
                     });
                 });
 
-                afterEach(function () {
-                    document.title = this.currentTitle;
-                });
-
                 it('should set currentParameters property to contain unwrapped route parameters', function () {
                     expect(this.router.currentParameters).toEqual({
                         category: 'A Category'
@@ -479,10 +440,6 @@ describe('Routing:', function () {
                     this.router.navigateTo('Contact Us', {
                         category: 'A Category'
                     });
-                });
-
-                afterEach(function () {
-                    document.title = this.currentTitle;
                 });
 
                 it('should change routePath twice', function () {
@@ -521,10 +478,6 @@ describe('Routing:', function () {
                     this.router.navigateTo('Contact Us', {
                         category: 'A Different Category'
                     });
-                });
-
-                afterEach(function () {
-                     document.title = this.currentTitle;
                 });
 
                 it('should change routePath twice', function () {

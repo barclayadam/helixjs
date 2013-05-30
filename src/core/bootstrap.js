@@ -63,8 +63,8 @@
 
         // Tie together routing with the application's main region manager
         $bus.subscribe('routeNavigated', function(msg) {
-            if (msg.options != null) {
-                appRegionManager.show(msg.options);
+            if (msg.route.options != null) {
+                appRegionManager.show(msg.route.options);
             }
         })
 

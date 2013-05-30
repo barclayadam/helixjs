@@ -28,15 +28,13 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location'], function ($bus, $log, $
         var paramRegex = /{(\*?)(\w+)}/g;
 
         /** Constructs a new route, with a name and route url. */
-        function Route(name, url, callbackOrOptions, options) {
+        function Route(name, url, options) {
             var routeDefinitionAsRegex,
             _this = this;
 
             this.name = name;
             this.url = url;
-            this.callbackOrOptions = callbackOrOptions;
             this.options = options;
-            this.title = options.title;
             this.requiredParams = [];
             this.paramNames = [];
 
@@ -141,21 +139,14 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location'], function ($bus, $log, $
     }
 
     RouteTable.prototype._doNavigate = function (url, route, parameters) {
-        var msg;
-        this.currentUrl = url;
-        this.currentRoute = route;
-        this.currentParameters = ko.toJS(_.extend(parameters, new hx.Uri(url).variables));
-
-        msg = {
+        var msg = {
             route: route,
             parameters: parameters
         };
 
-        if (_.isFunction(route.callbackOrOptions)) {
-            route.callbackOrOptions(parameters);
-        } else if (route.callbackOrOptions != null) {
-            msg.options = route.callbackOrOptions;
-        }
+        this.currentUrl = url;
+        this.currentRoute = route;
+        this.currentParameters = ko.toJS(_.extend(parameters, new hx.Uri(url).variables));
 
         $bus.publish("routeNavigated:" + route.name, msg);
     };
@@ -170,14 +161,8 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location'], function ($bus, $log, $
      *
      * @member route
      */
-    RouteTable.prototype.route = function (name, url, callbackOrOptions, options) {
-        if (options == null) {
-            options = {
-                title: name
-            };
-        }
-
-        this._routes[name] = new Route(name, url, callbackOrOptions, options);
+    RouteTable.prototype.route = function (name, url, options) {
+        this._routes[name] = new Route(name, url, options || {});
 
         return this;
     };
