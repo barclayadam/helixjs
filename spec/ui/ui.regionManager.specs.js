@@ -4,6 +4,18 @@ describe('region manager', function () {
         $ajax = hx.get('$ajax'),
         $log = hx.get('$log');
 
+    describe('region without a region manager', function () {
+        beforeEach(function () {
+            this.setHtmlFixture("<region id='my-region'></region>");
+        });
+
+        it('should throw an exception', function () {
+            expect(function() {
+                this.applyBindingsToFixture();
+            }.bind(this)).toThrow('A region binding handler must be a child of a regionManager or app binding handler');
+        });
+    });
+
     describe('single region', function () {
         beforeEach(function () {
             this.regionManager = new $RegionManager();
@@ -46,41 +58,15 @@ describe('region manager', function () {
         });
     });
 
-    describe('nested regions', function () {
-        beforeEach(function () {
-            this.regionManager = new $RegionManager();
-
-            // Typically, a region manager would be the root `app` on the
-            // body, but it is not a requirement.
-            this.setHtmlFixture("<div id='body' data-bind='regionManager: regionManager'>" +
-                                "    <header id='header'>This is the header</header>" + 
-                                "    <region id='my-main-region' class='region'></region>" +
-                                "    <footer id='footer'>This is the footer</footer>" + 
-                                "</div>");
-            
-            this.applyBindingsToFixture({
-                regionManager: this.regionManager
-            });
-
-            // Now show contents of region manager and ensure a child region can be shown
-
-            $templating.set('main-region-template', '<region data-option="\'child-region\'"></region>');
-            hx.provide('child-region', { templateName: 'child-region-template'});
-
-            $templating.set('child-region-template', '<span id="child-region-span">This is the child contents</span>');
-            
-            this.regionManager.show({ 'my-main-region': { templateName: 'main-region-template' }})
-        });
-
-        it('should render the child contents, instead of registering with the highest level region manager', function () {
-            expect(document.getElementById("child-region-span")).toHaveText("This is the child contents");
-        });
-    });
-
     describe('multiple regions with a default set', function () {
         beforeEach(function () {
             this.regionManager = new $RegionManager();
-            this.setHtmlFixture("<div id=\"body\" data-bind=\"regionManager: regionManager\">\n    <header id=\"header\">This is the header</header>\n\n    <region id=\"main\" data-default=\"true\"></region>\n    <region id=\"help\"></region>\n\n    <footer id=\"footer\">This is the footer</footer>\n</div>");
+            this.setHtmlFixture("<div id=\"body\" data-bind=\"regionManager: regionManager\">" +
+                                "  <header id='header'>This is the header</header>" +
+                                "  <region id='main' data-default='true'></region>" +
+                                "  <region id='help'></region>" +
+                                "  <footer id='footer'>This is the footer</footer>" +
+                                "</div>");
             
             this.applyBindingsToFixture({
                 regionManager: this.regionManager

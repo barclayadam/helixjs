@@ -38,7 +38,6 @@
         //= core/validation.rules.js
         //= core/location.js
         //= core/routing.js
-
                 
         //= core/tagBindingsProvider.js
         //= core/viewModel.js
@@ -52,6 +51,7 @@
 
         //= ui/ui.uiaction.js
         //= ui/ui.regions.js
+        //= ui/ui.components.js
 
         //= ui/ui.validation.js
 

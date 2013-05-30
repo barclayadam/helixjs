@@ -1,4 +1,4 @@
-describe('component binding provider', function () {
+describe('tag-based binding provider', function () {
     var $templating = hx.get('$templating');
 
     // A small selection of tests for existing functionality as a sanity check. NOT comprehensive.

@@ -1,26 +1,25 @@
-describe('region binding handler', function () {
+describe('component binding handler', function () {
     var $templating = hx.get('$templating'),
         $ajax = hx.get('$ajax');
 
     describe('binding undefined view model', function () {
         beforeEach(function () {
-            this.setHtmlFixture("<div id=\"fixture\" data-bind=\"region: viewModel\">\n    This is an anonymous template\n</div>");
+            this.setHtmlFixture("<div id=\"fixture\" data-bind=\"component: viewModel\">\n    This is an anonymous template\n</div>");
 
+            this.applyBindingsToFixture({ viewModel: undefined });
         });
 
-        it('should throw an exception', function () {
-            expect(function() {
-                this.applyBindingsToFixture({ viewModel: undefined });
-            }.bind(this)).toThrow('A null or undefined view model cannot be passed to a region binding handler without a parent region manager (or app)');
+        it('should render no children', function () { 
+            expect(document.getElementById("fixture")).toBeEmpty()
         });
     });
 
     describe('binding a plain object with anonymous template', function () {
         beforeEach(function () {
-            this.viewModel = {
+            this.viewModel = ko.observable({
                 aProperty: 'A Property',
                 anObservableProperty: ko.observable('An observable property')
-            };
+            });
 
             ko.bindingHandlers.test1 = {
                 init: this.spy(),
@@ -30,7 +29,7 @@ describe('region binding handler', function () {
                 })
             };
 
-            this.setHtmlFixture("<div id=\"fixture\" data-bind=\"region: viewModel\">\n    This is an anonymous template\n\n    <span data-bind=\"test1: anObservableProperty\"></span>\n</div>");
+            this.setHtmlFixture("<div id=\"fixture\" data-bind=\"component: viewModel\">\n    This is an anonymous template\n\n    <span data-bind=\"test1: anObservableProperty\"></span>\n</div>");
             this.applyBindingsToFixture({
                 viewModel: this.viewModel
             });
@@ -41,16 +40,22 @@ describe('region binding handler', function () {
         it('should set view model as context when rendering template', function () {
             // Just check that when binding directly to a property of the view model 
             // binding handlers are getting called with it (a little brittle!)
-            expect(ko.bindingHandlers.test1.init.args[0][1]()).toBe(this.viewModel.anObservableProperty);
+            expect(ko.bindingHandlers.test1.init.args[0][1]()).toBe(this.viewModel().anObservableProperty);
         });
 
         it('should not re-render the whole view when a property of the view model changes', function () {            
-            this.viewModel.anObservableProperty('A New Value');
+            this.viewModel().anObservableProperty('A New Value');
 
             // Init for first rendering, update for first rendering an update of
             // property.
             expect(ko.bindingHandlers.test1.init).toHaveBeenCalledOnce();
             expect(ko.bindingHandlers.test1.update).toHaveBeenCalledTwice();
+        });
+
+        it('should remove children when new view model is null', function () {            
+            this.viewModel(undefined);
+
+            expect(this.wrapper).toBeEmpty()
         });
     });
 
@@ -71,7 +76,7 @@ describe('region binding handler', function () {
                 anObservableProperty: ko.observable('')
             };
 
-            this.setHtmlFixture("<div id=\"fixture\" data-bind=\"region: viewModel\"></div>");
+            this.setHtmlFixture("<div id=\"fixture\" data-bind=\"component: viewModel\"></div>");
             this.applyBindingsToFixture({
                 viewModel: this.viewModel
             });
@@ -82,7 +87,7 @@ describe('region binding handler', function () {
         it('should use the named template', function () {
             // Just check that when binding directly to a property of the view model 
             // binding handlers are getting called with it (a little brittle!)
-            expect(document.getElementByIf('plain-text').toHaveText('This is the template');
+            expect(document.getElementById('plain-text')).toHaveText('This is the template.');
         });
 
         it('should not re-render the whole view when a property of the view model changes', function () {            
@@ -101,7 +106,7 @@ describe('region binding handler', function () {
 
             hx.provide('myInjectedViewModel', this.viewModelModuleCreator);            
 
-            this.setHtmlFixture("<div id=\"fixture\" data-bind=\"region: 'myInjectedViewModel'\"><span data-bind='text: aProp'></span></div>");
+            this.setHtmlFixture("<div id=\"fixture\" data-bind=\"component: 'myInjectedViewModel'\"><span data-bind='text: aProp'></span></div>");
 
             this.applyBindingsToFixture();
 
@@ -142,7 +147,7 @@ describe('region binding handler', function () {
                     })
                 };
 
-                this.setHtmlFixture("<div id=\"fixture\" data-bind=\"region: viewModel\">\n    This is the template\n</div>");
+                this.setHtmlFixture("<div id=\"fixture\" data-bind=\"component: viewModel\">\n    This is the template\n</div>");
                 
                 this.applyBindingsToFixture({
                     viewModel: this.viewModel
@@ -192,7 +197,7 @@ describe('region binding handler', function () {
                     hide: this.spy()
                 };
 
-                this.setHtmlFixture("<div id=\"fixture\" data-bind=\"region: viewModel\">\n    This is the template\n</div>");
+                this.setHtmlFixture("<div id=\"fixture\" data-bind=\"component: viewModel\">\n    This is the template\n</div>");
                 
                 this.applyBindingsToFixture({
                     viewModel: this.viewModel
@@ -254,7 +259,7 @@ describe('region binding handler', function () {
                 };
 
                 this.viewModel = ko.observable(this.viewModelOne);
-                this.setHtmlFixture("<div id=\"fixture\" data-bind=\"region: viewModel\">\n    This is the template\n</div>");
+                this.setHtmlFixture("<div id=\"fixture\" data-bind=\"component: viewModel\">\n    This is the template\n</div>");
                 
                 this.applyBindingsToFixture({
                     viewModel: this.viewModel
@@ -304,7 +309,7 @@ describe('region binding handler', function () {
                     })
                 };
 
-                this.setHtmlFixture("<div id=\"fixture\" data-bind=\"region: viewModel\"></div>");
+                this.setHtmlFixture("<div id=\"fixture\" data-bind=\"component: viewModel\"></div>");
                 this.applyBindingsToFixture({ viewModel: this.viewModel });
             });
 
