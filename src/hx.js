@@ -41,6 +41,7 @@
                 
         //= core/tagBindingsProvider.js
         //= core/viewModel.js
+        //= core/authoriser.js
 
         //= data/dataSource.js
         //= data/provider.memory.js

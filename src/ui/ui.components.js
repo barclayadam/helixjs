@@ -35,6 +35,16 @@
  * Each method will be called in turn, as demonstrated above, with the following
  * behaviours for each:
  *
+ * * `isAuthorised`: A component can determine whether or not the current user is
+ *   authorized to view the component be defining an `isAuthorised` method that returns
+ *   a boolean value (which may be a promise).
+ *
+ *   If this value is false then the component will not be rendered. This authorisation
+ *   method is used throughout the system to provide authorisation management such
+ *   as hiding links and redirecting to unauthorised pages. 
+ *
+ *   TODO: Add documentation for authorisation system
+ *
  * * `beforeShow`: This function will be called before the template is bound / shown
  *    to the user. It is expected this is where most processing will occur, where
  *    data required for the view will be loaded. It is for this reason that this
@@ -48,6 +58,9 @@
  *    template has been rendered by `knockout` the `show` function of the `view model`
  *    will be called.
  *
+ * * `hide`: If a component is replaced with another (e.g. in the context of a `region`)
+ *    then the previous components `hide` method will be called.
+ *
  * ## Region Manager Integration
  *
  * Typically an app will use a `region manager` to manage the regions within the
@@ -59,7 +72,7 @@
  * will use a region manager to determine what component to show, delegating all rendering
  * and management of individual components to this binding handler.
  */
-hx.config(['$log', '$ajax', '$injector'], function($log, $ajax, $injector) {
+hx.config(['$log', '$ajax', '$injector', '$authoriser', '$router'], function($log, $ajax, $injector, $authoriser, $router) {
     function getViewModel(viewModelOrName) {
         viewModelOrName = ko.utils.unwrapObservable(viewModelOrName);
 
@@ -91,7 +104,8 @@ hx.config(['$log', '$ajax', '$injector'], function($log, $ajax, $injector) {
             ko.dependencyDetection.ignore(function() {
                 var regionViewModel = getViewModel(viewModelName),
                     lastViewModel = ko.utils.domData.get(element, '__region__currentViewModel'),
-                    deferred = new jQuery.Deferred();
+                    authorizedDeferred = new jQuery.Deferred(),
+                    showDeferred = new jQuery.Deferred();
 
                 if (lastViewModel && lastViewModel.hide) {
                     lastViewModel.hide.apply(lastViewModel);
@@ -99,33 +113,43 @@ hx.config(['$log', '$ajax', '$injector'], function($log, $ajax, $injector) {
 
                 if (!regionViewModel) {
                     ko.utils.emptyDomNode(element);
-                } else {
-                    if (regionViewModel.beforeShow != null) {                
-                        regionViewModel.beforeShow.apply(regionViewModel);
-                    }
+                    return;
+                }
 
-                    if (regionViewModel.show != null) {
-                        deferred = $ajax.listen(function() {
-                            regionViewModel.show.apply(regionViewModel);
-                        });
-                    } else {
-                        // Resolve immediately, nothing to wait for
-                        deferred.resolve();
-                    }
+                $authoriser.authorise(regionViewModel).done(function(authorisationResult) {
+                    if(authorisationResult === false) {
+                        $log.debug('Authorisation of component has failed, this component will not be rendered.');
+                        ko.utils.emptyDomNode(element);
+                    } else {                        
 
-                    deferred.done(function () {
-                        var templateValueAccessor = createTemplateValueAccessor(regionViewModel),
-                            innerBindingContext = bindingContext.extend();
-
-                        koBindingHandlers.template.update(element, templateValueAccessor, allBindingsAccessor, viewModel, innerBindingContext);
-
-                        if (regionViewModel.afterShow != null) {
-                            regionViewModel.afterShow.apply(regionViewModel);
+                        if (regionViewModel.beforeShow != null) {                
+                            regionViewModel.beforeShow.apply(regionViewModel);
                         }
 
-                        ko.utils.domData.set(element, '__region__currentViewModel', regionViewModel);
-                    });
-                }
+                        if (regionViewModel.show != null) {
+                            showDeferred = $ajax.listen(function() {
+                                regionViewModel.show.apply(regionViewModel);
+                            });
+                        } else {
+                            // Resolve immediately, nothing to wait for
+                            showDeferred.resolve();
+                        }
+
+                        showDeferred.done(function () {
+                            var templateValueAccessor = createTemplateValueAccessor(regionViewModel),
+                                innerBindingContext = bindingContext.extend();
+
+                            koBindingHandlers.template.update(element, templateValueAccessor, allBindingsAccessor, viewModel, innerBindingContext);
+
+                            if (regionViewModel.afterShow != null) {
+                                regionViewModel.afterShow.apply(regionViewModel);
+                            }
+
+                            ko.utils.domData.set(element, '__region__currentViewModel', regionViewModel);
+                        });
+                    }
+                })
+                
             })
         }
     };

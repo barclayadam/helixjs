@@ -325,5 +325,35 @@ describe('component binding handler', function () {
                 expect(this.viewModel.afterShow).toHaveBeenCalledOnce()
             });
         });
+
+        describe('component that fails authorisation', function () {
+            var $authoriser = hx.get('$authoriser');
+
+            beforeEach(function () {
+                $templating.set('myNamedPartTemplate', 'This is the template');
+
+                this.showObservable = showObservable = ko.observable();
+
+                this.viewModel = {
+                    templateName: 'myNamedPartTemplate',
+
+                    show: this.spy()
+                };
+
+                this.setHtmlFixture("<div id=\"fixture\" data-bind=\"component: viewModel\"></div>");
+
+                var deferred = jQuery.Deferred();
+                deferred.resolve(false);
+                this.stub($authoriser, 'authorise').returns(deferred)
+            });
+
+            it('should not render the view', function () {
+                expect(document.getElementById('fixture')).toBeEmpty()
+            })
+
+            it('should not call the show function', function () {
+                expect(this.viewModel.show).toHaveNotBeenCalled()
+            })
+        });
     });
 });
