@@ -1,7 +1,3 @@
-function browserTagCaseIndependentHtml(html) {
-    return jQuery('<div/>').append(html).html();
-};
-
 beforeEach(function () {
     var publishSpy = window.sinonSandbox.spy(hx.get('$bus'), "publish");
 
