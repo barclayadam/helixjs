@@ -40,7 +40,7 @@ hx.singleton('$ajax', ['$bus'], function($bus) {
         */
         var ajaxRequest, failureHandlerRegistered, getDeferred, promise, requestOptions;
 
-        getDeferred = $.Deferred();
+        getDeferred = jQuery.Deferred();
         promise = getDeferred.promise();
 
         failureHandlerRegistered = false;
@@ -50,7 +50,7 @@ hx.singleton('$ajax', ['$bus'], function($bus) {
             type: httpMethod
         });
 
-        ajaxRequest = $.ajax(requestOptions);
+        ajaxRequest = jQuery.ajax(requestOptions);
 
         $bus.publish("ajaxRequestSent:" + requestBuilder.url, {
             path: requestBuilder.url,

@@ -91,7 +91,7 @@ hx.config(['$log', '$ajax', '$injector'], function($log, $ajax, $injector) {
             ko.dependencyDetection.ignore(function() {
                 var regionViewModel = getViewModel(viewModelName),
                     lastViewModel = ko.utils.domData.get(element, '__region__currentViewModel'),
-                    deferred = new $.Deferred();
+                    deferred = new jQuery.Deferred();
 
                 if (lastViewModel && lastViewModel.hide) {
                     lastViewModel.hide.apply(lastViewModel);

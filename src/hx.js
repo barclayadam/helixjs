@@ -7,8 +7,8 @@
             // [3] No module loader (plain <script> tag) - put directly in global namespace
             factory(window.jQuery, window._, window.ko, window.hx = {});
         }
-    })(function($, _, ko, hxExports) {
-        if ($ === void 0) { throw new Error('jquery must be included before HelixJS.'); }
+    })(function(jQuery, _, ko, hxExports) {
+        if (jQuery === void 0) { throw new Error('jquery must be included before HelixJS.'); }
         if (_ === void 0) { throw new Error('underscore must be included before HelixJS.'); }
         if (ko === void 0) { throw new Error('knockout must be included before HelixJS.'); }
 
