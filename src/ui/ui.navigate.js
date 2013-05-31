@@ -2,11 +2,10 @@ hx.config(['$router'], function($router) {
     ko.utils.registerEventHandler(document, 'click', function(event) {
         if(event.target.tagName === 'A') {
             var element = event.target,
-                routeName = ko.utils.domData.get(element, '__routeName'),
-                parameters = ko.utils.domData.get(element, '__routeParameters');
+                match = ko.utils.domData.get(element, '__matchedRoute');
 
-            if(routeName) {
-                $router.navigateTo(routeName, parameters);
+            if(match) {
+                $router.navigateTo(match.route.name, match.parameters);
 
                 if (event.preventDefault)
                     event.preventDefault();
@@ -40,12 +39,20 @@ hx.config(['$router'], function($router) {
         update: function(element, valueAccessor, allBindingsAccessor) {
             var routeName = ko.utils.unwrapObservable(valueAccessor()),
                 parameters = allBindingsAccessor()['parameters'];
-                url = $router.buildUrl(routeName, parameters);
+                match = $router.buildMatchedRoute(routeName, parameters);
 
-            element.setAttribute('href', url || '#');
-
-            ko.utils.domData.set(element, '__routeName', routeName);
-            ko.utils.domData.set(element, '__routeParameters', parameters);
+            if(match) {
+                element.setAttribute('href', match.url);
+                
+                match.authorise()
+                     .fail(function() {
+                        element.style.display = "none";
+                    })
+            } else {                
+                element.setAttribute('href', '#');
+            }
+            
+            ko.utils.domData.set(element, '__matchedRoute', match);
         }
     }
 });

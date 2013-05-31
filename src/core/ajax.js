@@ -222,7 +222,7 @@ hx.singleton('$ajax', ['$bus'], function($bus) {
             f();
             listening = false;
 
-            allFinishedPromise = $.when.apply(this, requestDetectionFrame);
+            allFinishedPromise = jQuery.when.apply(this, requestDetectionFrame);
 
             allFinishedPromise.then(function() {
                 requestDetectionFrame = [];

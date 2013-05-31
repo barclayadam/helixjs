@@ -136,7 +136,6 @@ koBindingHandlers.action = {
         if(shouldHide) {
             ko.utils.domData.set(element, '__original_display', element.style.display);
         }
-
     },
 
     update: function(element, valueAccessor, allBindingsAccessor) {

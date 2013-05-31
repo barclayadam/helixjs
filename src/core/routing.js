@@ -1,4 +1,4 @@
-hx.provide('$RouteTable', ['$bus', '$log', '$location'], function ($bus, $log, $location) {
+hx.provide('$RouteTable', ['$bus', '$log', '$location', '$injector', '$authoriser'], function ($bus, $log, $location, $injector, $authoriser) {
     /**
      Represents a single route within an application, the definition of a URL
      that may contain a set of parameters that can be used to navigate
@@ -98,9 +98,34 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location'], function ($bus, $log, $
             return "" + this.name + ": " + this.url;
         };
 
-        return Route;
+        Route.prototype.getComponents = function() {
+            return this.options.components;
+        }
 
+        return Route;
     })();
+
+    function createComponent(component) {
+        return _.isString(component) ? $injector.get(component) : component;
+    }
+
+    function MatchedRoute(route, url, parameters) {
+        this.route = route;
+        this.url = url;
+        this.parameters = ko.toJS(parameters || {});
+    }
+
+    /**
+     * Returns a promise that will indicate whether or not the current user
+     * is authorised to view this route, which is defined as being authorised to
+     * view all of the components that this route represents.
+     */
+    MatchedRoute.prototype.authorise = function() {
+        var componentsOption = this.route.getComponents(),
+            components = _.values(componentsOption);
+
+        return $authoriser.authoriseAll(_.map(components, createComponent), this.parameters);
+    }
 
     // Defines the root of this application, which will typically be the
     // root of the address (e.g. /). This can be set to a subdirectory if
@@ -122,33 +147,38 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location'], function ($bus, $log, $
         var self = this;
         this._routes = {};
 
+        this.current = {};
+
         // Handle messages that are raised by the location component
         // to indicate the URL has changed, that the user has navigated
         // to a new page (which is also raised on first load).
         $bus.subscribe('urlChanged:external', function (msg) {
-            var matchedRoute = self.getRouteFromUrl(msg.url);
+            var matchedRoute = self.getMatchedRouteFromUrl(msg.url);            
 
             if (!matchedRoute) {
-                $bus.publish('routeNotFound', {
-                    url: msg.url
-                });
+                $bus.publish('routeNotFound', { url: msg.url });
             } else {
-                self._doNavigate(msg.url, matchedRoute.route, matchedRoute.parameters);
+                self._doNavigate(matchedRoute);
             }
         });
     }
 
-    RouteTable.prototype._doNavigate = function (url, route, parameters) {
-        var msg = {
-            route: route,
-            parameters: parameters
-        };
+    RouteTable.prototype._doNavigate = function (match) {
+        var self = this,
+            msg = {
+                route: match.route,
+                parameters: match.parameters
+            };
 
-        this.currentUrl = url;
-        this.currentRoute = route;
-        this.currentParameters = ko.toJS(_.extend(parameters, new hx.Uri(url).variables));
+        match.authorise()
+            .done(function() {
+                self.current = match;
 
-        $bus.publish("routeNavigated:" + route.name, msg);
+                $bus.publish("routeNavigated:" + match.route.name, msg);
+            })
+            .fail(function() {
+                $bus.publish("unauthorisedRoute:" + match.route.name, msg);
+            });
     };
 
     /**
@@ -189,28 +219,44 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location'], function ($bus, $log, $
      *
      * @member getRouteFromUrl
      */
-    RouteTable.prototype.getRouteFromUrl = function (url) {
-        var match, matchedParams, name, path, r, _ref;
+    RouteTable.prototype.getMatchedRouteFromUrl = function (url) {
+        var parsedUri = new hx.Uri(url, { decode: true }),
+            match;
 
-        path = new hx.Uri(url, {
-            decode: true
-        }).path;
-
-        _ref = this._routes;
-
-        for (name in _ref) {
-            r = _ref[name];
-            matchedParams = r.match(path);
+        for (var name in this._routes) {
+            var r = this._routes[name],
+                matchedParams = r.match(parsedUri.path);
 
             if (matchedParams != null) {
-                match = {
-                    route: r,
-                    parameters: matchedParams
-                };
+                match = new MatchedRoute(r, url, _.extend(matchedParams, parsedUri.variables));
             }
         }
 
         return match;
+    };
+
+    /**
+     * Builds a URL based on a named route and a set of parameters, or
+     * `undefined` if no such route exists or the parameters do not
+     * match.
+     *
+     * @member buildUrl
+     */
+    RouteTable.prototype.buildMatchedRoute = function (name, parameters) {
+        var route = this.getNamedRoute(name),
+            url = route != null ? route.buildUrl(parameters) : void 0;
+
+        if (!route) {
+            $log.warn("The route '" + name + "' could not be found.");
+            return;
+        }
+
+        if (!url) {
+            $log.warn("The parameters specified are not valid for the '" + name + "' route.");
+            return;
+        }
+
+        return new MatchedRoute(route, url, parameters);
     };
 
     /**
@@ -230,41 +276,17 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location'], function ($bus, $log, $
             parameters = {};
         }
 
-        var url = this.buildUrl(name, parameters);
+        var match = this.buildMatchedRoute(name, parameters);
 
-        if (url) {
-            this._doNavigate(url, this.getNamedRoute(name), parameters);
+        if (match) {
+            this._doNavigate(match);
 
-            $location.routePath(url);
+            $location.routePath(match.url);
 
             return true;
         }
 
         return false;
-    };
-
-    /**
-     * Builds a URL based on a named route and a set of parameters, or
-     * `undefined` if no such route exists or the parameters do not
-     * match.
-     *
-     * @member buildUrl
-     */
-    RouteTable.prototype.buildUrl = function (name, parameters) {
-        var route = this.getNamedRoute(name),
-            url = route != null ? route.buildUrl(parameters) : void 0;
-
-        if (!route) {
-            $log.warn("The route '" + name + "' could not be found.");
-            return;
-        }
-
-        if (!url) {
-            $log.warn("The parameters specified are not valid for the '" + name + "' route.");
-            return;
-        }
-
-        return url;
     };
 
     return RouteTable;

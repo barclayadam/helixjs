@@ -73,17 +73,17 @@
  * and management of individual components to this binding handler.
  */
 hx.config(['$log', '$ajax', '$injector', '$authoriser', '$router'], function($log, $ajax, $injector, $authoriser, $router) {
-    function getViewModel(viewModelOrName) {
-        viewModelOrName = ko.utils.unwrapObservable(viewModelOrName);
+    function getComponent(componentOrName) {
+        componentOrName = ko.utils.unwrapObservable(componentOrName);
 
-        return _.isString(viewModelOrName) ? $injector.get(viewModelOrName) : viewModelOrName;
+        return _.isString(componentOrName) ? $injector.get(componentOrName) : componentOrName;
     }
 
-    function createTemplateValueAccessor(viewModel) {
+    function createTemplateValueAccessor(component) {
         return function() {
             return {
-                data: viewModel,
-                name: viewModel.templateName
+                data: component,
+                name: component.templateName
             }
         };
     }
@@ -92,43 +92,39 @@ hx.config(['$log', '$ajax', '$injector', '$authoriser', '$router'], function($lo
         tag: 'component->div',
 
         init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-            var viewModel = getViewModel(valueAccessor()),
-                templateValueAccessor = createTemplateValueAccessor(viewModel || {});
+            var component = getComponent(valueAccessor());
 
-            return koBindingHandlers.template.init(element, templateValueAccessor);
+            return koBindingHandlers.template.init(element, function() { return { data: {} }; });
         },
 
         update: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-            var viewModelName = valueAccessor();
+            var viewModelName = ko.utils.unwrapObservable(valueAccessor());
             
             ko.dependencyDetection.ignore(function() {
-                var regionViewModel = getViewModel(viewModelName),
-                    lastViewModel = ko.utils.domData.get(element, '__region__currentViewModel'),
-                    authorizedDeferred = new jQuery.Deferred(),
-                    showDeferred = new jQuery.Deferred();
+                var component = getComponent(viewModelName),
+                    lastComponent = ko.utils.domData.get(element, '__component__currentViewModel');
 
-                if (lastViewModel && lastViewModel.hide) {
-                    lastViewModel.hide.apply(lastViewModel);
+                if (lastComponent && lastComponent.hide) {
+                    lastComponent.hide.apply(lastComponent);
                 }
 
-                if (!regionViewModel) {
+                if (!component) {
                     ko.utils.emptyDomNode(element);
                     return;
                 }
 
-                $authoriser.authorise(regionViewModel).done(function(authorisationResult) {
-                    if(authorisationResult === false) {
-                        $log.debug('Authorisation of component has failed, this component will not be rendered.');
-                        ko.utils.emptyDomNode(element);
-                    } else {                        
+                $authoriser
+                    .authorise(component, $router.current.parameters)
+                    .done(function() {
+                        var showDeferred = new jQuery.Deferred();
 
-                        if (regionViewModel.beforeShow != null) {                
-                            regionViewModel.beforeShow.apply(regionViewModel);
+                        if (component.beforeShow != null) {                
+                            component.beforeShow.apply(component);
                         }
 
-                        if (regionViewModel.show != null) {
+                        if (component.show != null) {
                             showDeferred = $ajax.listen(function() {
-                                regionViewModel.show.apply(regionViewModel);
+                                component.show.apply(component);
                             });
                         } else {
                             // Resolve immediately, nothing to wait for
@@ -136,19 +132,22 @@ hx.config(['$log', '$ajax', '$injector', '$authoriser', '$router'], function($lo
                         }
 
                         showDeferred.done(function () {
-                            var templateValueAccessor = createTemplateValueAccessor(regionViewModel),
+                            var templateValueAccessor = createTemplateValueAccessor(component),
                                 innerBindingContext = bindingContext.extend();
 
                             koBindingHandlers.template.update(element, templateValueAccessor, allBindingsAccessor, viewModel, innerBindingContext);
 
-                            if (regionViewModel.afterShow != null) {
-                                regionViewModel.afterShow.apply(regionViewModel);
+                            if (component.afterShow != null) {
+                                component.afterShow.apply(component);
                             }
 
-                            ko.utils.domData.set(element, '__region__currentViewModel', regionViewModel);
+                            ko.utils.domData.set(element, '__component__currentViewModel', component);
                         });
-                    }
-                })
+                    })
+                    .fail(function() {
+                        $log.debug('Authorisation of component has failed, this component will not be rendered.');
+                        ko.utils.emptyDomNode(element);                        
+                    })
                 
             })
         }

@@ -327,24 +327,19 @@ describe('component binding handler', function () {
         });
 
         describe('component that fails authorisation', function () {
-            var $authoriser = hx.get('$authoriser');
-
             beforeEach(function () {
                 $templating.set('myNamedPartTemplate', 'This is the template');
-
-                this.showObservable = showObservable = ko.observable();
 
                 this.viewModel = {
                     templateName: 'myNamedPartTemplate',
 
-                    show: this.spy()
+                    show: this.spy(),
+
+                    isAuthorised: function() { return false; }
                 };
 
                 this.setHtmlFixture("<div id=\"fixture\" data-bind=\"component: viewModel\"></div>");
-
-                var deferred = jQuery.Deferred();
-                deferred.resolve(false);
-                this.stub($authoriser, 'authorise').returns(deferred)
+                this.applyBindingsToFixture({ viewModel: this.viewModel });
             });
 
             it('should not render the view', function () {
@@ -353,6 +348,32 @@ describe('component binding handler', function () {
 
             it('should not call the show function', function () {
                 expect(this.viewModel.show).toHaveNotBeenCalled()
+            })
+        });
+
+        describe('component that fails authorisation after having a successful already shown', function () {
+            beforeEach(function () {
+                $templating.set('authTemplate', 'This is the auth template');
+                $templating.set('unauthTemplate', 'This is the unauth template');
+
+                this.viewModel = ko.observable();
+
+                this.authViewModel = { templateName: 'authTemplate', show: this.spy(), isAuthorised: function() { return true; } };
+                this.unauthViewModel = { templateName: 'unauthTemplate', show: this.spy(), isAuthorised: function() { return false; } };
+
+                this.setHtmlFixture("<div id=\"fixture\" data-bind=\"component: viewModel\"></div>");
+                this.applyBindingsToFixture({ viewModel: this.viewModel });
+
+                this.viewModel(this.authViewModel);
+                this.viewModel(this.unauthViewModel);
+            });
+
+            it('should clear the view', function () {
+                expect(document.getElementById('fixture')).toBeEmpty()
+            })
+
+            it('should not call the show function', function () {
+                expect(this.unauthViewModel.show).toHaveNotBeenCalled()
             })
         });
     });

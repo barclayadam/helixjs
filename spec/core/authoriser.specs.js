@@ -2,71 +2,142 @@
     var $router = hx.get('$router'),
         $authoriser = hx.get('$authoriser');
 
-    beforeEach(function () {
-        this.component = {
-            isAuthorised: this.stub()
-        };
-    });
+    function shouldHaveResolved(promise) {
+        promise.fail(function() {
+            expect(true).toBe(false, 'Promise should not have rejected, should have resolved')
+        });
+    }
 
-    it('should pass the current routes values as parameters to the isAuthorised method', function() {
-        $router.currentParameters = { aValue: 1 };
+    function shouldHaveRejected(promise) {
+        promise.done(function() {
+            expect(true).toBe(false, 'Promise should not have resolved, should have rejected')
+        });
+    }
 
-        $authoriser.authorise(this.component);
+    describe('single component to authorise', function() {
+        beforeEach(function () {
+            this.component = {
+                isAuthorised: this.stub()
+            };
+        });
 
-        expect(this.component.isAuthorised).toHaveBeenCalledWith($router.currentParameters);
-    })
+        it('should pass the current routes values as parameters to the isAuthorised method', function() {
+            $authoriser.authorise(this.component, { aValue: 1 });
 
-    it('should handle returning true', function() {
-        this.component.isAuthorised = function(parameters, callback) { return true; };
+            expect(this.component.isAuthorised).toHaveBeenCalledWith({ aValue: 1 });
+        })
 
-        $authoriser.authorise(this.component).done(function(result) {
-            expect(result).toBe(true);
+        it('should handle returning true', function() {
+            this.component.isAuthorised = function(parameters, callback) { return true; };
+
+            shouldHaveResolved($authoriser.authorise(this.component));
+        })
+
+        it('should handle returning false', function() {
+            this.component.isAuthorised = function(parameters, callback) { return false; };
+
+            shouldHaveRejected($authoriser.authorise(this.component));
+        })
+
+        it('should handle returning promise that resolves to false', function() {
+            var deferred = jQuery.Deferred();
+            deferred.resolve(false);
+
+            this.component.isAuthorised.returns(deferred.promise());
+
+            shouldHaveRejected($authoriser.authorise(this.component));
+        })
+
+        it('should handle returning promise that resolves to true', function() {
+            var deferred = jQuery.Deferred();
+            deferred.resolve(true);
+
+            this.component.isAuthorised.returns(deferred.promise());
+
+            shouldHaveResolved($authoriser.authorise(this.component));
+        })
+
+        it('should handle returning undefined, but calling the callback function with false', function() {
+            this.component.isAuthorised = function(parameters, callback) { callback(false); };
+
+            shouldHaveRejected($authoriser.authorise(this.component));
+        })
+
+        it('should handle returning undefined, but calling the callback function with true', function() {
+            this.component.isAuthorised = function(parameters, callback) { callback(true); };
+
+            shouldHaveResolved($authoriser.authorise(this.component));
         })
     })
 
-    it('should handle returning false', function() {
-        this.component.isAuthorised = function(parameters, callback) { return false; };
+    describe('multiple components to authorise ($authoriser.authoriseAll)', function() {
+        beforeEach(function () {
+            this.componentA = { isAuthorised: this.stub() };
+            this.componentB = { isAuthorised: this.stub() };
 
-        $authoriser.authorise(this.component).done(function(result) {
-            expect(result).toBe(false);
+            this.components = [this.componentA, this.componentB];
+        });
+
+        it('should pass the current routes values as parameters to the isAuthorised method', function() {
+            $authoriser.authoriseAll(this.components, { aValue: 1 });
+
+            expect(this.componentA.isAuthorised).toHaveBeenCalledWith({ aValue: 1 });
+            expect(this.componentB.isAuthorised).toHaveBeenCalledWith({ aValue: 1 });
         })
-    })
 
-    it('should handle returning promise that resolves to false', function() {
-        var deferred = jQuery.Deferred();
-        deferred.resolve(false);
+        it('should return false if any fail', function() {
+            this.componentA.isAuthorised.returns(true)
+            this.componentB.isAuthorised.returns(false)
 
-        this.component.isAuthorised.returns(deferred.promise());
-
-        $authoriser.authorise(this.component).done(function(result) {
-            expect(result).toBe(false);
+            shouldHaveRejected($authoriser.authoriseAll(this.components));
         })
-    })
 
-    it('should handle returning promise that resolves to true', function() {
-        var deferred = jQuery.Deferred();
-        deferred.resolve(true);
+        it('should handle all returning true', function() {
+            this.componentA.isAuthorised.returns(true)
+            this.componentB.isAuthorised.returns(true)
 
-        this.component.isAuthorised.returns(deferred.promise());
-
-        $authoriser.authorise(this.component).done(function(result) {
-            expect(result).toBe(true);
+            shouldHaveResolved($authoriser.authoriseAll(this.components));
         })
-    })
 
-    it('should handle returning undefined, but calling the callback function with false', function() {
-        this.component.isAuthorised = function(parameters, callback) { callback(false); };
+        it('should handle all returning false', function() {
+            this.componentA.isAuthorised.returns(false)
+            this.componentB.isAuthorised.returns(false)
 
-        $authoriser.authorise(this.component).done(function(result) {
-            expect(result).toBe(false);
+            shouldHaveRejected($authoriser.authoriseAll(this.components));
         })
-    })
 
-    it('should handle returning undefined, but calling the callback function with true', function() {
-        this.component.isAuthorised = function(parameters, callback) { callback(true); };
+        it('should handle returning promise that resolves to false', function() {
+            var deferred = jQuery.Deferred();
+            deferred.resolve(false);
 
-        $authoriser.authorise(this.component).done(function(result) {
-            expect(result).toBe(true);
+            this.componentA.isAuthorised.returns(deferred.promise());
+            this.componentB.isAuthorised.returns(deferred.promise());
+
+            shouldHaveRejected($authoriser.authoriseAll(this.components));
+        })
+
+        it('should handle returning promise that resolves to true', function() {
+            var deferred = jQuery.Deferred();
+            deferred.resolve(true);
+
+            this.componentA.isAuthorised.returns(deferred.promise());
+            this.componentB.isAuthorised.returns(deferred.promise());
+
+            shouldHaveResolved($authoriser.authoriseAll(this.components));
+        })
+
+        it('should handle returning undefined, but calling the callback function with false', function() {
+            this.componentA.isAuthorised = function(parameters, callback) { callback(false); };
+            this.componentB.isAuthorised = function(parameters, callback) { callback(false); };
+
+            shouldHaveRejected($authoriser.authoriseAll(this.components));
+        })
+
+        it('should handle returning undefined, but calling the callback function with true', function() {
+            this.componentA.isAuthorised = function(parameters, callback) { callback(true); };
+            this.componentB.isAuthorised = function(parameters, callback) { callback(true); };
+
+            shouldHaveResolved($authoriser.authoriseAll(this.components));
         })
     })
 });

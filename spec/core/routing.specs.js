@@ -1,7 +1,7 @@
 function itShouldReturnMatchedRoute(options) {
     describe("by " + options.name, function () {
         beforeEach(function () {
-            this.matchedRoute = this.router.getRouteFromUrl(options.inputUrl);
+            this.matchedRoute = this.router.getMatchedRouteFromUrl(options.inputUrl);
         });
 
         it('should return the matched route data', function () {
@@ -23,12 +23,13 @@ describe('Routing:', function () {
 
     beforeEach(function () {
         this.router = new (hx.get('$RouteTable'));
+        this.routePathStub = this.stub(hx.get('$location'), 'routePath');
     });
 
     describe('No routes defined', function () {
         describe('getting a route that does not exist (URL)', function () {
             beforeEach(function () {
-                this.matchedRoute = this.router.getRouteFromUrl('/An unknown url');
+                this.matchedRoute = this.router.getMatchedRouteFromUrl('/An unknown url');
             });
 
             it('should return undefined', function () {
@@ -49,14 +50,14 @@ describe('Routing:', function () {
         describe('URL changed by user', function () {
             beforeEach(function () {
                 $bus.publish('urlChanged:external', {
-                    url: '/404',
+                    url: '/PageDoesNotExist',
                     external: true
                 });
             });
 
             it('should publish a routeNotFound message', function () {
                 expect('routeNotFound').toHaveBeenPublishedWith({
-                    url: '/404'
+                    url: '/PageDoesNotExist'
                 });
             });
         });
@@ -96,11 +97,11 @@ describe('Routing:', function () {
             });
 
             it('should set currentRoute property', function () {
-                expect(this.router.currentRoute).toBe(this.contactUsRoute);
+                expect(this.router.current.route).toBe(this.contactUsRoute);
             });
 
-            it('should set currentParameters property to be empty', function () {
-                expect(this.router.currentParameters).toEqual({});
+            it('should set current.parameters property to be empty', function () {
+                expect(this.router.current.parameters).toEqual({});
             });
         });
 
@@ -112,8 +113,8 @@ describe('Routing:', function () {
                 });
             });
 
-            it('should set currentParameters property to contain query string parameters', function () {
-                expect(this.router.currentParameters).toEqual({
+            it('should set current.parameters property to contain query string parameters', function () {
+                expect(this.router.current.parameters).toEqual({
                     name: 'My Name'
                 });
             });
@@ -137,7 +138,6 @@ describe('Routing:', function () {
         describe('navigateTo route', function () {
             describe('once', function () {
                 beforeEach(function () {
-                    this.routePathStub = this.stub(hx.get('$location'), 'routePath');
                     this.router.navigateTo('Contact Us');
                 });
 
@@ -157,8 +157,6 @@ describe('Routing:', function () {
                 beforeEach(function () {
                     this.routeNavigatedStub = this.stub();                    
                     $bus.subscribe('routeNavigated', this.routeNavigatedStub);
-
-                    this.routePathStub = this.stub(hx.get('$location'), 'routePath');
 
                     this.router.navigateTo('Contact Us');
                     this.router.navigateTo('Contact Us');
@@ -203,14 +201,14 @@ describe('Routing:', function () {
             itShouldReturnMatchedRoute({
                 name: 'URL with query string parameters',
                 inputUrl: '/Contact Us/?key=prop',
-                expectedParameters: {},
+                expectedParameters: { key: 'prop' },
                 route: 'Contact Us'
             });
 
             itShouldReturnMatchedRoute({
                 name: 'URL with different casing',
                 inputUrl: '/CoNTact US/?key=prop',
-                expectedParameters: {},
+                expectedParameters: { key: 'prop' },
                 route: 'Contact Us'
             });
         });
@@ -227,7 +225,6 @@ describe('Routing:', function () {
 
         describe('navigateTo route', function () {
             beforeEach(function () {
-                this.routePathStub = this.stub(hx.get('$location'), 'routePath');
                 this.router.navigateTo('Contact Us');
             });
 
@@ -290,8 +287,6 @@ describe('Routing:', function () {
         describe('navigateTo route', function () {
             describe('switch between two routes', function () {
                 beforeEach(function () {
-                    this.routePathStub = this.stub(hx.get('$location'), 'routePath');
-
                     this.router.navigateTo('Contact Us');
                     this.router.navigateTo('About Us');
                     this.router.navigateTo('Contact Us');
@@ -394,12 +389,12 @@ describe('Routing:', function () {
                 });
             });
 
-            it('should set currentRoute property', function () {
-                expect(this.router.currentRoute).toBe(this.contactUsRoute);
+            it('should set current.route property', function () {
+                expect(this.router.current.route).toBe(this.contactUsRoute);
             });
 
-            it('should set currentParameters property to contain route parameters', function () {
-                expect(this.router.currentParameters).toEqual({
+            it('should set current.parameters property to contain route parameters', function () {
+                expect(this.router.current.parameters).toEqual({
                     category: 'A Category'
                 });
             });
@@ -411,15 +406,13 @@ describe('Routing:', function () {
                     this.routeNavigatedStub = this.stub();
                     $bus.subscribe('routeNavigated', this.routeNavigatedStub);
 
-                    this.routePathStub = this.stub(hx.get('$location'), 'routePath');
-
                     this.router.navigateTo('Contact Us', {
                         category: ko.observable('A Category')
                     });
                 });
 
-                it('should set currentParameters property to contain unwrapped route parameters', function () {
-                    expect(this.router.currentParameters).toEqual({
+                it('should set current.parameters property to contain unwrapped route parameters', function () {
+                    expect(this.router.current.parameters).toEqual({
                         category: 'A Category'
                     });
                 });
@@ -430,8 +423,6 @@ describe('Routing:', function () {
                 beforeEach(function () {
                     this.routeNavigatedStub = this.stub();
                     $bus.subscribe('routeNavigated', this.routeNavigatedStub);
-
-                    this.routePathStub = this.stub(hx.get('$location'), 'routePath');
 
                     this.router.navigateTo('Contact Us', {
                         category: 'A Category'
@@ -454,12 +445,12 @@ describe('Routing:', function () {
                     expect(this.routeNavigatedStub).toHaveBeenCalledTwice();
                 });
 
-                it('should set currentRoute property', function () {
-                    expect(this.router.currentRoute).toBe(this.contactUsRoute);
+                it('should set current.route property', function () {
+                    expect(this.router.current.route).toBe(this.contactUsRoute);
                 });
 
-                it('should set currentParameters property to contain route parameters', function () {
-                    expect(this.router.currentParameters).toEqual({
+                it('should set current.parameters property to contain route parameters', function () {
+                    expect(this.router.current.parameters).toEqual({
                         category: 'A Category'
                     });
                 });
@@ -468,8 +459,6 @@ describe('Routing:', function () {
                 beforeEach(function () {
                     this.routeNavigatedStub = this.stub();
                     $bus.subscribe('routeNavigated', this.routeNavigatedStub);
-
-                    this.routePathStub = this.stub(hx.get('$location'), 'routePath');
 
                     this.router.navigateTo('Contact Us', {
                         category: 'A Category'
@@ -496,25 +485,25 @@ describe('Routing:', function () {
 
         describe('creating a URL from the named route', function () {
             beforeEach(function () {
-                this.url = this.router.buildUrl('Contact Us', {
+                this.match = this.router.buildMatchedRoute('Contact Us', {
                     category: 'A Category'
                 });
             });
 
             it('should return the url with parameter', function () {
-                expect(this.url).toEqual('/Contact Us/A Category');
+                expect(this.match.url).toEqual('/Contact Us/A Category');
             });
         });
 
         describe('creating a URL from the named route with observable values', function () {
             beforeEach(function () {
-                this.url = this.router.buildUrl('Contact Us', {
+                this.match = this.router.buildMatchedRoute('Contact Us', {
                     category: ko.observable('A Category')
                 });
             });
 
             it('should return the url with unwrapped parameter', function () {
-                expect(this.url).toEqual('/Contact Us/A Category');
+                expect(this.match.url).toEqual('/Contact Us/A Category');
             });
         });
 
@@ -559,7 +548,8 @@ describe('Routing:', function () {
                 name: 'URL with query string parameters',
                 inputUrl: '/Contact Us/My Category?key=prop',
                 expectedParameters: {
-                    category: 'My Category'
+                    category: 'My Category',
+                    key: 'prop'
                 },
                 route: 'Contact Us'
             });
@@ -573,14 +563,14 @@ describe('Routing:', function () {
 
         describe('creating a URL from the named route', function () {
             beforeEach(function () {
-                this.url = this.router.buildUrl('Contact Us', {
+                this.match = this.router.buildMatchedRoute('Contact Us', {
                     category: 'A Category',
                     param2: 'A Value'
                 });
             });
 
             it('should return the url with parameter', function () {
-                expect(this.url).toEqual('/Contact Us/A Category/A Value');
+                expect(this.match.url).toEqual('/Contact Us/A Category/A Value');
             });
         });
 
@@ -630,7 +620,8 @@ describe('Routing:', function () {
                 inputUrl: '/Contact Us/My Category/Other?key=prop',
                 expectedParameters: {
                     param2: 'Other',
-                    category: 'My Category'
+                    category: 'My Category',
+                    key: 'prop'
                 },
                 route: 'Contact Us'
             });
@@ -645,23 +636,23 @@ describe('Routing:', function () {
 
         describe('creating a URL from the named route', function () {
             beforeEach(function () {
-                this.url = this.router.buildUrl('File', {
+                this.match = this.router.buildMatchedRoute('File', {
                     path: 'my/path/file.png'
                 });
             });
 
             it('should return the url with parameter', function () {
-                expect(this.url).toEqual('/File/my/path/file.png');
+                expect(this.match.url).toEqual('/File/my/path/file.png');
             });
         });
 
         describe('creating a URL from the named route with optional param missing', function () {
             beforeEach(function () {
-                this.url = this.router.buildUrl('File', {});
+                this.match = this.router.buildMatchedRoute('File', {});
             });
 
             it('should return the url with parameter', function () {
-                expect(this.url).toEqual('/File/');
+                expect(this.match.url).toEqual('/File/');
             });
         });
 
@@ -706,7 +697,8 @@ describe('Routing:', function () {
                 name: 'URL with query string parameters',
                 inputUrl: '/File/my/path/file.png?key=prop',
                 expectedParameters: {
-                    path: 'my/path/file.png'
+                    path: 'my/path/file.png',
+                    key: 'prop'
                 },
                 route: 'File'
             });
@@ -720,5 +712,37 @@ describe('Routing:', function () {
                 route: 'File'
             });
         });
+    });
+
+    describe('Authorisation Matched route', function () {
+        beforeEach(function () {
+            this.authComponent = { isAuthorised: this.stub() };
+
+            this.router.route('AuthRoute', '/auth-route', { components: { main: this.authComponent } });
+        });
+
+        it('should call isAuthorised of created component when calling matchedRoute.authorise', function() {
+            var matchedRoute = this.router.buildMatchedRoute('AuthRoute', {});
+            matchedRoute.authorise();
+
+            expect(this.authComponent.isAuthorised).toHaveBeenCalled();
+        })
+
+        it('should authorise component on navigation', function() {
+            this.router.navigateTo('AuthRoute', {});
+
+            expect(this.authComponent.isAuthorised).toHaveBeenCalled();
+        })
+
+        it('should should public an unauthorised message when authorisation fails', function() {
+            this.authComponent.isAuthorised.returns(false);
+
+            this.router.navigateTo('AuthRoute', {});
+
+            expect('unauthorisedRoute:AuthRoute').toHaveBeenPublishedWith({ 
+                route: this.router.getNamedRoute('AuthRoute'), 
+                parameters: {}
+            });
+        })
     });
 });

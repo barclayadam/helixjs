@@ -1,6 +1,5 @@
 (function() {
-    // The main injector into which all modules will be loaded via calls to hx.provide,
-    // or created by hx.create
+    // The main injector into which all modules will be loaded via calls to hx.provide
     var injector = new hx.Injector();
 
     // Expose methods of the single internal injector as 'globals'.
@@ -51,8 +50,7 @@
     }
 
     function startApp() {
-        var $log = hx.get('$log'),
-            $location = hx.get('$location'),
+        var $location = hx.get('$location'),
             $bus = hx.get('$bus'),
             $RegionManager = hx.get('$RegionManager');
 
@@ -63,8 +61,10 @@
 
         // Tie together routing with the application's main region manager
         $bus.subscribe('routeNavigated', function(msg) {
-            if (msg.route.options != null) {
-                appRegionManager.show(msg.route.options);
+            var components = msg.route.getComponents();
+            
+            if (components != null) {
+                appRegionManager.show(components);
             }
         })
 
