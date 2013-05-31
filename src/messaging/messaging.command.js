@@ -1,5 +1,14 @@
 hx.singleton('$Command', ['$log', '$ajax', '$EventEmitterFactory'], function($log, $ajax, $EventEmitterFactory) {
     
+    function execute(name, url, values) {
+        $log.info("Executing command '" + name + "'.");
+
+        return $ajax
+                .url(url)
+                .data(values || {})
+                .post();
+    }
+
     /**
      Initialises a new instance of the `hx.messaging.Command` class with the
      specified name and default values. 
@@ -11,8 +20,9 @@ hx.singleton('$Command', ['$log', '$ajax', '$EventEmitterFactory'], function($lo
     function Command(name, defaultValues) {
         var key, value;
 
-        this.defaultValues = defaultValues;
-        this.__name = name;
+        this.$defaultValues = defaultValues;
+        this.$name = name;
+        this.$url = Command.urlTemplate.replace("{name}", this.$name);
 
         for (key in defaultValues) {
             value = defaultValues[key];
@@ -26,13 +36,17 @@ hx.singleton('$Command', ['$log', '$ajax', '$EventEmitterFactory'], function($lo
         this.toJSON = this.toJSON.bind(this);
     }
 
+    Command.prototype.setUrl = function(url) {
+        this.$url = url;
+    }
+
     Command.prototype.execute = function () {
         this.validate();
 
         if (this.isValid()) {
             this.$publish('submitting', { command: this });
 
-            var executionPromise = Command.execute(this.__name, this);
+            var executionPromise = execute(this.$name, this.$url, this);
 
             executionPromise.then(function(data) {
                 this.$publish('succeeded', { command: this, data: data });
@@ -55,36 +69,14 @@ hx.singleton('$Command', ['$log', '$ajax', '$EventEmitterFactory'], function($lo
     Command.prototype.toJSON = function () {
         var definedValues = {};
 
-        for (var key in this.defaultValues) {
+        for (var key in this.$defaultValues) {
             definedValues[key] = ko.utils.unwrapObservable(this[key]);
         }
 
         return definedValues;
     };
 
-    Command.urlTemplate = '/api/{name}';  
-
-    /**
-     Executes a 'command', something that is simply defined as an AJAX call to a predefined
-     URL that has the name injected and JSON values POSTed.
-
-     The URL template that is used is defined by `$command.urlTemplate`, with a single
-     placeholder that will be replaced:
-
-     * `{name}`: Replaced by the value of `commandName` passed to this method
-
-     This method returns a promise that will resolve with the value of the AJAX call.
-    */
-    Command.execute = function (commandName, values) {
-        if (values == null) { values = {}; }
-
-        $log.info("Executing command '" + commandName + "'.");
-
-        return $ajax
-                .url(Command.urlTemplate.replace("{name}", commandName))
-                .data(values)
-                .post();
-    };
+    Command.urlTemplate = '/api/{name}'; 
 
     return Command;
 });

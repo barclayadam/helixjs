@@ -1,50 +1,6 @@
 describe('Messaging - Commands', function () {
     var $Command = hx.get('$Command');
     
-    describe('Executing a command (low-level)', function () {
-        beforeEach(function () {
-            $Command.urlTemplate = 'ExecuteCommand/{name}';
-
-            this.promise = $Command.execute('My Command', {
-                id: 3456
-            });
-
-            this.successCallback = this.spy();
-            this.promise.then(this.successCallback);
-
-            this.failureCallback = this.spy();
-            this.promise.fail(this.failureCallback);
-        });
-
-        describe('that succeeds', function () {
-            it('should resolve the promise with the result, using URL with replaced name', function () {
-                this.server.respondWith("POST", "ExecuteCommand/My Command", [
-                    200, {
-                        "Content-Type": "application/json"
-                    }, '{ "resultProperty": 5}']);
-
-                this.server.respond();
-
-                expect(this.successCallback).toHaveBeenCalledWith({
-                    resultProperty: 5
-                });
-            });
-        });
-
-        describe('that fails', function () {
-            it('should reject the promise', function () {
-                this.server.respondWith("POST", "ExecuteCommand/My Command", [
-                    500, {
-                        "Content-Type": "application/json"
-                    }, '{}']);
-
-                this.server.respond();
-
-                expect(this.failureCallback).toHaveBeenCalled();
-            });
-        });
-    });
-
     describe('Manipulating a Command', function () {
         beforeEach(function () {
             this.command = new $Command('My Command', {
@@ -125,7 +81,6 @@ describe('Messaging - Commands', function () {
                 expect(this.validationFailedEventSpy).toHaveBeenCalledWith( { command: this.command });
             });
         });
-
         describe('that succeeds', function () {
             beforeEach(function () {
                 this.succeededEventSpy = this.spy();
@@ -159,6 +114,36 @@ describe('Messaging - Commands', function () {
                 expect(this.succeededEventSpy).toHaveBeenCalled();
             });
         });
+
+        describe('overridden URL', function () {
+            beforeEach(function () {
+                this.command.setUrl('my/custom/url')
+
+                this.succeededEventSpy = this.spy();
+                this.command.subscribe('succeeded', this.succeededEventSpy);
+
+                this.promise = this.command.execute();
+                this.promise.then(this.successCallback);
+
+                this.server.respondWith("POST", "my/custom/url", [
+                    200, {
+                        "Content-Type": "application/json"
+                    }, '{ "resultProperty": 5}']);
+
+                this.server.respond();
+            });
+
+            it('should resolve the promise with the result, using overriden URL', function () {
+                expect(this.successCallback).toHaveBeenCalledWith({
+                    resultProperty: 5
+                });
+            });
+
+            it('should raise a succeeded event', function () {
+                expect(this.succeededEventSpy).toHaveBeenCalled();
+            });
+        });
+
 
         describe('that is executed under a different context', function () {
             beforeEach(function () {
@@ -233,6 +218,5 @@ describe('Messaging - Commands', function () {
                 expect(this.submittingEventSpy2).toHaveNotBeenCalled();
             });
         });
-
     });
 });
