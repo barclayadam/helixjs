@@ -116,6 +116,8 @@ hx.config(['$log', '$ajax', '$injector', '$authoriser', '$router'], function($lo
                 $authoriser
                     .authorise(component, $router.current.parameters)
                     .done(function() {
+                        ko.utils.toggleDomNodeCssClass(element, 'is-loading', true);
+
                         var showDeferred = new jQuery.Deferred();
 
                         if (component.beforeShow != null) {                
@@ -134,6 +136,8 @@ hx.config(['$log', '$ajax', '$injector', '$authoriser', '$router'], function($lo
                         showDeferred.done(function () {
                             var templateValueAccessor = createTemplateValueAccessor(component),
                                 innerBindingContext = bindingContext.extend();
+
+                            ko.utils.toggleDomNodeCssClass(element, 'is-loading', false);
 
                             koBindingHandlers.template.update(element, templateValueAccessor, allBindingsAccessor, viewModel, innerBindingContext);
 

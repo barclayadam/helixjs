@@ -214,6 +214,11 @@ describe('component binding handler', function () {
                 expect(this.viewModel.afterShow).toHaveNotBeenCalled();
             });
 
+            it('should add is-loading class to element', function () {
+                // We have not responded from server yet
+                expect(document.getElementById("fixture")).toHaveClass('is-loading');
+            });
+
             describe('after AJAX requests complete', function () {
                 beforeEach(function () {
                     this.server.respondWith('GET', '/Users/Managers', [
@@ -231,6 +236,10 @@ describe('component binding handler', function () {
                 it('should call afterShow before ajax requests complete', function () {
                     // We have now responded from server
                     expect(this.viewModel.afterShow).toHaveBeenCalled();
+                });
+
+                it('should remove is-loading class to element', function () {
+                    expect(document.getElementById("fixture")).not.toHaveClass('is-loading');
                 });
             });
         });
