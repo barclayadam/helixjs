@@ -36,7 +36,7 @@ jasmine.slow = (function() {
         }
         reportStr = "spec #" + currentSpec.id + " took " + timeDiff + "ms: " + parentDesc + suiteDesc + " it " + specDesc;
 
-        console.log(reportStr);
+        window.console && window.console.log(reportStr);
       }
     };
   };
