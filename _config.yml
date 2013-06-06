@@ -1,5 +1,5 @@
 navigation:
 - name: Home
-  url: /index.html
+  url: /
 - name: Getting Started
   url: /getting-started.html
