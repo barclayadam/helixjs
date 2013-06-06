@@ -3,7 +3,3 @@ navigation:
   url: /index.html
 - name: Getting Started
   url: /getting-started.html
-- name: Documentation
-  url: /documentation.html  
-- name: Examples
-  url: /examples.html
