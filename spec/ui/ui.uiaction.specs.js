@@ -9,11 +9,11 @@ describe('UIAction', function () {
             });
 
             this.action = new hx.UiAction(this.actionSpy);
-            this.returnValue = this.action.execute('A Value');
+            this.returnValue = this.action('A Value');
         });
 
-        it('should have an execute function', function () {
-            expect(this.action.execute).toBeAFunction();
+        it('should be a function', function () {
+            expect(this.action).toBeAFunction();
         });
 
         it('should pass through calls to the configured function', function () {
@@ -42,7 +42,7 @@ describe('UIAction', function () {
     describe('basic action with no configuration and no return value', function () {
         beforeEach(function () {
             this.action = new hx.UiAction(this.spy());
-            this.returnValue = this.action.execute('A Value');
+            this.returnValue = this.action('A Value');
         });
 
         it('should return undefined on execution', function () {
@@ -70,7 +70,7 @@ describe('UIAction', function () {
             };
 
             this.action = new hx.UiAction(this.actionOptions);
-            this.action.execute();
+            this.action();
         });
 
         it('should call enabled function with context set', function () {
@@ -103,7 +103,7 @@ describe('UIAction', function () {
         describe('when enabled is true', function () {
             beforeEach(function () {
                 this.enabled(true);
-                this.action.execute('A Value');
+                this.action('A Value');
             });
 
             it('should pass through calls to the configured function', function () {
@@ -127,7 +127,7 @@ describe('UIAction', function () {
         describe('when enabled is false', function () {
             beforeEach(function () {
                 this.enabled(false);
-                this.action.execute('A Value');
+                this.action('A Value');
             });
 
             it('should not pass through calls to the configured function', function () {
@@ -151,7 +151,7 @@ describe('UIAction', function () {
             });
 
             this.action = new hx.UiAction(this.actionSpy);
-            this.action.execute();
+            this.action();
         });
 
         it('should have executing observable that is true whilst deferred has not resolved', function () {
@@ -178,9 +178,9 @@ describe('UIAction', function () {
                 action: this.actionSpy
             });
 
-            this.action.execute();
-            this.action.execute();
-            this.action.execute();
+            this.action();
+            this.action();
+            this.action();
         });
 
         it('should only execute function once whilst the first has not completed', function () {
@@ -189,7 +189,7 @@ describe('UIAction', function () {
 
         it('should allow execution again after first call completes', function () {
             this.deferred.resolve();
-            this.action.execute();
+            this.action();
             expect(this.actionSpy).toHaveBeenCalledTwice();
         });
     });

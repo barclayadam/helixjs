@@ -18,9 +18,6 @@
  * action is asynchrounous the user can not execute the action multiple times in parallel,
  * which is particularly useful when submitting forms to the server.
  *
- * @class UiAction
- * @constructor
- *
  * @param {object|function} funcOrOptions - The function to execute, or an options object
  * @param {function} funcOrOptions.action - [required] The function to execute
  * @param {function|observable} funcOrOptions.enabled - A function or observable that can
@@ -29,9 +26,12 @@
  *    to disable this action during execution, default to `true`
  * @param {any} funcOrOptions.context - The context (`this` value) the enabled (if supplied) and 
  * action functions will be bound to.
+ * @return {function} A function that wraps the action passed in, and augments it with the
+ * functionality as described above
  */
 hx.UiAction = function (funcOrOptions) {
-    var action, disableDuringExecution, enabled, executing;
+    var action, disableDuringExecution, enabled, 
+        executing = ko.observable(false);
 
     if (_.isFunction(funcOrOptions)) {
         enabled = ko.observable(true);
@@ -44,6 +44,28 @@ hx.UiAction = function (funcOrOptions) {
     }
 
     /**
+     * Executes this UiAction.
+     *
+     * @method execute
+     * @return {any} The result of executing this action
+     */
+    function execute() {
+        var ret;
+
+        if (enabled() && (!disableDuringExecution || !executing())) {
+            executing(true);
+
+            ret = action.apply(funcOrOptions.context || this, arguments);
+
+            hx.utils.asPromise(ret).then(function () {
+                executing(false);
+            });
+
+            return ret;
+        }
+    };
+
+    /**
      * Determines whether or not this action is enabled, that when {@link execute} is called
      * it will be executed. 
      *
@@ -52,7 +74,7 @@ hx.UiAction = function (funcOrOptions) {
      * @default true
      * @observable
      */
-    this.enabled = enabled;
+    execute.enabled = enabled;
 
     /**
      * Determines whether this action is currently executing, useful when binding to an async
@@ -63,7 +85,7 @@ hx.UiAction = function (funcOrOptions) {
      * @type bool
      * @observable
      */
-    this.executing = ko.observable(false);
+    execute.executing = executing;
 
     /**
      * Determines whether or not this action should be disabled during execution, such that
@@ -74,29 +96,9 @@ hx.UiAction = function (funcOrOptions) {
      * @type bool
      * @default false
      */
-    this.disableDuringExecution = disableDuringExecution;
+    execute.disableDuringExecution = disableDuringExecution;
 
-    /**
-     * Executes this UiAction.
-     *
-     * @method execute
-     * @return {any} The result of executing this action
-     */
-    this.execute = function () {
-        var ret, self = this;
-
-        if (this.enabled() && (!this.disableDuringExecution || !this.executing())) {
-            this.executing(true);
-
-            ret = action.apply(funcOrOptions.context || this, arguments);
-
-            hx.utils.asPromise(ret).then(function () {
-                self.executing(false);
-            });
-
-            return ret;
-        }
-    };
+    return execute;
 };
  
 /**
@@ -127,10 +129,11 @@ hx.UiAction = function (funcOrOptions) {
  */
 koBindingHandlers.action = {
     init: function(element, valueAccessor, allBindingsAccessor) {
-        var shouldHide = allBindingsAccessor()['onDisabled'] === 'hide';
+        var shouldHide = allBindingsAccessor()['onDisabled'] === 'hide',
+            uiAction = valueAccessor();
 
         ko.utils.registerEventHandler(element, 'click', function() {
-            valueAccessor().execute();
+            uiAction();
         })
 
         if(shouldHide) {
