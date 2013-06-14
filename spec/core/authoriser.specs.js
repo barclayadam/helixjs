@@ -3,15 +3,11 @@
         $authoriser = hx.get('$authoriser');
 
     function shouldHaveResolved(promise) {
-        promise.fail(function() {
-            expect(true).toBe(false, 'Promise should not have rejected, should have resolved')
-        });
+        expect(promise.state()).toEqual("resolved");
     }
 
     function shouldHaveRejected(promise) {
-        promise.done(function() {
-            expect(true).toBe(false, 'Promise should not have resolved, should have rejected')
-        });
+        expect(promise.state()).toEqual("rejected");
     }
 
     describe('single component to authorise', function() {

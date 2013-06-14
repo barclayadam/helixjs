@@ -26,7 +26,8 @@ hx.provide('$authoriser', function() {
             var result = component.isAuthorised(parameters, handleResult);
 
             if(result !== undefined) {
-                hx.utils.asPromise(result).done(handleResult);
+                hx.utils.asPromise(result)
+                    .then(handleResult, function() { authorizedDeferred.reject(); });
             }
         } else {
             // Resolve immediately, nothing to wait for
