@@ -170,7 +170,7 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location', '$injector', '$authorise
                 parameters: match.parameters
             };
 
-        match.authorise()
+        return match.authorise()
             .done(function() {
                 self.current = match;
 
@@ -279,14 +279,10 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location', '$injector', '$authorise
         var match = this.buildMatchedRoute(name, parameters);
 
         if (match) {
-            this._doNavigate(match);
-
-            $location.routePath(match.url);
-
-            return true;
+            this._doNavigate(match).done(function() {
+                $location.routePath(match.url);
+            });
         }
-
-        return false;
     };
 
     return RouteTable;

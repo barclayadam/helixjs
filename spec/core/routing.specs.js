@@ -714,7 +714,7 @@ describe('Routing:', function () {
         });
     });
 
-    describe('Authorisation Matched route', function () {
+    describe('Authorisation', function() {
         beforeEach(function () {
             this.authComponent = { isAuthorised: this.stub() };
 
@@ -734,7 +734,7 @@ describe('Routing:', function () {
             expect(this.authComponent.isAuthorised).toHaveBeenCalled();
         })
 
-        it('should should public an unauthorised message when authorisation fails', function() {
+        it('should should publish an unauthorised message when authorisation fails', function() {
             this.authComponent.isAuthorised.returns(false);
 
             this.router.navigateTo('AuthRoute', {});
@@ -744,5 +744,13 @@ describe('Routing:', function () {
                 parameters: {}
             });
         })
-    });
+
+        it('should should not update $location.routePath when authorisation fails', function() {
+            this.authComponent.isAuthorised.returns(false);
+
+            this.router.navigateTo('AuthRoute', {});
+
+            expect(this.routePathStub).toHaveNotBeenCalled();
+        })
+    })
 });
