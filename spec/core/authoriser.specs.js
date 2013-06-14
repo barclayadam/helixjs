@@ -57,6 +57,24 @@
             shouldHaveResolved($authoriser.authorise(this.component));
         })
 
+        it('should handle returning promise that resolves without a value', function() {
+            var deferred = jQuery.Deferred();
+            deferred.resolve();
+
+            this.component.isAuthorised.returns(deferred.promise());
+
+            shouldHaveResolved($authoriser.authorise(this.component));
+        })
+
+        it('should handle returning promise that rejects without a value', function() {
+            var deferred = jQuery.Deferred();
+            deferred.reject();
+
+            this.component.isAuthorised.returns(deferred.promise());
+
+            shouldHaveRejected($authoriser.authorise(this.component));
+        })
+
         it('should handle returning undefined, but calling the callback function with false', function() {
             this.component.isAuthorised = function(parameters, callback) { callback(false); };
 

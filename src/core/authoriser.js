@@ -19,7 +19,7 @@ hx.provide('$authoriser', function() {
     function authorise(component, parameters) {
         var authorizedDeferred = new jQuery.Deferred(),
             handleResult = function(r) {
-                authorizedDeferred[r ? 'resolve' : 'reject']();
+                authorizedDeferred[r === false ? 'reject' : 'resolve']();
             };
 
         if(component.isAuthorised) {
