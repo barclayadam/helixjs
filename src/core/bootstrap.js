@@ -49,10 +49,13 @@
         injector.get('$configBlocks');
     }
 
-    function startApp() {
+    function startApp(element) {
         var $location = hx.get('$location'),
             $bus = hx.get('$bus'),
-            $RegionManager = hx.get('$RegionManager');
+            $RegionManager = hx.get('$RegionManager'),
+            $ajax = hx.get('$ajax');
+
+        ko.utils.toggleDomNodeCssClass(element, 'loading', true);
 
         var appRegionManager = new $RegionManager();
         hx.provide('$appRegionManager', appRegionManager);
@@ -66,9 +69,22 @@
             if (components != null) {
                 appRegionManager.show(components);
             }
-        })
+        });
 
-        $location.initialise();
+        $ajax.listen(function() {
+            $bus.publish('preload-data', {});
+        }).done(function() {
+            // Once the app has been bootstrapped we want to set-up the region manager
+            // before the app is properly 'started' (e.g. location services is initialised)
+            var bindingContext = new ko.bindingContext({});
+                bindingContext['$regionManager'] = appRegionManager;
+
+            ko.applyBindingsToDescendants(bindingContext, element);
+
+            $location.initialise();
+
+            ko.utils.toggleDomNodeCssClass(element, 'loading', false);
+        })
     }
 
     // Once everything has been loaded we bootstrap, which simply involves attempting
@@ -84,15 +100,7 @@
 
     koBindingHandlers.app = {
         init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-            // Once the app has been bootstrapped we want to set-up the region manager
-            // before the app is properly 'started' (e.g. location services is initialised)
-            hx.config(function() {
-                koBindingHandlers.regionManager.init(element, (function() {
-                    return hx.get('$appRegionManager');
-                }), allBindingsAccessor, viewModel, bindingContext);
-            });         
-
-            startApp(); 
+            startApp(element); 
             
             return { controlsDescendantBindings: true };
         }
