@@ -1,8 +1,8 @@
 {
   "name": "HelixJS",
-  "description": "Lightning-fast web development with knockout.js at its core.",
+  "description": "DNA for web apps",
   "version": "0.0.1",
-  "homepage": "https://github.com/barclayadam/helixjs",
+  "homepage": "https://www.helixjs.org",
   "keywords": [
     "knockout",
     "plugin",
@@ -20,7 +20,7 @@
   ],
   "author": {
     "name": "Adam Barclay",
-    "email": "barclay.adam@gmail.com"
+    "email": "adam.barclay@redsequence.com"
   },
   "bugs": {
     "web": "https://github.com/barclayadam/helixjs/issues"

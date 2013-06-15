@@ -142,4 +142,29 @@ describe('validation - ui', function() {
         })
 
     })
+
+    describe('serverErrors', function() {
+        beforeEach(function() {
+            var $Command = hx.get('$Command');
+
+            this.setHtmlFixture("<div data-bind='with: test'>" +
+                                " <input id='password' type='password' data-bind='value: password' />" +
+                                " <validationmessage id='password-validation-message' data-option='password'></validationMessage>" +
+                                "</div>");
+            
+            this.testCommand = new $Command('test', {
+                password: ko.observable().addValidationRules()
+            });
+
+            this.applyBindingsToFixture({
+                test: this.testCommand
+            });
+
+            this.testCommand.setServerErrors({ password: 'Password is invalid.' });
+        });
+
+        it('should set text content to the error message', function() {
+            expect(document.getElementById('password-validation-message')).toHaveText('Password is invalid.');
+        })            
+    })
 })

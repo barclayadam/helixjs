@@ -77,7 +77,7 @@ hx.config(function() {
             var value = valueAccessor();
 
             if(value && value.isValid) {
-                var isValid = value.isValid();
+                var isValid = value.isValid() && value.serverErrors().length === 0;
 
                 ko.utils.toggleDomNodeCssClass(element, 'valid', isValid);
                 ko.utils.toggleDomNodeCssClass(element, 'invalid', !isValid);
@@ -87,7 +87,7 @@ hx.config(function() {
                     ko.utils.emptyDomNode(element);
                 } else {
                     var errorText = ko.utils.domData.get(element, '__validation_message') ||
-                                    value.errors().join("<br />");
+                                    value.errors().concat(value.serverErrors()).join("<br />");
 
                     ko.utils.setTextContent(element, errorText);
                 }
