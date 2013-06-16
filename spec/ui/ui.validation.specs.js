@@ -140,31 +140,57 @@ describe('validation - ui', function() {
 
             expect(document.getElementById('validation-message')).toHaveClass('validated');
         })
-
     })
 
-    describe('serverErrors', function() {
+    describe('error visibility', function() {
         beforeEach(function() {
-            var $Command = hx.get('$Command');
-
-            this.setHtmlFixture("<div data-bind='with: test'>" +
+            this.setHtmlFixture("<div data-bind='with: viewModel'>" +
                                 " <input id='password' type='password' data-bind='value: password' />" +
                                 " <validationmessage id='password-validation-message' data-option='password'></validationMessage>" +
                                 "</div>");
             
-            this.testCommand = new $Command('test', {
-                password: ko.observable().addValidationRules()
-            });
+            this.viewModel = {
+                password: ko.observable().addValidationRules({ required: true, requiredMessage: 'My required message' })
+            }
+
+            hx.validation.mixin(this.viewModel);
 
             this.applyBindingsToFixture({
-                test: this.testCommand
+                viewModel: this.viewModel
             });
-
-            this.testCommand.setServerErrors({ password: 'Password is invalid.' });
         });
 
-        it('should set text content to the error message', function() {
-            expect(document.getElementById('password-validation-message')).toHaveText('Password is invalid.');
-        })            
+        describe('when server errors have not been set', function () {
+            it('should show client errors only', function () {
+                expect(document.getElementById('password-validation-message')).toHaveText('My required message');
+            });
+
+            it('should show nothing when client errors have been fixed', function () {
+                this.viewModel.password('test');
+
+                expect(document.getElementById('password-validation-message')).toBeEmpty();
+            });            
+        });
+
+        describe('when server errors set', function () {
+            beforeEach(function () {
+                this.viewModel.setServerErrors({ password: 'Password is invalid' });
+            });
+
+            it('should show both client errors and server errors', function () {
+                // Clear value, making it invalid as set as required
+                this.viewModel.password(undefined);
+
+                expect(document.getElementById('password-validation-message')).toHaveText('My required message<br />Password is invalid');
+            });
+
+            it('should show just server errors when client errors have been fixed', function () {
+                this.viewModel.password('test');
+                // This is wrong
+                this.viewModel.setServerErrors({ password: 'Password is invalid' });                
+
+                expect(document.getElementById('password-validation-message')).toHaveText('Password is invalid');
+            }); 
+        });         
     })
 })
