@@ -47,7 +47,8 @@ hx.singleton('$ajax', ['$bus'], function($bus) {
 
         requestOptions = _.defaults(requestBuilder.properties, {
             url: requestBuilder.url,
-            type: httpMethod
+            type: httpMethod,
+            contentType: "application/json; charset=utf-8"
         });
 
         ajaxRequest = jQuery.ajax(requestOptions);
