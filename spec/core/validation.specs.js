@@ -78,19 +78,145 @@ describe('validation', function () {
         });
     });
 
-    describe('validating a property', function () {
+    describe('validating a property - non async', function () {
         beforeEach(function () {
             this.property = ko.observable();
             this.property.addValidationRules({
                 required: true
             });
-            this.property.validate();
+            
+            this.validationPromise = this.property.validate();
         });
 
-        it('should mark property as being validated', function () {
+        it('should mark property as having been validated', function () {
             expect(this.property.validated()).toBe(true);
         });
+
+        it('should return a resolved promise with result of validation', function () {
+            expect(this.validationPromise.state()).toBe('resolved');
+
+            this.validationPromise.done(function(r) {
+                expect(r).toBe(false);
+            })
+        });
     });
+
+    describe('validating a property with async validator', function() {
+        beforeEach(function() {
+            this.deferred = deferred = new jQuery.Deferred();
+
+            hx.validation.rules['asyncExample'] = {
+                validator: function (value, options) {
+                    return deferred;
+                },
+
+                message: "This field is validated as async",
+            }
+
+            this.property = ko.observable();
+            this.property.addValidationRules({
+                asyncExample: true
+            });
+
+            this.validatePromise = this.property.validate();
+        })
+
+        it('should set validating observable of property to true', function() {
+            expect(this.property.validating()).toBe(true);
+        })
+
+        it('should return a pending promise from validate method', function() {
+            expect(this.validatePromise.state()).toBe("pending");
+        })
+
+        it('should set validating to false when promise resolved', function() {
+            this.deferred.resolve();
+            expect(this.property.validating()).toBe(false);
+        })
+
+        it('should add an error if resolves to false', function() {
+            this.deferred.resolve(false);
+
+            expect(this.property.errors()).toContain('This field is validated as async');
+        })
+
+        it('should set isValid to false if resolves to false', function() {
+            this.deferred.resolve(false);
+
+            expect(this.property.isValid()).toBe(false);
+        })
+
+        it('should not an error if resolves to true', function() {
+            this.deferred.resolve(true);
+
+            expect(this.property.errors()).toEqual([]);
+        })
+
+        it('should set isValid to false if resolves to true', function() {
+            this.deferred.resolve(true);
+
+            expect(this.property.isValid()).toBe(true);
+        })
+    });
+
+    describe('validating a property with multiple async validators', function() {
+        beforeEach(function() {
+            this.deferred1 = deferred1 = new jQuery.Deferred();
+            this.deferred2 = deferred2 = new jQuery.Deferred();
+
+            hx.validation.rules['asyncExample1'] = {
+                validator: function (value, options) {
+                    return deferred1;
+                },
+
+                message: "This field is validated as async - example1",
+            }
+
+            hx.validation.rules['asyncExample2'] = {
+                validator: function (value, options) {
+                    return deferred2;
+                },
+
+                message: "This field is validated as async - example2",
+            }
+
+            this.property = ko.observable();
+
+            this.property.addValidationRules({
+                asyncExample1: true,
+                asyncExample2: true
+            });
+
+            this.validatePromise = this.property.validate();
+        })
+
+        it('should not set errors if only one has resolved', function() {
+            this.deferred1.resolve(true);
+
+            expect(this.property.errors()).toEqual([]);
+        })
+
+        it('should keep validating as true if only one resolves', function() {
+            this.deferred1.resolve(true);
+
+            expect(this.property.validating()).toBe(true);
+        })
+
+        it('should mark validating as false when all resolve', function() {
+            this.deferred1.resolve(true);
+            this.deferred2.resolve(true);
+
+            expect(this.property.validating()).toBe(false);
+        })
+
+        it('should add errors of any resolved as false', function() {
+            this.deferred1.resolve(true);
+            this.deferred2.resolve(false);
+
+            expect(this.property.errors().length).toBe(1);
+            expect(this.property.errors()).toContain('This field is validated as async - example2');
+        })
+    })
 
     describe('adding validation rules multiple times', function () {
         beforeEach(function () {
@@ -239,6 +365,7 @@ describe('validation', function () {
                         property1: 'A Value'
                     });
 
+                    debugger
                     this.model.property2('A Value');
                 });
 
@@ -378,6 +505,7 @@ describe('validation', function () {
                     expect(this.model.arrayProp()[1].isValid()).toBe(false);
                 });
             });
+
             describe('when plain child object has validatables with one failing', function () {
                 beforeEach(function () {
                     this.model = {
@@ -474,6 +602,60 @@ describe('validation', function () {
                     });
                 });
             });
+
+            describe('async', function() {
+                beforeEach(function() {
+                    this.asyncDeferred = asyncDeferred = new jQuery.Deferred();
+
+                    this.property = ko.observable().addValidationRules({
+                            custom: function() {
+                                return asyncDeferred;
+                            }
+                        });
+
+                    this.model = {
+                        asyncProperty: this.property
+                    };
+
+                    hx.validation.mixin(this.model);
+                    this.validatePromise = this.model.validate();
+                })
+
+                it('should return a pending promise from validate method', function() {
+                    expect(this.validatePromise.state()).toBe("pending");
+                })
+
+                it('should set validating to true if promises have not been resolved', function() {
+                    expect(this.model.validating()).toBe(true);
+                })
+
+                it('should set validating to false if promises have been resolved', function() {
+                    this.asyncDeferred.resolve(true);
+
+                    expect(this.model.validating()).toBe(false);
+                })
+
+                it('should resolve validation promise with isValid value when resolved true', function() {
+                    this.asyncDeferred.resolve(true);
+
+                    expect(this.validatePromise.state()).toBe("resolved");
+
+                    this.validatePromise.done(function(result) {
+                        expect(result).toBe(true);
+                    })
+                })
+
+                it('should resolve validation promise with isValid value when resolved true', function() {
+                    this.asyncDeferred.resolve(false);
+
+                    expect(this.validatePromise.state()).toBe("resolved");
+
+                    this.validatePromise.done(function(result) {
+                        expect(result).toBe(false);
+                    })
+                })
+
+            })
         });
 
         describe('messaging', function () {

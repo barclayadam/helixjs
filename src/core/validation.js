@@ -17,80 +17,66 @@ validation.formatErrorMessage = function (msg) {
 };
 
 function getMessageCreator (propertyRules, ruleName) {
-    return propertyRules["" + ruleName + "Message"] || hx.validation.rules[ruleName].message || "The field is invalid";
-};
-
-function getErrors (observableValue) {
-    var errors, isValid, msgCreator, rule, ruleName, ruleOptions, rules, value;
-
-    errors = [];
-    rules = observableValue.validationRules();
-
-    // We only peek at the actual observable values as all subscriptions
-    // are done manually in a validatable property's validate method, yet
-    // this could be called as part of the model's validate method which
-    // creates a computed around the whole model, causing multiple subscriptions.
-    value = observableValue.peek();
-
-    for (ruleName in rules) {
-        ruleOptions = rules[ruleName];
-        rule = hx.validation.rules[ruleName];
-
-        if (rule != null) {
-            isValid = rule.validator(value, ruleOptions);
-
-            if (!isValid) {
-                msgCreator = getMessageCreator(rules, ruleName);
-
-                if (_.isFunction(msgCreator)) {
-                    errors.push(validation.formatErrorMessage(msgCreator(ruleOptions)));
-                } else {
-                    errors.push(validation.formatErrorMessage(msgCreator));
-                }
-            }
-        }
-    }
-
-    return errors;
+    return propertyRules[ruleName + "Message"] || hx.validation.rules[ruleName].message || "The field is invalid";
 };
 
 // Validates the specified 'model'.
 //
 // If the model has `validationRules` defined (e.g. a `validatable` observable) 
 // will validate those values.
-function validateModel (model) {
-    var valid = true;
+function validateModel (model, doesNotRequirePromise) {
+    var validationPromises = [];
 
-    if (model != null) {
-        // We have reached a property that has been marked as `validatable`
-        if ((model.validate != null) && (model.validationRules != null)) {
-            model.validate();
-            valid = model.isValid() && valid;
-        }
+    // Unwrap the passed in model - will handle observables wrapped in
+    // other observables by ignoring intermediate observables
+    while (ko.isObservable(model)) {
+      model = model.peek();
+    }    
 
-        // Need to ensure that children are also validated, either
-        // child properties (this is a 'model'), or an array (which
-        // may also have its own validation rules).
-        while (ko.isObservable(model)) {
-          model = model.peek();
-        }
-        
+    if (model) {
         if (_.isObject(model)) {
             for (var propName in model) {
                 if (!__hasProp.call(model, propName)) continue;
 
-                valid = (validateModel(model[propName])) && valid;
-            }
-        }
+                var propValue = model[propName];
 
-        if (_.isArray(model)) {
+                // We have reached a property that has been marked as `validatable`
+                if (propValue && propValue.validate && propValue.validationRules != null) {
+                    // We only want to be dependent on isValid, not the actual value
+                    // any any other value.
+                    ko.dependencyDetection.ignore(function() {
+                        validationPromises.push(propValue.validate());
+                    });
+
+                    // Add a dependency to isValid to force update of model on
+                    // value change.
+                    propValue.isValid();
+                }
+
+                validationPromises.push(validateModel(propValue, true));
+            }
+        } else if (_.isArray(model)) {
             for (var i = 0; i < model.length; i++) {
-                valid = (validateModel(model[i])) && valid;
+                validationPromises.push(validateModel(model[i], true));
             }
         }
     }
     
-    return valid;
+    // To avoid garbage we will only return a simple true value if there is
+    // nothing to be validated
+    if(validationPromises.length === 0) {
+        return true;
+    }
+
+    var masterDeferred = new jQuery.Deferred();
+
+    jQuery.when.apply(this, validationPromises).done(function() {
+        var allValid = _.every(arguments, function(r) { return r === true; });
+
+        masterDeferred.resolve(allValid);
+    })
+
+    return masterDeferred.promise();
 }
 
 /**
@@ -108,6 +94,8 @@ function validateModel (model) {
  have validation rules specified against them.
 */
 validation.mixin = function (model) {
+    var lastValidationPromise;
+
     /**
      Validates this model against the currently-defined set of
      rules (against the child properties), setting up dependencies
@@ -127,7 +115,15 @@ validation.mixin = function (model) {
         // of this model and its children changes.
         if (!model.validated()) {
             ko.computed(function () {
-                model.isValid(validateModel(model));
+                model.validating(true);
+
+                lastValidationPromise = hx.utils.asPromise(validateModel(model))
+
+                lastValidationPromise.done(function(isValid) {
+                    model.isValid(isValid);
+
+                    model.validating(false);
+                });
             });
 
             model.validated(true);
@@ -137,7 +133,11 @@ validation.mixin = function (model) {
         // of the model will be reset, as it would not be possible to
         // determine validity of the model until going back to the server.
         model.serverErrors([]);
+
+        return lastValidationPromise;
     };
+    
+    model.validating = ko.observable(false);
 
     /**
      An observable that indicates whether this model has been validated,
@@ -217,6 +217,8 @@ validation.newModel = function (model) {
                          of this observable property.
 */
 ko.extenders.validationRules = function (target, validationRules) {
+    var lastValidationPromise;
+
     if (validationRules == null) {
         validationRules = {};
     }
@@ -224,20 +226,20 @@ ko.extenders.validationRules = function (target, validationRules) {
     // We are adding rules to an already validatable property, just extend
     // its validation rules.
     if (target.validationRules != null) {
-        target.validationRules(_.extend(target.validationRules(), validationRules));
+        target.validationRules = _.extend(target.validationRules, validationRules);
+        validate();
         return;
     }
 
-    target.validationRules = ko.observable(validationRules);
+    target.validationRules = validationRules;
 
-    // Validates this property against the currently-defined set of
-    // rules (against the child properties), setting up a dependency
-    // that will update the `errors` and `isValid` property of this
-    // observable on any value change.
     target.validate = function () {
         target.validated(true);
+
+        return lastValidationPromise;
     };
 
+    target.validating = ko.observable(false);
 
     // An observable that indicates whether this property has been validated,
     // set to `true` when the `validate` method of this method has been 
@@ -253,23 +255,84 @@ ko.extenders.validationRules = function (target, validationRules) {
     // stop the posting of a form to the server).
     target.serverErrors = ko.observable([]);
     
+    function handleValidationResult(isValid, ruleName, ruleOptions, errors) {
+        if (!isValid) {
+            var msgCreator = getMessageCreator(target.validationRules, ruleName);
+
+            if (_.isFunction(msgCreator)) {
+                errors.push(validation.formatErrorMessage(msgCreator(ruleOptions)));
+            } else {
+                errors.push(validation.formatErrorMessage(msgCreator));
+            }
+        }
+    }
+
     function validate () {
         if (ko.isObservable(target.peek())) {
             throw new Error('Cannot set an observable value as the value of a validated observable');
         }
+
+        target.validating(true);
 
         // When this value is changed the server errors will be removed, as
         // there would be no way to identify whether they were still accurate
         // or not until re-submitted, so for user-experience purposes these
         // errors are removed when a user modifies the value.
         target.serverErrors([]);
-        target.errors(getErrors(target));
 
-        target.isValid(target.errors().length === 0);
+        var currentErrors = [],
+            asyncPromises = [],
+            rules = target.validationRules,
+            // We only peek at the actual observable values as all subscriptions
+            // are done manually in a validatable property's validate method, yet
+            // this could be called as part of the model's validate method which
+            // creates a computed around the whole model, causing multiple subscriptions.
+            value = target.peek();
+
+        for (ruleName in rules) {
+            var ruleOptions = rules[ruleName],
+                rule = hx.validation.rules[ruleName];
+
+            if (rule != null) {
+                var isValidOrPromise = rule.validator(value, ruleOptions);
+
+                if (isValidOrPromise && isValidOrPromise.state && isValidOrPromise.then) {
+                    // We are dealing with an async validator
+                    asyncPromises.push(isValidOrPromise);
+
+                    isValidOrPromise
+                        .done(function(isValidResult) {
+                            handleValidationResult(isValidResult, ruleName, ruleOptions, currentErrors);
+                        })
+                } else {
+                    handleValidationResult(isValidOrPromise, ruleName, ruleOptions, currentErrors);
+                }                
+            }
+        }
+
+        var validationResultDeferred = new jQuery.Deferred();
+
+        function validationEnded() {
+            target.errors(currentErrors);
+            target.isValid(currentErrors.length === 0);
+
+            target.validating(false);
+
+            validationResultDeferred.resolve(currentErrors.length === 0);
+        }
+
+        lastValidationPromise = validationResultDeferred.promise();
+
+        if(asyncPromises.length === 0) {
+            validationEnded();
+        } else {
+            jQuery.when.apply(this, asyncPromises)
+                .then(validationEnded, validationEnded);
+        }
+
     };
 
     target.subscribe(validate);
-    target.validationRules.subscribe(validate);
     validate();
 
     return target;
