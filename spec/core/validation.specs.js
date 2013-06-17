@@ -365,7 +365,6 @@ describe('validation', function () {
                         property1: 'A Value'
                     });
 
-                    debugger
                     this.model.property2('A Value');
                 });
 
