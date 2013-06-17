@@ -144,10 +144,7 @@ describe('validation - ui', function() {
 
     describe('error visibility', function() {
         beforeEach(function() {
-            this.setHtmlFixture("<div data-bind='with: viewModel'>" +
-                                " <input id='password' type='password' data-bind='value: password' />" +
-                                " <validationmessage id='password-validation-message' data-option='password'></validationMessage>" +
-                                "</div>");
+            this.setHtmlFixture("<validationmessage id='password-validation-message' data-option='viewModel.password'></validationMessage>");
             
             this.viewModel = {
                 password: ko.observable().addValidationRules({ required: true, requiredMessage: 'My required message' })
@@ -184,9 +181,14 @@ describe('validation - ui', function() {
                 expect(document.getElementById('password-validation-message')).toHaveText('My required message<br />Password is invalid');
             });
 
+            it('should clear server errors when value is updated', function () {
+                this.viewModel.password('test');               
+
+                expect(document.getElementById('password-validation-message')).toBeEmpty();
+            }); 
+
             it('should show just server errors when client errors have been fixed', function () {
                 this.viewModel.password('test');
-                // This is wrong
                 this.viewModel.setServerErrors({ password: 'Password is invalid' });                
 
                 expect(document.getElementById('password-validation-message')).toHaveText('Password is invalid');
