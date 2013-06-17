@@ -581,6 +581,10 @@ describe('validation', function () {
                     expect(this.model.property1.isValid()).toBe(true);
                 });
 
+                it('should set properties without serverErrors as having an empty array of server errors', function () {
+                    expect(this.model.property2.serverErrors()).toEqual([]);
+                });
+
                 describe('and property value is updated', function () {
                     beforeEach(function () {
                         this.model.property1('A New Value');

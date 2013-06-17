@@ -185,9 +185,11 @@ validation.mixin = function (model) {
 
             value = model[key];
 
-            if ((value != null ? value.serverErrors : void 0) != null) {
-                value.serverErrors(_.flatten([errors[key]] || []));
-                delete errors[key];
+            if (value && value.serverErrors) {
+                if(errors[key]) {
+                    value.serverErrors(_.flatten([errors[key]] || []));
+                    delete errors[key];
+                }
             }
         }
 
