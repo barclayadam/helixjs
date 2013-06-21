@@ -114,7 +114,7 @@ hx.config(['$log', '$ajax', '$injector', '$authoriser', '$router'], function($lo
                 }
 
                 $authoriser
-                    .authorise(component, $router.current.parameters)
+                    .authorise(component, $router.current().parameters)
                     .done(function() {
                         ko.utils.toggleDomNodeCssClass(element, 'is-loading', true);
 

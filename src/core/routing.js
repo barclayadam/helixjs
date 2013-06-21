@@ -147,7 +147,7 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location', '$injector', '$authorise
         var self = this;
         this._routes = {};
 
-        this.current = {};
+        this.current = ko.observable({});
 
         // Handle messages that are raised by the location component
         // to indicate the URL has changed, that the user has navigated
@@ -172,7 +172,7 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location', '$injector', '$authorise
 
         return match.authorise()
             .done(function() {
-                self.current = match;
+                self.current(match);
 
                 $bus.publish("routeNavigated:" + match.route.name, msg);
             })

@@ -2,7 +2,8 @@ describe('ui - navigation', function() {
     var router = hx.get('$router');
 
     beforeEach(function() {
-        this.stub(router, 'navigateTo');        
+        this.spy(router, 'navigateTo');  
+        this.routePathStub = this.stub(hx.get('$location'), 'routePath');      
     })
 
     describe('missing route', function() {
@@ -38,7 +39,8 @@ describe('ui - navigation', function() {
 
     describe('route with required parameters', function() {
         beforeEach(function() {
-            router.route('My Page', '/my-other-page/{category}');
+            router.route('My Page', '/my-page/{category}');
+            router.route('My Other Page', '/my-other-page/{category}');
         });
 
         describe('parameters specified as static values', function() {
@@ -48,7 +50,7 @@ describe('ui - navigation', function() {
             })
 
             it('set href to constructed URL', function() {
-                expect(document.getElementById('my-page-link')).toHaveAttr('href', '/my-other-page/a-category');
+                expect(document.getElementById('my-page-link')).toHaveAttr('href', '/my-page/a-category');
             })
 
             it('should navigate to the route on click', function() {
@@ -62,7 +64,10 @@ describe('ui - navigation', function() {
             beforeEach(function() {
                 this.category = ko.observable('some-category');
 
-                this.setHtmlFixture("<a id='my-page-link' data-bind=\"navigate: 'My Page', parameters: { category: category }\">A Link</a>");
+                this.setHtmlFixture("<div>" +
+                                    " <a id='my-page-link' data-bind=\"navigate: 'My Page', parameters: { category: category }\">A Link</a>" +
+                                    " <a id='my-other-page-link' data-bind=\"navigate: 'My Other Page', parameters: { category: category }\">Another Link</a>" +
+                                    "</div>");
 
                 this.applyBindingsToFixture({
                     category: this.category
@@ -70,13 +75,26 @@ describe('ui - navigation', function() {
             })
 
             it('set href to constructed URL', function() {
-                expect(document.getElementById('my-page-link')).toHaveAttr('href', '/my-other-page/some-category');
+                expect(document.getElementById('my-page-link')).toHaveAttr('href', '/my-page/some-category');
             })
 
             it('should navigate to the route on click', function() {
                 ko.utils.triggerEvent(document.getElementById('my-page-link'), 'click');
 
                 expect(router.navigateTo).toHaveBeenCalledWith('My Page', { category: this.category() });
+            })
+
+            it('should add active class when navigated', function() {
+                ko.utils.triggerEvent(document.getElementById('my-page-link'), 'click');
+
+                expect(document.getElementById('my-page-link')).toHaveClass('active');
+            })
+
+            it('should remove active class when another route navigated', function() {
+                ko.utils.triggerEvent(document.getElementById('my-page-link'), 'click');
+                ko.utils.triggerEvent(document.getElementById('my-other-page-link'), 'click');
+
+                expect(document.getElementById('my-page-link')).not.toHaveClass('active');
             })
         });
     })

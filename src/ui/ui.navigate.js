@@ -36,6 +36,14 @@ hx.config(['$router'], function($router) {
      * <a data-bind="navigate: 'View User', parameters: { userId: 4 }>View User 4</a>"
      */
     koBindingHandlers.navigate = {
+        init: function(element, valueAccessor) {            
+            var routeName = ko.utils.unwrapObservable(valueAccessor());
+
+            $router.current.subscribe(function(current) {
+                ko.utils.toggleDomNodeCssClass(element, 'active', current.route.name === routeName);
+            })
+        },
+
         update: function(element, valueAccessor, allBindingsAccessor) {
             var routeName = ko.utils.unwrapObservable(valueAccessor()),
                 parameters = allBindingsAccessor()['parameters'];

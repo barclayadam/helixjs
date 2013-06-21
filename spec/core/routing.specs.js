@@ -97,11 +97,11 @@ describe('Routing:', function () {
             });
 
             it('should set currentRoute property', function () {
-                expect(this.router.current.route).toBe(this.contactUsRoute);
+                expect(this.router.current().route).toBe(this.contactUsRoute);
             });
 
             it('should set current.parameters property to be empty', function () {
-                expect(this.router.current.parameters).toEqual({});
+                expect(this.router.current().parameters).toEqual({});
             });
         });
 
@@ -114,7 +114,7 @@ describe('Routing:', function () {
             });
 
             it('should set current.parameters property to contain query string parameters', function () {
-                expect(this.router.current.parameters).toEqual({
+                expect(this.router.current().parameters).toEqual({
                     name: 'My Name'
                 });
             });
@@ -390,11 +390,11 @@ describe('Routing:', function () {
             });
 
             it('should set current.route property', function () {
-                expect(this.router.current.route).toBe(this.contactUsRoute);
+                expect(this.router.current().route).toBe(this.contactUsRoute);
             });
 
             it('should set current.parameters property to contain route parameters', function () {
-                expect(this.router.current.parameters).toEqual({
+                expect(this.router.current().parameters).toEqual({
                     category: 'A Category'
                 });
             });
@@ -412,7 +412,7 @@ describe('Routing:', function () {
                 });
 
                 it('should set current.parameters property to contain unwrapped route parameters', function () {
-                    expect(this.router.current.parameters).toEqual({
+                    expect(this.router.current().parameters).toEqual({
                         category: 'A Category'
                     });
                 });
@@ -446,11 +446,11 @@ describe('Routing:', function () {
                 });
 
                 it('should set current.route property', function () {
-                    expect(this.router.current.route).toBe(this.contactUsRoute);
+                    expect(this.router.current().route).toBe(this.contactUsRoute);
                 });
 
                 it('should set current.parameters property to contain route parameters', function () {
-                    expect(this.router.current.parameters).toEqual({
+                    expect(this.router.current().parameters).toEqual({
                         category: 'A Category'
                     });
                 });
