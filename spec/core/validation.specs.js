@@ -670,21 +670,35 @@ describe('validation', function () {
                     message: this.stub().returns('myCustomRule message')
                 };
 
+                this.asyncDeferred = asyncDeferred = new $.Deferred();
+
                 this.model = {
                     customMessageProp: ko.observable().addValidationRules({
                         required: true,
                         requiredMessage: 'My custom failure message'
                     }),
+
                     customPropertyNameProp: ko.observable().addValidationRules({
                         required: true,
                         propertyName: 'myOverridenPropertyName'
                     }),
+
                     customRuleProp: ko.observable().addValidationRules({
                         myCustomRule: true
+                    }),
+
+                    asyncMessageProp: ko.observable().addValidationRules({
+                        custom: function(value) {
+                            return asyncDeferred;
+                        },
+
+                        customMessage: 'This is the async failure',
+
                     })
                 };
-                
+
                 hx.validation.mixin(this.model);
+                
                 this.model.validate();
             });
 
@@ -698,6 +712,13 @@ describe('validation', function () {
 
             it('should not format error messages by default', function () {
                 expect(this.model.customRuleProp.errors()).toContain('myCustomRule message');
+            });
+
+            it('should correctly use message when custom validator is async', function () {
+                // We want to simulate async that is not resolved immediately, resolve it here
+                asyncDeferred.resolve(false);
+
+                expect(this.model.asyncMessageProp.errors()).toContain('This is the async failure');
             });
         });
     });

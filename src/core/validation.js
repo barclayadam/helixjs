@@ -24,7 +24,7 @@ function getMessageCreator (propertyRules, ruleName) {
 //
 // If the model has `validationRules` defined (e.g. a `validatable` observable) 
 // will validate those values.
-function validateModel (model, doesNotRequirePromise) {
+function validateModel (model) {
     var validationPromises = [];
 
     // Unwrap the passed in model - will handle observables wrapped in
@@ -42,7 +42,7 @@ function validateModel (model, doesNotRequirePromise) {
 
                 // We have reached a property that has been marked as `validatable`
                 if (propValue && propValue.validate && propValue.validationRules != null) {
-                    // We only want to be dependent on isValid, not the actual value
+                    // We only want to be dependent on isValid, not the actual value or
                     // any any other value.
                     ko.dependencyDetection.ignore(function() {
                         validationPromises.push(propValue.validate());
@@ -53,11 +53,11 @@ function validateModel (model, doesNotRequirePromise) {
                     propValue.isValid();
                 }
 
-                validationPromises.push(validateModel(propValue, true));
+                validationPromises.push(validateModel(propValue));
             }
         } else if (_.isArray(model)) {
             for (var i = 0; i < model.length; i++) {
-                validationPromises.push(validateModel(model[i], true));
+                validationPromises.push(validateModel(model[i]));
             }
         }
     }
@@ -291,25 +291,27 @@ ko.extenders.validationRules = function (target, validationRules) {
             // creates a computed around the whole model, causing multiple subscriptions.
             value = target.peek();
 
-        for (ruleName in rules) {
-            var ruleOptions = rules[ruleName],
-                rule = hx.validation.rules[ruleName];
+        for (var ruleName in rules) {
+            (function(ruleName) {
+                var ruleOptions = rules[ruleName],
+                    rule = hx.validation.rules[ruleName];
 
-            if (rule != null) {
-                var isValidOrPromise = rule.validator(value, ruleOptions);
+                if (rule != null) {
+                    var isValidOrPromise = rule.validator(value, ruleOptions);
 
-                if (isValidOrPromise && isValidOrPromise.state && isValidOrPromise.then) {
-                    // We are dealing with an async validator
-                    asyncPromises.push(isValidOrPromise);
+                    if (isValidOrPromise && isValidOrPromise.state && isValidOrPromise.then) {
+                        // We are dealing with an async validator
+                        asyncPromises.push(isValidOrPromise);
 
-                    isValidOrPromise
-                        .done(function(isValidResult) {
-                            handleValidationResult(isValidResult, ruleName, ruleOptions, currentErrors);
-                        })
-                } else {
-                    handleValidationResult(isValidOrPromise, ruleName, ruleOptions, currentErrors);
-                }                
-            }
+                        isValidOrPromise
+                            .done(function(isValidResult) {
+                                handleValidationResult(isValidResult, ruleName, ruleOptions, currentErrors);
+                            })
+                    } else {
+                        handleValidationResult(isValidOrPromise, ruleName, ruleOptions, currentErrors);
+                    }     
+                }
+            }(ruleName));           
         }
 
         var validationResultDeferred = new jQuery.Deferred();
@@ -328,8 +330,7 @@ ko.extenders.validationRules = function (target, validationRules) {
         if(asyncPromises.length === 0) {
             validationEnded();
         } else {
-            jQuery.when.apply(this, asyncPromises)
-                .then(validationEnded, validationEnded);
+            jQuery.when.apply(this, asyncPromises).always(validationEnded);
         }
 
     };
