@@ -55,13 +55,6 @@ describe('Messaging - Commands', function () {
                 this.promise = this.command.execute();
                 this.promise.then(this.successCallback);
                 this.promise.fail(this.failureCallback);
-
-                this.server.respondWith("POST", "ExecuteCommand/My Command", [
-                    200, {
-                        "Content-Type": "application/json"
-                    }, '{ "resultProperty": 5}']);
-
-                this.server.respond();
             });
 
             it('should not execute any AJAX', function () {
@@ -81,6 +74,36 @@ describe('Messaging - Commands', function () {
                 expect(this.validationFailedEventSpy).toHaveBeenCalledWith( { command: this.command });
             });
         });
+
+        describe('async validator', function() {
+            beforeEach(function () {
+                this.asyncValidationDeferred = asyncValidationDeferred = new $.Deferred();
+
+                this.command = new $Command('My Command', {
+                    id: ko.observable(3456).addValidationRules({
+                        custom: function() {
+                            return asyncValidationDeferred;
+                        }
+                    })
+                });
+
+                this.submittingEventSpy = this.spy();
+                this.command.subscribe('submitting', this.submittingEventSpy);
+
+                this.command.execute();
+            });
+
+            it('should not raise a submitting event when validation fails', function () {
+                this.asyncValidationDeferred.resolve(false);
+                expect(this.submittingEventSpy).toHaveNotBeenCalled();
+            });
+
+            it('should not raise a submitting event when validation succeeds', function () {
+                this.asyncValidationDeferred.resolve(true);
+                expect(this.submittingEventSpy).toHaveBeenCalled();
+            });
+        })
+
         describe('that succeeds', function () {
             beforeEach(function () {
                 this.succeededEventSpy = this.spy();

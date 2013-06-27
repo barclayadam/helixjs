@@ -41,29 +41,28 @@ hx.singleton('$Command', ['$log', '$ajax', '$EventEmitterFactory'], function($lo
     }
 
     Command.prototype.execute = function () {
-        this.validate();
+        var self = this,
+            result = jQuery.Deferred();
 
-        if (this.isValid()) {
-            this.$publish('submitting', { command: this });
+        this.validate().done(function() {
+            if (self.isValid()) {
+                self.$publish('submitting', { command: self });
 
-            var executionPromise = execute(this.$name, this.$url, this);
+                execute(self.$name, self.$url, self)
+                    .done(function(data) {
+                            self.$publish('succeeded', { command: self, data: data });
+                            result.resolve(data);
+                        })
+                    .fail(function(data) {
+                            self.$publish('failed', { command: self, data: data });
+                            result.reject(data);
+                        });
+            } else {
+                self.$publish('validationFailed', { command: self });
+            }
+        });
 
-            executionPromise.then(function(data) {
-                this.$publish('succeeded', { command: this, data: data });
-            }.bind(this));
-
-            executionPromise.fail(function(data) {
-                this.$publish('failed', { command: this, data: data });
-            }.bind(this));
-
-            return executionPromise;
-        } else {
-            this.$publish('validationFailed', { command: this });
-            
-            // If not valid then a promise that never resolves is returned.
-            // TODO: Is this the correct thing to do?
-            return jQuery.Deferred();
-        }
+        return result;
     };
 
     Command.prototype.toJSON = function () {
