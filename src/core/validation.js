@@ -24,7 +24,7 @@ function getMessageCreator (propertyRules, ruleName) {
 //
 // If the model has `validationRules` defined (e.g. a `validatable` observable) 
 // will validate those values.
-function validateModel (model) {
+function validateModel (model, includedProperties) {
     var validationPromises = [];
 
     // Unwrap the passed in model - will handle observables wrapped in
@@ -37,6 +37,7 @@ function validateModel (model) {
         if (_.isObject(model)) {
             for (var propName in model) {
                 if (!__hasProp.call(model, propName)) continue;
+                if (includedProperties && !_.contains(includedProperties, propName)) continue
 
                 var propValue = model[propName];
 
@@ -93,7 +94,7 @@ function validateModel (model) {
  non-observable values, although only observable properties will
  have validation rules specified against them.
 */
-validation.mixin = function (model) {
+validation.mixin = function (model, includedProperties) {
     var lastValidationPromise;
 
     /**
@@ -117,7 +118,7 @@ validation.mixin = function (model) {
             ko.computed(function () {
                 model.validating(true);
 
-                lastValidationPromise = hx.utils.asPromise(validateModel(model))
+                lastValidationPromise = hx.utils.asPromise(validateModel(model, includedProperties))
 
                 lastValidationPromise.done(function(isValid) {
                     model.isValid(isValid);

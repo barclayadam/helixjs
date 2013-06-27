@@ -18,18 +18,15 @@ hx.singleton('$Command', ['$log', '$ajax', '$EventEmitterFactory'], function($lo
      when the command is executed.
     */
     function Command(name, defaultValues) {
-        var key, value;
-
         this.$defaultValues = defaultValues;
         this.$name = name;
         this.$url = Command.urlTemplate.replace("{name}", this.$name);
 
-        for (key in defaultValues) {
-            value = defaultValues[key];
-            this[key] = hx.utils.asObservable(value);
+        for (var key in defaultValues) {
+            this[key] = hx.utils.asObservable(defaultValues[key]);
         }
 
-        hx.validation.mixin(this);
+        hx.validation.mixin(this, _.keys(defaultValues));
         $EventEmitterFactory.mixin(this);
 
         this.execute = this.execute.bind(this);

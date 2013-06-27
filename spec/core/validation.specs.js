@@ -661,6 +661,26 @@ describe('validation', function () {
             })
         });
 
+        describe('with explicitly included properties', function () {
+            beforeEach(function () {
+                this.model = {
+                    ignoredProperty: ko.observable().addValidationRules({ required: true }),
+                    includedProperty: ko.observable('a value').addValidationRules({ required: true })
+                };
+
+                hx.validation.mixin(this.model, ['includedProperty']);
+                this.model.validate();
+            });
+
+            it('should not validate properties not in inclusion list', function () {
+                expect(this.model.ignoredProperty.validated()).toBe(false);
+            });
+
+            it('should validate properties in inclusion list', function () {
+                expect(this.model.includedProperty.validated()).toBe(true);
+            });
+        });
+
         describe('messaging', function () {
             beforeEach(function () {
                 hx.validation.rules.myCustomRule = {
