@@ -21,12 +21,14 @@ hx.singleton('$Command', ['$log', '$ajax', '$EventEmitterFactory'], function($lo
         this.$defaultValues = defaultValues;
         this.$name = name;
         this.$url = Command.urlTemplate.replace("{name}", this.$name);
+        this.$valueKeys = [];
 
         for (var key in defaultValues) {
             this[key] = hx.utils.asObservable(defaultValues[key]);
+            this.$valueKeys.push(key);
         }
 
-        hx.validation.mixin(this, _.keys(defaultValues));
+        hx.validation.mixin(this, this.$valueKeys);
         $EventEmitterFactory.mixin(this);
 
         this.execute = this.execute.bind(this);
@@ -45,7 +47,7 @@ hx.singleton('$Command', ['$log', '$ajax', '$EventEmitterFactory'], function($lo
             if (self.isValid()) {
                 self.$publish('submitting', { command: self });
 
-                execute(self.$name, self.$url, self)
+                execute(self.$name, self.$url, _.pick(self, self.$valueKeys))
                     .done(function(data) {
                             self.$publish('succeeded', { command: self, data: data });
                             result.resolve(data);
