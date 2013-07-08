@@ -58,5 +58,6 @@
 
         //= ui/ui.navigate.js
         //= ui/ui.pager.js
+        //= ui/ui.dialog.js
     });
 })(window, document);
