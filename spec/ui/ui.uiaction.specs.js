@@ -1,4 +1,6 @@
 describe('UIAction', function () {
+    var uiAction = hx.get('$UiAction');
+
     describe('basic action with no configuration', function () {
         beforeEach(function () {
             var _this = this;
@@ -8,7 +10,7 @@ describe('UIAction', function () {
                 return "My Return Value";
             });
 
-            this.action = new hx.UiAction(this.actionSpy);
+            this.action = uiAction(this.actionSpy);
             this.returnValue = this.action('A Value');
         });
 
@@ -41,7 +43,7 @@ describe('UIAction', function () {
 
     describe('basic action with no configuration and no return value', function () {
         beforeEach(function () {
-            this.action = new hx.UiAction(this.spy());
+            this.action = uiAction(this.spy());
             this.returnValue = this.action('A Value');
         });
 
@@ -69,7 +71,7 @@ describe('UIAction', function () {
                 context: this.context
             };
 
-            this.action = new hx.UiAction(this.actionOptions);
+            this.action = uiAction(this.actionOptions);
             this.action();
         });
 
@@ -94,7 +96,7 @@ describe('UIAction', function () {
 
             this.enabled = ko.observable(true);
 
-            this.action = new hx.UiAction({
+            this.action = uiAction({
                 enabled: this.enabled,
                 action: this.actionSpy
             });
@@ -150,7 +152,7 @@ describe('UIAction', function () {
                 return _this.deferred;
             });
 
-            this.action = new hx.UiAction(this.actionSpy);
+            this.action = uiAction(this.actionSpy);
             this.action();
         });
 
@@ -173,7 +175,7 @@ describe('UIAction', function () {
                 return _this.deferred;
             });
 
-            this.action = new hx.UiAction({
+            this.action = uiAction({
                 disableDuringExecution: true,
                 action: this.actionSpy
             });
