@@ -1,8 +1,10 @@
 describe('action binding handler', function() {
+    var uiAction = hx.get('$UiAction');
+    
     describe('sync action - always enabled', function() {
         beforeEach(function() {
             this.actionSpy = this.spy();
-            this.action = new hx.UiAction(this.actionSpy);
+            this.action = uiAction(this.actionSpy);
 
             this.setHtmlFixture("<div>" +
                                 " <a id='action-link' data-bind='action: action'>Execute Action</a>" +
@@ -24,7 +26,7 @@ describe('action binding handler', function() {
         beforeEach(function() {
             this.enabled = ko.observable(false)
             this.actionSpy = this.spy();
-            this.action = new hx.UiAction({
+            this.action = uiAction({
                 enabled: this.enabled,
                 action: this.actionSpy
             });
@@ -107,7 +109,7 @@ describe('action binding handler', function() {
                 return this.deferred;
             }.bind(this));
 
-            this.action = new hx.UiAction(this.actionSpy);
+            this.action = uiAction(this.actionSpy);
 
             this.setHtmlFixture("<div>" +
                                 " <a id='action-link' data-bind='action: action'>Execute Action</a>" +
