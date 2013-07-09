@@ -177,6 +177,13 @@
             shouldHaveResolved($authoriser.authoriseAny(this.components));
         })
 
+        it('should return true if at least one succeeds', function() {
+            this.componentA.isAuthorised.returns(false)
+            this.componentB.isAuthorised.returns(true)
+
+            shouldHaveResolved($authoriser.authoriseAny(this.components));
+        })        
+
         it('should handle all returning true', function() {
             this.componentA.isAuthorised.returns(true)
             this.componentB.isAuthorised.returns(true)

@@ -53,12 +53,10 @@ hx.provide('$authoriser', function() {
             _.each(authorisationPromises, function(a) {
                 a.done(function () {
                     masterPromise.resolve();
-                }).fail(function () {
-                    masterPromise.reject();
                 });
             });
 
-            return masterPromise;
+            return masterPromise.reject();
         }        
     }
 });
