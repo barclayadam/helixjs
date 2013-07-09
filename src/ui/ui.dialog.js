@@ -20,9 +20,7 @@ hx.config('$templating', function($templating) {
         '  <button class=hx-dialog--confirm--ok data-bind="click: function() { $root.close(true) }, text: okText"></button>' +
         '  <button class=hx-dialog--confirm--cancel data-bind="click: function() { $root.close(false) }, text: cancelText"></button>' +
         '</footer>'
-    );
-
-    
+    );    
 });
 
 hx.provide('$dialog', function() {
@@ -104,7 +102,9 @@ hx.provide('$dialog', function() {
 
                 currentShowPromise.resolve(closeValue);
 
-                previouslyActiveElement.focus();
+                if(previouslyActiveElement) {
+                    previouslyActiveElement.focus();
+                }
 
                 ko.utils.toggleDomNodeCssClass(document.body, 'dialog-open', false);
 
