@@ -2,7 +2,7 @@
  * @class $Notifier
  * @static
  */
-hx.singleton('$Notifier', '$bus', function($bus) {
+hx.singleton('$notifier', '$bus', function($bus) {
     var notifications = {};
 
     /**
@@ -73,7 +73,20 @@ hx.singleton('$Notifier', '$bus', function($bus) {
             level: level,
             options: options || {}
         });
-    }
+    };
+
+    /**
+     * Subscribes the given callback to any notifications that are raised from here.
+     *
+     * The callback receives the same message data that is published directly to the
+     * `$bus`.
+     *
+     * @param {function} callback The function that will be executed when any notifications
+     * are raised
+     */
+    notifications.subscribe = function(callback) {
+        $bus.subscribe('notification', callback);
+    };
 
     return notifications;
 });
