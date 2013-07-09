@@ -41,9 +41,24 @@ hx.provide('$authoriser', function() {
         authorise: authorise,
 
         authoriseAll: function(components, parameters) {
-            var authorisationPromises = _.map(components, function(c) { return authorise(c, parameters ) });
+            var authorisationPromises = _.map(components, function(c) { return authorise(c, parameters) });
 
             return jQuery.when.apply(this, authorisationPromises);
-        }
+        },
+
+        authoriseAny: function(components, parameters) {
+            var authorisationPromises = _.map(components, function(c) { return authorise(c, parameters) }),
+                masterPromise = new jQuery.Deferred();
+
+            _.each(authorisationPromises, function(a) {
+                a.done(function () {
+                    masterPromise.resolve();
+                }).fail(function () {
+                    masterPromise.reject();
+                });
+            });
+
+            return masterPromise;
+        }        
     }
 });
