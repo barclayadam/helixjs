@@ -48,15 +48,28 @@ hx.provide('$authoriser', function() {
 
         authoriseAny: function(components, parameters) {
             var authorisationPromises = _.map(components, function(c) { return authorise(c, parameters) }),
+                rejectedCount = 0,
                 masterPromise = new jQuery.Deferred();
 
+            function handleResolve() {
+                masterPromise.resolve()
+            }
+
+            function handleReject() {
+                if(masterPromise.state() === 'pending') {
+                    rejectedCount = rejectedCount + 1;
+
+                    if(rejectedCount === authorisationPromises.length) {
+                        masterPromise.reject();
+                    }
+                }
+            }
+
             _.each(authorisationPromises, function(a) {
-                a.done(function () {
-                    masterPromise.resolve();
-                });
+                a.then(handleResolve, handleReject);
             });
 
-            return masterPromise.reject();
+            return masterPromise.promise();
         }        
     }
 });
