@@ -18,6 +18,9 @@ hx.singleton('$Command', ['$log', '$ajax', '$EventEmitterFactory'], function($lo
      when the command is executed.
     */
     function Command(name, defaultValues) {
+        if (!(this instanceof Command))
+            return new Command(name, defaultValues);
+
         this.$defaultValues = defaultValues;
         this.$name = name;
         this.$url = Command.urlTemplate.replace("{name}", this.$name);

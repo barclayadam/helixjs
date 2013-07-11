@@ -28,6 +28,15 @@ describe('Messaging - Commands', function () {
         });
     });
 
+    it('should allow creating a Command without new keyword', function () {
+        var command = $Command('My Command', {
+                id: 3456,
+                name: 'My Name'
+            });
+
+        expect(command).not.toBeNull();
+    });
+
     describe('Executing a Command', function () {
         beforeEach(function () {
             $Command.urlTemplate = 'ExecuteCommand/{name}';
