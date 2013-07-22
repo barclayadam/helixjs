@@ -18,6 +18,10 @@ describe('UIAction', function () {
             expect(this.action).toBeAFunction();
         });
 
+        it('should have a isUiAction property that is true', function () {
+            expect(this.action.isUiAction).toBe(true);
+        });
+
         it('should pass through calls to the configured function', function () {
             expect(this.actionSpy).toHaveBeenCalled();
         });
@@ -52,7 +56,7 @@ describe('UIAction', function () {
         });
     })
 
-    describe('basic action with context provide', function () {
+    describe('basic action with context provided', function () {
         beforeEach(function () {
             this.context = { aProperty: 'A value' };
             this.contextsRecorded = contextsRecorded = {};
@@ -163,6 +167,11 @@ describe('UIAction', function () {
 
         it('should have executing observable that is false when deferred resolves', function () {
             this.deferred.resolve();
+            expect(this.action.executing()).toBe(false);
+        });
+
+        it('should have executing observable that is false when deferred rejects', function () {
+            this.deferred.reject();
             expect(this.action.executing()).toBe(false);
         });
     });
