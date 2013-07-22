@@ -53,6 +53,9 @@ describe('Messaging - Commands', function () {
 
         describe('that fails validation', function () {
             beforeEach(function () {
+                this.$ajax = hx.get('$ajax');
+                this.spy(this.$ajax, 'url');
+
                 this.validationFailedEventSpy = this.spy();
                 this.command.subscribe('validationFailed', this.validationFailedEventSpy);
 
@@ -62,13 +65,11 @@ describe('Messaging - Commands', function () {
                 this.command.id(void 0);
 
                 this.promise = this.command.execute();
-                this.promise.then(this.successCallback);
                 this.promise.fail(this.failureCallback);
             });
 
             it('should not execute any AJAX', function () {
-                expect(this.successCallback).toHaveNotBeenCalled();
-                expect(this.failureCallback).toHaveNotBeenCalled();
+                expect(this.$ajax.url).toHaveNotBeenCalled();
             });
 
             it('should not raise a submitting event', function () {
@@ -81,6 +82,10 @@ describe('Messaging - Commands', function () {
 
             it('should raise a validationFailed event', function () {
                 expect(this.validationFailedEventSpy).toHaveBeenCalledWith( { command: this.command });
+            });
+
+            it('should reject returned promise', function () {
+                expect(this.failureCallback).toHaveBeenCalled();
             });
         });
 

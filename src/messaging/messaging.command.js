@@ -61,6 +61,7 @@ hx.singleton('$Command', ['$log', '$ajax', '$EventEmitterFactory'], function($lo
                         });
             } else {
                 self.$publish('validationFailed', { command: self });
+                result.reject();
             }
         });
 
