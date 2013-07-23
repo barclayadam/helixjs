@@ -34,6 +34,10 @@ describe('UIAction', function () {
             expect(this.returnValue).toEqual("My Return Value");
         });
 
+        it('should default disableDuringExecution to true', function () {
+            expect(this.action.disableDuringExecution).toBe(true);
+        });
+
         it('should have an always-true enabled observable attached', function () {
             expect(this.action.enabled).toBeObservable();
             expect(this.action.enabled()).toBe(true);
@@ -87,7 +91,6 @@ describe('UIAction', function () {
             expect(this.contextsRecorded['action']).toBe(this.context);
         });
     })
-
 
     describe('basic action with enabled observable passed', function () {
         beforeEach(function () {

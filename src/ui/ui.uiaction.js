@@ -37,7 +37,7 @@
         if (_.isFunction(funcOrOptions)) {
             enabled = ko.observable(true);
             action = funcOrOptions;
-            disableDuringExecution = false;
+            disableDuringExecution = true;
         } else {
             enabled = hx.utils.asObservable(funcOrOptions.enabled != null ? funcOrOptions.enabled : true, funcOrOptions.context || this);
             disableDuringExecution = funcOrOptions.disableDuringExecution != null ? funcOrOptions.disableDuringExecution : false;
