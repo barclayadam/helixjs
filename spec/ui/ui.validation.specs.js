@@ -51,6 +51,13 @@ describe('validation - ui', function() {
                     it('should call modifyElement of the applied rules if applicable', function() {
                         expect(hx.validation.rules.required.modifyElement).toHaveBeenCalledWith(document.getElementById('validated-' + inputType), true)
                     })
+
+                    it('should add is-validating class when property is validating', function() {
+                        // Clear value, making it invalid as set as required
+                        this.validatedObservable.validating(true);
+
+                        expect(document.getElementById('validated-' + inputType)).toHaveClass('is-validating')
+                    })  
                 })
             }
 
@@ -115,7 +122,16 @@ describe('validation - ui', function() {
             expect(document.getElementById('validation-message')).not.toHaveClass('valid');
             expect(document.getElementById('validation-message-with-override')).not.toHaveClass('valid');
             expect(document.getElementById('validation-message-span')).not.toHaveClass('valid');
-        })     
+        })           
+
+        it('should add is-validating class when property is validating', function() {
+            // Clear value, making it invalid as set as required
+            this.validated.validating(true);
+
+            expect(document.getElementById('validation-message')).toHaveClass('is-validating');
+            expect(document.getElementById('validation-message-with-override')).toHaveClass('is-validating');
+            expect(document.getElementById('validation-message-span')).toHaveClass('is-validating');
+        })  
 
         it('should set text content to the error message', function() {
             // Clear value, making it invalid as set as required

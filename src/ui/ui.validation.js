@@ -22,6 +22,7 @@ hx.config(function() {
                 element.setAttribute('aria-invalid', !value.isValid());
 
                 ko.utils.toggleDomNodeCssClass(element, 'validated', value.validated());
+                ko.utils.toggleDomNodeCssClass(element, 'is-validating', value.validating());
             }
 
             if (value && value.validationRules) {
@@ -82,6 +83,7 @@ hx.config(function() {
                 ko.utils.toggleDomNodeCssClass(element, 'valid', isValid);
                 ko.utils.toggleDomNodeCssClass(element, 'invalid', !isValid);
                 ko.utils.toggleDomNodeCssClass(element, 'validated', value.validated());
+                ko.utils.toggleDomNodeCssClass(element, 'is-validating', value.validating());
 
                 if(isValid) {
                     ko.utils.emptyDomNode(element);
