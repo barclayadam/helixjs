@@ -52,10 +52,12 @@ hx.config(['$router'], function($router) {
             if(match) {
                 element.setAttribute('href', match.url);
                 
-                match.authorise()
-                     .fail(function() {
-                        element.style.display = "none";
-                    })
+                ko.dependencyDetection.ignore(function() {
+                    match.authorise()
+                         .fail(function() {
+                            element.style.display = "none";
+                        })
+                });
             } else {                
                 element.setAttribute('href', '#');
             }

@@ -109,8 +109,37 @@ describe('ui - navigation', function() {
             this.applyBindingsToFixture({});
         });
 
-        it('set hide the link', function() {
+        it('should hide the link', function() {
             expect(document.getElementById('my-page-link')).toBeHidden();
         })
     })
+
+    describe('authorised route components - isAuthorised updates observables async', function() {
+        beforeEach(function() {
+            var self = this;
+            
+            this.observableChangedDuringIsAuthorised = ko.observable();
+            this.callCount = 0;
+
+            this.component = { 
+                isAuthorised: function(callback) {
+                    self.callCount = self.callCount + 1;
+                    self.observableChangedDuringIsAuthorised();
+                }
+            };
+
+            this.spy(this.component.isAuthorised);
+
+            router.route('My Page', '/my-page', { components: { 'main': this.component } });
+
+            this.setHtmlFixture("<a id='my-page-link' data-bind=\"navigate: 'My Page'\">A Link</a>");
+            this.applyBindingsToFixture({});
+        });
+
+        it('should call isAuthorised only once', function() {
+            this.observableChangedDuringIsAuthorised('a new value');
+
+            expect(this.callCount).toBe(1);
+        });
+    });
 })
