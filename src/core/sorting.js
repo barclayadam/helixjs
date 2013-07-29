@@ -17,9 +17,9 @@ hx.Sorter = (function () {
 
     Sorter.prototype.setSortOrder = function (definition) {
         return this.definition(_(definition.split(',')).map(function (p) {
-            var indexOfSpace;
             p = ko.utils.stringTrim(p);
-            indexOfSpace = p.indexOf(' ');
+
+            var indexOfSpace = p.indexOf(' ');
 
             if (indexOfSpace > -1) {
                 return {
@@ -40,18 +40,17 @@ hx.Sorter = (function () {
       been set for this sorter, or returning the array as-is if not
       sorting definition has been specified. 
     */
-    Sorter.prototype.sort = function (array) {
-        var _this = this;
+    Sorter.prototype.sort = function (array) {        
+        var definition = this.definition();
 
-        if (this.definition()) {
+        if (definition) {
             return array.sort(function (a, b) {
-                var p, _i, _len, _ref;
-                _ref = _this.definition();
+                for (var i = 0; i < definition.length; i++) {
+                    var p = definition[i],
+                        aProperty = ko.utils.unwrapObservable(a[p.name]),
+                        bProperty = ko.utils.unwrapObservable(b[p.name]);
 
-                for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-                    p = _ref[_i];
-
-                    if (a[p.name] > b[p.name]) {
+                    if (aProperty > bProperty) {
                         if (p.order === 'ascending') {
                             return 1;
                         } else {
@@ -59,7 +58,7 @@ hx.Sorter = (function () {
                         }
                     }
 
-                    if (a[p.name] < b[p.name]) {
+                    if (aProperty < bProperty) {
                         if (p.order === 'ascending') {
                             return -1;
                         } else {
@@ -102,10 +101,10 @@ hx.Sorter = (function () {
     */
     Sorter.prototype.toString = function () {
         return _.reduce(this.definition(), (function (memo, o) {
-            var prop = "" + o.name + " " + o.order;
+            var prop = o.name + " " + o.order;
 
             if (memo) {
-                return "" + memo + ", " + prop;
+                return memo + ", " + prop;
             } else {
                 return prop;
             }
