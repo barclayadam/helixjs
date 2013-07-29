@@ -170,7 +170,10 @@
                 isForm = element.tagName === 'FORM';
 
             if (!uiAction.isUiAction) {
-                uiAction = makeUiAction(uiAction);
+                uiAction = makeUiAction({
+                    action: uiAction,
+                    context: viewModel
+                });
             }
 
             ko.utils.registerEventHandler(element, isForm ? 'submit' : 'click', function(e) {

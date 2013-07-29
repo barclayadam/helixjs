@@ -145,10 +145,12 @@ describe('action binding handler', function() {
             this.setHtmlFixture("<div>" +
                                 " <a id='action-link' data-bind='action: action'>Execute Action</a>" +
                                 "</div>");
-            
-            this.applyBindingsToFixture({
+
+            this.viewModel = {
                 action: this.action
-            });
+            };
+            
+            this.applyBindingsToFixture(this.viewModel);
 
             ko.utils.triggerEvent(document.getElementById('action-link'), 'click');
         });
@@ -160,6 +162,10 @@ describe('action binding handler', function() {
         it('should remove an is-executing class when execution has completed', function() {
             this.deferred.resolve()
             expect(document.getElementById('action-link')).not.toHaveClass('is-executing')          
+        })
+
+        it('should set context to the view model', function() {
+            expect(this.action).toHaveBeenCalledOn(this.viewModel)
         })
     })
 
