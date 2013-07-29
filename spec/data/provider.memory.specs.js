@@ -10,7 +10,7 @@ describe('dataSource providers - memory', function() {
         }
 
         this.data = ko.observable(_.map(_.range(25), function(n) { return createItem(n); }));
-        this.dataSource = $DataSource.from(new $InMemoryProvider({ data: this.data }))
+        this.dataSource = $DataSource.from($InMemoryProvider({ data: this.data }))
     })
 
     it('should return complete data set when no options specified', function() {

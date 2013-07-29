@@ -3,6 +3,10 @@ hx.provide('$InMemoryProvider', function() {
      * @class $InMemoryProvider 
      */
     function $InMemoryProvider(options) {
+        if(!(this instanceof $InMemoryProvider)) {
+            return new $InMemoryProvider(options);
+        }
+        
         this.options = options;
     }
 
