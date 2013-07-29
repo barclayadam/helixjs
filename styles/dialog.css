@@ -1,12 +1,3 @@
-/*.has-overlay {
-  overflow: hidden;
-}
-
-.has-overlay > body {
-  height: 100%;
-  overflow-y: scroll;
-}*/
-
 .hx-dialog {
   position: fixed;
   top: 0;
@@ -24,14 +15,14 @@
 
 .hx-dialog .hx-dialog--inner {
   position: absolute;
-  top: 50px;
+  top: 10%;
   left: 50%;
   z-index: 20;
   margin-left: -325px;
   width: 650px;
   overflow-x: hidden;
   background: #fff;
-  -webkit-box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
 }
 
@@ -113,10 +104,6 @@
 
 @media screen and (max-width: 30em) {
   .hx-dialog {
-    -webkit-transition: -webkit-transform .25s ease-in-out, opacity 1ms .25s;
-    -moz-transition: -moz-transform .25s ease-in-out, opacity 1ms .25s;
-    -o-transition: -o-transform .25s ease-in-out, opacity 1ms .25s;
-    -ms-transition: -ms-transform .25s ease-in-out, opacity 1ms .25s;
     transition: transform .25s ease-in-out, opacity 1ms .25s;
     display: block;
     height: 100%;
@@ -125,10 +112,6 @@
   
   .hx-dialog:before {
     background-color: #27aae2;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#27aae2), to(#1c9cd3));
-    background-image: -webkit-linear-gradient(top, #27aae2, #1c9cd3);
-    background-image: -moz-linear-gradient(top, #27aae2, #1c9cd3);
-    background-image: -o-linear-gradient(top, #27aae2, #1c9cd3);
     background-image: linear-gradient(to bottom, #27aae2, #1c9cd3);
     content: '';
     position: fixed;
@@ -137,7 +120,7 @@
     right: 0;
     z-index: 30;
     height: 3em;
-    -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
+
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
   }
 
@@ -148,7 +131,7 @@
     padding-top: 3em;
     height: 100%;
     overflow: scroll;
-    -webkit-box-shadow: none;
+
     box-shadow: none;
   }
 
@@ -171,14 +154,12 @@
     padding: 0.5em 1em;
   }
 }
-
 @media screen and (max-height: 46em) and (min-width: 30em) {
   .hx-dialog .hx-dialog--content {
     max-height: 340px;
     max-height: 50vh;
   }
 }
-
 @media screen and (max-height: 36em) and (min-width: 30em) {
   .hx-dialog .hx-dialog--content {
     max-height: 265px;
@@ -188,8 +169,6 @@
 
 @media screen and (min-width: 30em) {
   .hx-dialog {
-    -webkit-transition: opacity 0.4s;
-    -o-transition: opacity 0.4s;
     transition: opacity 0.4s;
   }
 }
