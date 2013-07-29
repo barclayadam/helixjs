@@ -44,6 +44,8 @@ hx.provide('$InMemoryProvider', function() {
             data = _.filter(data, function(i) {
                 return loadOptions.where(i, loadOptions.params);
             })
+
+            totalCount = data.length;
         }
 
         if(loadOptions.orderBy) {

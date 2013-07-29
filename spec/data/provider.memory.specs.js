@@ -39,12 +39,20 @@ describe('dataSource providers - memory', function() {
         expect(this.dataSource.pageCount()).toEqual(5);
     })
 
-    it('should handle filtering (where)', function() {
+    it('should handle filtering (where) by applying function to values', function() {
         this.dataSource.where(function(i) {
             return i.numberProperty % 10 == 0;
         }).load();
 
         expect(this.dataSource.data()).toEqual([this.data()[0], this.data()[10], this.data()[20]]);
+    })
+
+    it('should handle filtering (where) by modifying totalCount to be the total *after* filtering', function() {
+        this.dataSource.where(function(i) {
+            return i.numberProperty % 10 == 0;
+        }).load();
+
+        expect(this.dataSource.totalCount()).toEqual(3);
     })
 
     it('should handle filtering (where) with parameters passed to where function', function() {
