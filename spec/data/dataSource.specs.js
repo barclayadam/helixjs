@@ -224,6 +224,28 @@ describe('dataSource', function() {
         })
     })
 
+    describe('with paging specified - no data', function() {
+        beforeEach(function() {
+            this.returnValue = { totalCount: 0, items: [] };
+            this.providerStub = this.stub().returns(this.returnValue);
+
+            this.dataSource = $DataSource
+                                .from(this.providerStub)
+                                .pageSize(20)
+                                .page(1);
+
+            this.dataSource.load();
+        })
+
+        it('should store totalCount in totalCount observable', function() {
+            expect(this.dataSource.totalCount()).toBe(0);
+        })
+
+        it('should store page items in data observable', function() {
+            expect(this.dataSource.data()).toBe(this.returnValue.items);            
+        })
+    })
+
     describe('with a provider instance', function() {    
         beforeEach(function() {
             this.returnValue = ['a', 42, 5, 3, 'ds', 34]

@@ -215,7 +215,7 @@ hx.provide('$DataSource', function() {
 
             // TODO: Verification of result (e.g. must be paged if option specified)
             // if we are paged
-            if(result.totalCount) {
+            if(result.totalCount != null) {
                 this.totalCount(result.totalCount);
                 this.pageCount(Math.ceil(result.totalCount / this.pageSize()));
 
