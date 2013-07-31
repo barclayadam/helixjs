@@ -22,7 +22,10 @@ describe('ui - navigation', function() {
         beforeEach(function() {
             router.route('My Page', '/my-page');
 
-            this.setHtmlFixture("<a id='my-page-link' data-bind=\"navigate: 'My Page'\">A Link</a>");
+            this.setHtmlFixture(
+                "<a id='my-page-link' data-bind=\"navigate: 'My Page'\">A Link</a>" +
+                "<a data-bind=\"navigate: 'My Page'\"><span id=inner-link-element>Another Link</span></a>"
+                );
             this.applyBindingsToFixture({});
         })
 
@@ -32,6 +35,12 @@ describe('ui - navigation', function() {
 
         it('should navigate to the route on click', function() {
             ko.utils.triggerEvent(document.getElementById('my-page-link'), 'click');
+
+            expect(router.navigateTo).toHaveBeenCalledWith('My Page', {});
+        })
+
+        it('should navigate to the route on click of inner element', function() {
+            ko.utils.triggerEvent(document.getElementById('inner-link-element'), 'click');
 
             expect(router.navigateTo).toHaveBeenCalledWith('My Page', {});
         })
@@ -65,7 +74,7 @@ describe('ui - navigation', function() {
                 this.category = ko.observable('some-category');
 
                 this.setHtmlFixture("<div>" +
-                                    " <a id='my-page-link' data-bind=\"navigate: 'My Page', parameters: { category: category }\">A Link</a>" +
+                                    " <a id='my-page-link' data-bind=\"navigate: 'My Page', parameters: { category: category }\">A Link</a>" +                                    
                                     " <a id='my-other-page-link' data-bind=\"navigate: 'My Other Page', parameters: { category: category }\">Another Link</a>" +
                                     "</div>");
 

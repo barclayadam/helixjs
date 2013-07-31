@@ -1,18 +1,25 @@
 hx.config(['$router'], function($router) {
     ko.utils.registerEventHandler(document, 'click', function(event) {
-        if(event.target.tagName === 'A') {
-            var element = event.target,
-                match = ko.utils.domData.get(element, '__matchedRoute');
+        var element = event.target;
 
-            if(match) {
-                $router.navigateTo(match.route.name, match.parameters);
+        do {        
+            if(element.tagName === 'A') {
+                var match = ko.utils.domData.get(element, '__matchedRoute');
 
-                if (event.preventDefault)
-                    event.preventDefault();
-                else
-                    event.returnValue = false;
+                if(match) {
+                    $router.navigateTo(match.route.name, match.parameters);
+
+                    if (event.preventDefault)
+                        event.preventDefault();
+                    else
+                        event.returnValue = false;
+
+                    return;
+                }
             }
-        }
+
+            element = element.parentNode;
+        } while(element);
     });
 
     /**
