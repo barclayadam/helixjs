@@ -229,12 +229,11 @@ ko.extenders.validationRules = function (target, validationRules) {
     // We are adding rules to an already validatable property, just extend
     // its validation rules.
     if (target.validationRules != null) {
-        target.validationRules = _.extend(target.validationRules, validationRules);
-        validate();
+        target.validationRules(_.extend(target.validationRules(), validationRules));
         return;
     }
 
-    target.validationRules = validationRules;
+    target.validationRules = ko.observable(validationRules);
 
     target.validate = function () {
         target.validated(true);
@@ -260,7 +259,7 @@ ko.extenders.validationRules = function (target, validationRules) {
     
     function handleValidationResult(isValid, ruleName, ruleOptions, errors) {
         if (!isValid) {
-            var msgCreator = getMessageCreator(target.validationRules, ruleName);
+            var msgCreator = getMessageCreator(target.validationRules(), ruleName);
 
             if (_.isFunction(msgCreator)) {
                 errors.push(validation.formatErrorMessage(msgCreator(ruleOptions)));
@@ -270,8 +269,8 @@ ko.extenders.validationRules = function (target, validationRules) {
         }
     }
 
-    function validate () {
-        if (ko.isObservable(target.peek())) {
+    ko.computed(function() {
+        if (ko.isObservable(target())) {
             throw new Error('Cannot set an observable value as the value of a validated observable');
         }
 
@@ -285,12 +284,8 @@ ko.extenders.validationRules = function (target, validationRules) {
 
         var currentErrors = [],
             asyncPromises = [],
-            rules = target.validationRules,
-            // We only peek at the actual observable values as all subscriptions
-            // are done manually in a validatable property's validate method, yet
-            // this could be called as part of the model's validate method which
-            // creates a computed around the whole model, causing multiple subscriptions.
-            value = target.peek();
+            rules = target.validationRules(),
+            value = target();
 
         for (var ruleName in rules) {
             (function(ruleName) {
@@ -333,11 +328,7 @@ ko.extenders.validationRules = function (target, validationRules) {
         } else {
             jQuery.when.apply(this, asyncPromises).always(validationEnded);
         }
-
-    };
-
-    target.subscribe(validate);
-    validate();
+    });
 
     return target;
 };

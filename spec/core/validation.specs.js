@@ -234,6 +234,33 @@ describe('validation', function () {
         });
     });
 
+    describe('validating a property with validator that has observable dependencies', function () {
+        beforeEach(function () {
+            this.validatorDependency = validatorDependency = ko.observable(false);
+
+            hx.validation.rules.withObservableDependency = {
+                validator: function () {
+                    return validatorDependency();
+                }
+            };
+
+
+            this.property = ko.observable('a');
+            this.property.addValidationRules({
+                withObservableDependency: true
+            });
+        });
+
+        it('should reevaulate validility after dependency changes', function () {
+            expect(this.property.isValid()).toBe(this.validatorDependency());
+
+            // Flip the dependency, the value of which becomes isValid for this validator
+            this.validatorDependency(!this.validatorDependency())
+
+            expect(this.property.isValid()).toBe(this.validatorDependency());
+        });
+    });
+
     describe('validating a model', function () {
         describe('with no defined observable properties', function () {
             beforeEach(function () {

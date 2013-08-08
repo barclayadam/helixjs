@@ -26,7 +26,7 @@ hx.config(function() {
             }
 
             if (value && value.validationRules) {
-                _.each(value.validationRules, function(options, key) {
+                _.each(value.validationRules(), function(options, key) {
                     var rule = hx.validation.rules[key];
 
                     if(rule && rule.modifyElement) {
