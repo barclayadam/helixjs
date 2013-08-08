@@ -15,6 +15,20 @@ describe('templating', function () {
         });
     });
 
+    describe('when using built-in template binding handler with named template', function () {
+        beforeEach(function () {
+            this.setHtmlFixture("<script type='text/html' id='named-template'>My Named Template Text</script>" +
+                                "<div id=templated data-bind=\"template: { name: 'named-template' }\"></div>");
+
+            this.applyBindingsToFixture({});
+            this.wrapper = document.getElementById('templated');
+        });
+        
+        it('should render the named template', function () {
+            expect(this.wrapper).toHaveText('My Named Template Text');
+        });
+    });
+
     describe('string templates', function () {
         describe('when a named template is added', function () {
             beforeEach(function () {

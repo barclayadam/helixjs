@@ -58,7 +58,7 @@ hx.singleton('$templating', ['$ajax'], function($ajax) {
                 if (!templateElement) {
                     return new ExternalTemplateSource(template);
                 } else {
-                    return new ko.templateSources.domElement(elem);
+                    return new ko.templateSources.domElement(templateElement);
                 }
             } else {
                 throw new Error("Unknown template type: " + template);
