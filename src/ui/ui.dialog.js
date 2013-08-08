@@ -21,6 +21,18 @@ hx.config('$templating', function($templating) {
         '  <button class=hx-dialog--confirm--cancel data-bind="click: function() { $root.close(false) }, text: cancelText"></button>' +
         '</footer>'
     );    
+
+    $templating.set('$dialog-alert',
+        '<header>' +
+        ' <h2 class=hx-dialog--alert--title data-bind="text: title"></h2>' +
+        '</header>' +
+        '' +
+        ' <p class=hx-dialog--alert--message data-bind="text: message"></p>' +
+        '' +
+        '<footer>' +
+        '  <button class=hx-dialog--alert--ok data-bind="click: function() { $root.close(true) }, text: okText"></button>' +
+        '</footer>'
+    );   
 });
 
 hx.provide('$dialog', function() {
@@ -117,19 +129,6 @@ hx.provide('$dialog', function() {
         };
     }
 
-    function createConfirmComponent(options) {
-        var componentDefaults = {
-            templateName: '$dialog-confirm',
-
-            title: '', 
-            message: '',
-            okText: 'OK',
-            cancelText: 'Cancel'
-        };
-
-        return _.extend({}, componentDefaults, options);
-    }
-
     return {
 
         /**
@@ -175,7 +174,45 @@ hx.provide('$dialog', function() {
                 };
             }
 
-            var dialog = new Dialog(createConfirmComponent(options), { modal: true, closeControls: false });
+            var component = {
+                    templateName: '$dialog-confirm',
+
+                    title: options.title || '', 
+                    message: options.message || '',
+                    okText: options.okText || 'Ok',
+                    cancelText: options.cancelText || 'Cancel'
+                },
+                dialog = new Dialog(component, { modal: true, closeControls: false });
+
+            return dialog.open();
+        },
+
+        /**
+         * A convienience method of creating a modal alert dialog, a dialog that presents 
+         * the user with a message and a single button that would close the dialog.
+         *
+         * This method will immediately open the dialog and return the promise that will be resolved with
+         * when the user presses the 'ok' button.
+         *
+         * If this method is called with a `string`, then that will be used as the message, with all
+         * other options being defaults. Otherwise, in the case of an object being passed, that will be used to
+         * allow overriding any option.
+         */
+        alert: function(options) {
+            if(_.isString(options)) {
+                options = {
+                    message: options
+                };
+            }
+
+            var component = {
+                    templateName: '$dialog-alert',
+
+                    title: options.title || '', 
+                    message: options.message || '',
+                    okText: options.okText || 'Ok'
+                },
+                dialog = new Dialog(component, { modal: true, closeControls: false });
 
             return dialog.open();
         }

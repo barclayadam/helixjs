@@ -247,6 +247,73 @@ describe('dialog', function() {
         })
     })
 
+    describe('alert', function() {
+        describe('with just message specified', function() {
+            beforeEach(function() {
+                this.alertPromise = this.$dialog.alert('This is my message');
+            })
+
+            afterEach(function() {
+                if(document.getElementsByClassName('hx-dialog--alert--ok')[0]) {
+                    ko.utils.triggerEvent(document.getElementsByClassName('hx-dialog--alert--ok')[0], 'click');
+                }
+            })
+
+            it('should use alert message', function() {
+                expect(document.getElementsByClassName('hx-dialog--alert--message')[0]).toHaveText('This is my message');
+            })
+
+            it('resolve promise with true when OK button pressed', function() {
+                ko.utils.triggerEvent(document.getElementsByClassName('hx-dialog--alert--ok')[0], 'click');
+
+                expect(this.alertPromise.state()).toBe("resolved");
+                this.alertPromise.done(function(v) {
+                    expect(v).toBe(true);
+                })
+            })
+
+            it('close dialog when OK button is pressed', function() {
+                ko.utils.triggerEvent(document.getElementsByClassName('hx-dialog--alert--ok')[0], 'click');
+                expect(document.getElementsByClassName('hx-dialog').length).toBe(0);
+            })
+        });
+
+        describe('with fully overriden options', function() {
+            beforeEach(function() {
+                this.alertPromise = this.$dialog.alert({
+                    title: 'My title', 
+                    message: 'This is my message', 
+                    okText: 'Ok Text',
+                    cancelText: 'Cancel Text'
+                });
+            })
+
+            afterEach(function() {
+                ko.utils.triggerEvent(document.getElementsByClassName('hx-dialog--alert--ok')[0], 'click');
+            })
+
+            it('should use title text in header', function() {
+                expect(document.getElementsByClassName('hx-dialog--alert--title')[0]).toHaveText('My title');
+            })
+
+            it('should use alert message', function() {
+                expect(document.getElementsByClassName('hx-dialog--alert--message')[0]).toHaveText('This is my message');
+            })
+
+            it('should use OK button text', function() {
+                expect(document.getElementsByClassName('hx-dialog--alert--ok')[0]).toHaveText('Ok Text');
+            })
+
+            it('should not show the close button', function() {
+                expect(document.getElementsByClassName('hx-dialog--close')[0]).toBeHidden();
+            })
+
+            it('should immediately open a modal dialog', function() {
+                expect(document.getElementsByClassName('hx-dialog').length).toBe(1);
+            })
+        })
+    })
+
     describe('confirm', function() {
         describe('with just message specified', function() {
             beforeEach(function() {
