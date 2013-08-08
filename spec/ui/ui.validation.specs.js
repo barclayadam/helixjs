@@ -22,6 +22,8 @@ describe('validation - ui', function() {
                                     " <input id='validated-input' type='text' data-bind='value: validated' />" +
                                     " <select id='validated-select' type='text' data-bind='value: validated' />" +
                                     " <textarea id='validated-textarea' type='text' data-bind='value: validated'></textarea>" +
+                                    " <span id='validated-span' type='text' data-bind='validated: validated'></span>" +
+                                    " <input id='validated-input-explicit' type='text' data-bind='validated: validated'></span>" +
                                     "</div>");
 
                 this.validatedObservable = ko.observable('a value').addValidationRules({ required: true, requiredMessage: 'This is my message' });
@@ -64,6 +66,8 @@ describe('validation - ui', function() {
             checkInputType('input');
             checkInputType('select');
             checkInputType('textarea');
+            checkInputType('span');
+            checkInputType('input-explicit');
         })
     })
 

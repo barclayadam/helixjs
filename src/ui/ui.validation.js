@@ -1,9 +1,10 @@
 hx.config(function() {
     /**
-     * A binding handler that is not designed to be used directly but instead will attach itself
-     * to form input elements (input, select, textarea) and, if a `value` binding has been specified
-     * that refers to a validated observable, updated classes and attributes that allow styling
+     * A binding handler that given a validated observable will add classes and attributes that allow styling
      * to indicate validation status.
+     *
+     * This binding handler will automatically handle `input`, `select` and `textarea` elements using
+     * the `value` binding handler if it refers to a validated observable.
      *
      * An `aria-invalid` attribute will be immediately added and kept up-to-date with the
      * `isValid` property of the observable
@@ -12,27 +13,30 @@ hx.config(function() {
      * styling to target only those input fields that have been marked as validated (e.g. once a form
      * has been submitted).
      */
-    koBindingHandlers.inputValidationClass = {
+    koBindingHandlers.validated = {
         tag: ['input', 'select', 'textarea'],
 
         update: function(element, valueAccessor, allBindingsAccessor) {
-            var value = allBindingsAccessor()['value'];
+            var passedValue = valueAccessor(),
+                validatedObservable = passedValue === true ? allBindingsAccessor()['value'] : passedValue;
 
-            if (value && value.isValid) {
-                element.setAttribute('aria-invalid', !value.isValid());
+            if (validatedObservable) {
+                if (validatedObservable.isValid) {
+                    element.setAttribute('aria-invalid', !validatedObservable.isValid());
 
-                ko.utils.toggleDomNodeCssClass(element, 'validated', value.validated());
-                ko.utils.toggleDomNodeCssClass(element, 'is-validating', value.validating());
-            }
+                    ko.utils.toggleDomNodeCssClass(element, 'validated', validatedObservable.validated());
+                    ko.utils.toggleDomNodeCssClass(element, 'is-validating', validatedObservable.validating());
+                }
 
-            if (value && value.validationRules) {
-                _.each(value.validationRules(), function(options, key) {
-                    var rule = hx.validation.rules[key];
+                if (validatedObservable.validationRules) {
+                    _.each(validatedObservable.validationRules(), function(options, key) {
+                        var rule = hx.validation.rules[key];
 
-                    if(rule && rule.modifyElement) {
-                        rule.modifyElement(element, options);
-                    }
-                })
+                        if(rule && rule.modifyElement) {
+                            rule.modifyElement(element, options);
+                        }
+                    })
+                }
             }
         }
     }

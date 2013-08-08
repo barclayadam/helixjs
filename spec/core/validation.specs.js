@@ -244,7 +244,6 @@ describe('validation', function () {
                 }
             };
 
-
             this.property = ko.observable('a');
             this.property.addValidationRules({
                 withObservableDependency: true
