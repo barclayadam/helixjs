@@ -156,6 +156,23 @@ describe('tag-based binding provider', function () {
         });
     });
 
+    describe('binding handler specified as tag compatible, without replacement, with explictly defined data-bind', function () {
+        it('should not override value passed through data-bind', function () {
+            var passedValue = 'My passed value';
+
+            ko.bindingHandlers.inputEnhancer = {
+                tag: 'input',
+
+                init: function (element, valueAccessor) {
+                    expect(valueAccessor()).toBe(passedValue)
+                }
+            };
+
+            this.setHtmlFixture("<input id='input-control' data-bind='inputEnhancer: passedValue' />");
+            this.applyBindingsToFixture({ passedValue: passedValue });
+        });
+    });
+
     describe('binding handler specified as tag compatible for multiple tags, without replacement', function () {
         beforeEach(function () {
             ko.bindingHandlers.inputEnhancer = {

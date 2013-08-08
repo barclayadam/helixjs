@@ -177,7 +177,10 @@ hx.singleton('$hxBindingsProvider', function() {
             if (tagBindingHandlers.length > 0) {
                 for (_i = 0, _len = tagBindingHandlers.length; _i < _len; _i++) {
                     tagBindingHandlerName = tagBindingHandlers[_i].name;
-                    existingBindings[tagBindingHandlerName] = processOptions(node, tagBindingHandlerName, bindingContext);
+
+                    if (existingBindings[tagBindingHandlerName] === undefined) {
+                        existingBindings[tagBindingHandlerName] = processOptions(node, tagBindingHandlerName, bindingContext);
+                    }
                 }
             }
 
