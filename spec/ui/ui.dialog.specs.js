@@ -254,17 +254,17 @@ describe('dialog', function() {
             })
 
             afterEach(function() {
-                if(document.getElementsByClassName('hx-dialog--alert--ok')[0]) {
-                    ko.utils.triggerEvent(document.getElementsByClassName('hx-dialog--alert--ok')[0], 'click');
+                if(document.getElementsByClassName('hx-dialog--ok')[0]) {
+                    ko.utils.triggerEvent(document.getElementsByClassName('hx-dialog--ok')[0], 'click');
                 }
             })
 
             it('should use alert message', function() {
-                expect(document.getElementsByClassName('hx-dialog--alert--message')[0]).toHaveText('This is my message');
+                expect(document.getElementsByClassName('hx-dialog--message')[0]).toHaveText('This is my message');
             })
 
             it('resolve promise with true when OK button pressed', function() {
-                ko.utils.triggerEvent(document.getElementsByClassName('hx-dialog--alert--ok')[0], 'click');
+                ko.utils.triggerEvent(document.getElementsByClassName('hx-dialog--ok')[0], 'click');
 
                 expect(this.alertPromise.state()).toBe("resolved");
                 this.alertPromise.done(function(v) {
@@ -273,7 +273,7 @@ describe('dialog', function() {
             })
 
             it('close dialog when OK button is pressed', function() {
-                ko.utils.triggerEvent(document.getElementsByClassName('hx-dialog--alert--ok')[0], 'click');
+                ko.utils.triggerEvent(document.getElementsByClassName('hx-dialog--ok')[0], 'click');
                 expect(document.getElementsByClassName('hx-dialog').length).toBe(0);
             })
         });
@@ -289,19 +289,19 @@ describe('dialog', function() {
             })
 
             afterEach(function() {
-                ko.utils.triggerEvent(document.getElementsByClassName('hx-dialog--alert--ok')[0], 'click');
+                ko.utils.triggerEvent(document.getElementsByClassName('hx-dialog--ok')[0], 'click');
             })
 
             it('should use title text in header', function() {
-                expect(document.getElementsByClassName('hx-dialog--alert--title')[0]).toHaveText('My title');
+                expect(document.getElementsByClassName('hx-dialog--title')[0]).toHaveText('My title');
             })
 
             it('should use alert message', function() {
-                expect(document.getElementsByClassName('hx-dialog--alert--message')[0]).toHaveText('This is my message');
+                expect(document.getElementsByClassName('hx-dialog--message')[0]).toHaveText('This is my message');
             })
 
             it('should use OK button text', function() {
-                expect(document.getElementsByClassName('hx-dialog--alert--ok')[0]).toHaveText('Ok Text');
+                expect(document.getElementsByClassName('hx-dialog--ok')[0]).toHaveText('Ok Text');
             })
 
             it('should not show the close button', function() {
@@ -321,17 +321,17 @@ describe('dialog', function() {
             })
 
             afterEach(function() {
-                if(document.getElementsByClassName('hx-dialog--confirm--cancel')[0]) {
-                    ko.utils.triggerEvent(document.getElementsByClassName('hx-dialog--confirm--cancel')[0], 'click');
+                if(document.getElementsByClassName('hx-dialog--cancel')[0]) {
+                    ko.utils.triggerEvent(document.getElementsByClassName('hx-dialog--cancel')[0], 'click');
                 }
             })
 
             it('should use confirm message', function() {
-                expect(document.getElementsByClassName('hx-dialog--confirm--message')[0]).toHaveText('This is my message');
+                expect(document.getElementsByClassName('hx-dialog--message')[0]).toHaveText('This is my message');
             })
 
             it('resolve promise with true when OK button pressed', function() {
-                ko.utils.triggerEvent(document.getElementsByClassName('hx-dialog--confirm--ok')[0], 'click');
+                ko.utils.triggerEvent(document.getElementsByClassName('hx-dialog--ok')[0], 'click');
 
                 expect(this.confirmPromise.state()).toBe("resolved");
                 this.confirmPromise.done(function(v) {
@@ -340,12 +340,12 @@ describe('dialog', function() {
             })
 
             it('close dialog when OK button is pressed', function() {
-                ko.utils.triggerEvent(document.getElementsByClassName('hx-dialog--confirm--ok')[0], 'click');
+                ko.utils.triggerEvent(document.getElementsByClassName('hx-dialog--ok')[0], 'click');
                 expect(document.getElementsByClassName('hx-dialog').length).toBe(0);
             })
 
             it('resolve promise with false when Cancel button pressed', function() {
-                ko.utils.triggerEvent(document.getElementsByClassName('hx-dialog--confirm--cancel')[0], 'click');
+                ko.utils.triggerEvent(document.getElementsByClassName('hx-dialog--cancel')[0], 'click');
 
                 expect(this.confirmPromise.state()).toBe("resolved");
                 this.confirmPromise.done(function(v) {
@@ -354,7 +354,7 @@ describe('dialog', function() {
             })
 
             it('close dialog when cancel button is pressed', function() {
-                ko.utils.triggerEvent(document.getElementsByClassName('hx-dialog--confirm--cancel')[0], 'click');
+                ko.utils.triggerEvent(document.getElementsByClassName('hx-dialog--cancel')[0], 'click');
                 expect(document.getElementsByClassName('hx-dialog').length).toBe(0);
             })
         })
@@ -370,23 +370,23 @@ describe('dialog', function() {
             })
 
             afterEach(function() {
-                ko.utils.triggerEvent(document.getElementsByClassName('hx-dialog--confirm--cancel')[0], 'click');
+                ko.utils.triggerEvent(document.getElementsByClassName('hx-dialog--cancel')[0], 'click');
             })
 
             it('should use title text in header', function() {
-                expect(document.getElementsByClassName('hx-dialog--confirm--title')[0]).toHaveText('My title');
+                expect(document.getElementsByClassName('hx-dialog--title')[0]).toHaveText('My title');
             })
 
             it('should use confirm message', function() {
-                expect(document.getElementsByClassName('hx-dialog--confirm--message')[0]).toHaveText('This is my message');
+                expect(document.getElementsByClassName('hx-dialog--message')[0]).toHaveText('This is my message');
             })
 
             it('should use OK button text', function() {
-                expect(document.getElementsByClassName('hx-dialog--confirm--ok')[0]).toHaveText('Ok Text');
+                expect(document.getElementsByClassName('hx-dialog--ok')[0]).toHaveText('Ok Text');
             })
 
             it('should use Cancel button text', function() {
-                expect(document.getElementsByClassName('hx-dialog--confirm--cancel')[0]).toHaveText('Cancel Text');
+                expect(document.getElementsByClassName('hx-dialog--cancel')[0]).toHaveText('Cancel Text');
             })
 
             it('should not show the close button', function() {

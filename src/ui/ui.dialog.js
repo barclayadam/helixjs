@@ -10,28 +10,32 @@ hx.config('$templating', function($templating) {
     );
 
     $templating.set('$dialog-confirm',
-        '<header>' +
-        ' <h2 class=hx-dialog--confirm--title data-bind="text: title"></h2>' +
-        '</header>' +
+        '<div class=hx-confirm-dialog>' +
+        ' <header>' +
+        '  <h2 class=hx-dialog--title data-bind="text: title"></h2>' +
+        ' </header>' +
         '' +
-        ' <p class=hx-dialog--confirm--message data-bind="text: message"></p>' +
+        '  <p class=hx-dialog--message data-bind="text: message"></p>' +
         '' +
-        '<footer>' +
-        '  <button class=hx-dialog--confirm--ok data-bind="click: function() { $root.close(true) }, text: okText"></button>' +
-        '  <button class=hx-dialog--confirm--cancel data-bind="click: function() { $root.close(false) }, text: cancelText"></button>' +
-        '</footer>'
+        ' <footer>' +
+        '   <button class=hx-dialog--ok data-bind="click: function() { $root.close(true) }, text: okText"></button>' +
+        '   <button class=hx-dialog--cancel data-bind="click: function() { $root.close(false) }, text: cancelText"></button>' +
+        ' </footer>' +
+        '</div>'
     );    
 
     $templating.set('$dialog-alert',
-        '<header>' +
-        ' <h2 class=hx-dialog--alert--title data-bind="text: title"></h2>' +
-        '</header>' +
+        '<div class=hx-alert-dialog>' +
+        ' <header>' +
+        '  <h2 class=hx-dialog--title data-bind="text: title"></h2>' +
+        ' </header>' +
         '' +
-        ' <p class=hx-dialog--alert--message data-bind="text: message"></p>' +
+        '  <p class=hx-dialog--message data-bind="text: message"></p>' +
         '' +
-        '<footer>' +
-        '  <button class=hx-dialog--alert--ok data-bind="click: function() { $root.close(true) }, text: okText"></button>' +
-        '</footer>'
+        ' <footer>' +
+        '   <button class=hx-dialog--ok data-bind="click: function() { $root.close(true) }, text: okText"></button>' +
+        ' </footer>' +
+        '</div>'
     );   
 });
 
