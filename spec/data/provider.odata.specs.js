@@ -1,5 +1,5 @@
-describe('dataSource providers - odata', function() {
-    var $DataSource = hx.get('$DataSource'),
+describe('dataView providers - odata', function() {
+    var $DataView = hx.get('$DataView'),
         $OdataProvider = hx.get('$OdataProvider'),
         $ajax = hx.get('$ajax');
 
@@ -14,39 +14,39 @@ describe('dataSource providers - odata', function() {
 
         this.provider = new $OdataProvider({ root: '/api/' });
 
-        this.dataSource = $DataSource
+        this.dataView = $DataView
             .from(this.provider)
             .operation('MyServiceOperation');
     })
 
     describe('querying', function() {
         it('should return complete data set when no options specified', function() {
-            this.dataSource.load();
+            this.dataView.load();
 
             expect(this.urlCalledWith).toEqual('/api/MyServiceOperation');
             expect(this.getStub).toHaveBeenCalled();
         })
 
         it('should handle take param', function() {
-            this.dataSource.take(5).load();
+            this.dataView.take(5).load();
 
             expect(this.urlCalledWith).toEqual('/api/MyServiceOperation?$take=5&$inlinecount=allpages');
         })
 
         it('should handle skip param', function() {
-            this.dataSource.skip(5).load();
+            this.dataView.skip(5).load();
 
             expect(this.urlCalledWith).toEqual('/api/MyServiceOperation?$skip=5&$inlinecount=allpages');
         })
 
         it('should handle paging', function() {
-            this.dataSource.page(2).pageSize(5).load();
+            this.dataView.page(2).pageSize(5).load();
 
             expect(this.urlCalledWith).toEqual('/api/MyServiceOperation?$take=5&$skip=5&$inlinecount=allpages');
         })
 
         it('should handle filtering (where) using a string', function() {
-            this.dataSource
+            this.dataView
                 .where("numberProperty lt 10")
                 .load();
 
@@ -54,7 +54,7 @@ describe('dataSource providers - odata', function() {
         })
 
         it('should handle filtering (where) with parameters passed to where function', function() {
-            this.dataSource
+            this.dataView
                 .params({ aParam: 5 })
                 .where(function(params) {
                     return "numberProperty lt " + params.aParam;
@@ -65,7 +65,7 @@ describe('dataSource providers - odata', function() {
         })
 
         xit('should handle mapping', function() {
-            this.dataSource.map(function(i) {
+            this.dataView.map(function(i) {
                 return { mappedProperty: i.numberProperty };
             }).load();
 
@@ -73,24 +73,24 @@ describe('dataSource providers - odata', function() {
         })
 
         it('should handle orderBy', function() {
-            this.dataSource.orderBy('numberProperty desc').load();
+            this.dataView.orderBy('numberProperty desc').load();
 
             expect(this.urlCalledWith).toEqual('/api/MyServiceOperation?$orderby=numberProperty%20desc');
         })
 
         xit('should handle groupBy', function() {
-            this.dataSource.groupBy('group').load();
+            this.dataView.groupBy('group').load();
         })
 
         describe('multiple-options', function() {
             it('skip and take', function() {
-                this.dataSource.skip(3).take(5).load();
+                this.dataView.skip(3).take(5).load();
 
                 expect(this.urlCalledWith).toEqual('/api/MyServiceOperation?$take=5&$skip=3&$inlinecount=allpages');
             })
 
             it('filtering (where) and paging', function() {
-                this.dataSource
+                this.dataView
                     .where("numberProperty lt 10")
                     .page(2).pageSize(5)
                     .load();
@@ -99,13 +99,13 @@ describe('dataSource providers - odata', function() {
             })
 
             it('order by and paging', function() {
-                this.dataSource.orderBy('numberProperty').page(2).pageSize(5).load();
+                this.dataView.orderBy('numberProperty').page(2).pageSize(5).load();
 
                 expect(this.urlCalledWith).toEqual('/api/MyServiceOperation?$orderby=numberProperty&$take=5&$skip=5&$inlinecount=allpages');
             })
 
             xit('group by and paging', function() {
-                this.dataSource
+                this.dataView
                     .groupBy('group')
                     .page(1)
                     .pageSize(2)

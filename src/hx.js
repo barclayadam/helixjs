@@ -43,7 +43,7 @@
         //= core/viewModel.js
         //= core/authoriser.js
 
-        //= data/dataSource.js
+        //= data/dataView.js
         //= data/provider.memory.js
         //= data/provider.odata.js
                         

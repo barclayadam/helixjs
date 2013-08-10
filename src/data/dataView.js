@@ -1,8 +1,8 @@
-hx.provide('$DataSource', function() {
+hx.provide('$DataView', function() {
     /** 
-     * @class $DataSource 
+     * @class $DataView 
      */
-    function DataSource(provider) {
+    function DataView(provider) {
         if(_.isFunction(provider)) {
             // Ensure if a function is supplied as a provider it conforms to
             // provider interface (e.g. it becomes the `load` function)
@@ -15,7 +15,7 @@ hx.provide('$DataSource', function() {
 
         // A provider can provide extra methods which will be exposed on this data source
         // through proxying. For each method defined a new one will be created on the
-        // dataSource that will pass through the dataSource, a parameter store and all
+        // DataView that will pass through the DataView, a parameter store and all
         // arguments provided by the consumer of the new method.
         if(provider.fn) {
             for(var key in provider.fn) {
@@ -88,9 +88,9 @@ hx.provide('$DataSource', function() {
      *
      * @method where
      * @param {function} whereFn - The function applied to filter out results.
-     * @return {DataSource} - Returns this data source, to allow chaining further calls.
+     * @return {DataView} - Returns this data source, to allow chaining further calls.
      */
-    DataSource.prototype.where = createParamMethod('where');
+    DataView.prototype.where = createParamMethod('where');
 
     /**
      * Sets an object that will be passed through to the provider of this
@@ -99,9 +99,9 @@ hx.provide('$DataSource', function() {
      *
      * @method params
      * @param {object|observable<object>} params - The parameters to pass through.
-     * @return {DataSource} - Returns this data source, to allow chaining further calls.
+     * @return {DataView} - Returns this data source, to allow chaining further calls.
      */
-    DataSource.prototype.params = createParamMethod('params');
+    DataView.prototype.params = createParamMethod('params');
 
     /**
      * A property that the data should be ordered by, as a string, or undefined to
@@ -109,9 +109,9 @@ hx.provide('$DataSource', function() {
      *
      * @method orderBy
      * @param {string} orderBy - The property to order the data by.
-     * @return {DataSource} - Returns this data source, to allow chaining further calls.
+     * @return {DataView} - Returns this data source, to allow chaining further calls.
      */
-    DataSource.prototype.orderBy = createParamMethod('orderBy');
+    DataView.prototype.orderBy = createParamMethod('orderBy');
 
     /**
      * A property by which to group the data, which results in a transformed result
@@ -122,9 +122,9 @@ hx.provide('$DataSource', function() {
      * @method groupBy
      * @param {string} groupBy - The property to group results by, or undefined to remove
      *   any previous group by clauses.
-     * @return {DataSource} - Returns this data source, to allow chaining further calls.
+     * @return {DataView} - Returns this data source, to allow chaining further calls.
      */
-    DataSource.prototype.groupBy = createParamMethod('groupBy');
+    DataView.prototype.groupBy = createParamMethod('groupBy');
 
     /**
      * Specifies the number of items that should be 'taken', such that given a result
@@ -133,9 +133,9 @@ hx.provide('$DataSource', function() {
      *
      * @method take
      * @param {integer} take - The number of items to be returned.
-     * @return {DataSource} - Returns this data source, to allow chaining further calls.
+     * @return {DataView} - Returns this data source, to allow chaining further calls.
      */
-    DataSource.prototype.take = createParamMethod('take');
+    DataView.prototype.take = createParamMethod('take');
 
     /**
      * Specifies the number of items to skip from the start before returning any values. This
@@ -143,28 +143,28 @@ hx.provide('$DataSource', function() {
      *
      * @method skip
      * @param {integer} skip - The number of items to skip before returning data.
-     * @return {DataSource} - Returns this data source, to allow chaining further calls.
+     * @return {DataView} - Returns this data source, to allow chaining further calls.
      */
-    DataSource.prototype.skip = createParamMethod('skip');
+    DataView.prototype.skip = createParamMethod('skip');
 
     /**
-     * Specifies the page (1-based) of items to fetch from the dataSource, to be used in conjunction
+     * Specifies the page (1-based) of items to fetch from the DataView, to be used in conjunction
      * with the {@link pageSize} option to provide paging semantics over the data from the provider.
      *
      * @method page
      * @param {integer} page - The current page to retrieve.
-     * @return {DataSource} - Returns this data source, to allow chaining further calls.
+     * @return {DataView} - Returns this data source, to allow chaining further calls.
      */
-    DataSource.prototype.page = createParamMethod('page');
+    DataView.prototype.page = createParamMethod('page');
 
     /**
      * Specifies the page size that should be fetched from the data provider.
      *
      * @method pageSize
      * @param {integer} pageSize - The size of the page to retrieve
-     * @return {DataSource} - Returns this data source, to allow chaining further calls.
+     * @return {DataView} - Returns this data source, to allow chaining further calls.
      */
-    DataSource.prototype.pageSize = createParamMethod('pageSize');
+    DataView.prototype.pageSize = createParamMethod('pageSize');
 
     /**
      * Specifies a mapping function, a function that will be passed each data item that has been
@@ -173,9 +173,9 @@ hx.provide('$DataSource', function() {
      *
      * @method map
      * @param {function} mapFn - The mapping function to use.
-     * @return {DataSource} - Returns this data source, to allow chaining further calls.
+     * @return {DataView} - Returns this data source, to allow chaining further calls.
      */
-    DataSource.prototype.map = createParamMethod('map');
+    DataView.prototype.map = createParamMethod('map');
 
     /**
      * Loads data from the data provider using the currently configured properties. 
@@ -187,7 +187,7 @@ hx.provide('$DataSource', function() {
      *
      * @method load
      */
-    DataSource.prototype.load = function() {
+    DataView.prototype.load = function() {
         if(!this.$$initialisedProvider) {
             if(this.$$provider.initialise) {
                 this.$$provider.initialise(this);
@@ -231,13 +231,13 @@ hx.provide('$DataSource', function() {
 
     return {
         /**
-         * Creates a new $DataSource, using the given provider
+         * Creates a new $DataView, using the given provider
          *
          * @method from
          * @static
          */
         from: function(provider) {
-            return new DataSource(provider);
+            return new DataView(provider);
         }
     }
 })

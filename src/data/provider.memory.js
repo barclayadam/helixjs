@@ -1,4 +1,4 @@
-hx.provide('$InMemoryProvider', function() {
+hx.singleton('$InMemoryProvider', function() {
     /** 
      * @class $InMemoryProvider 
      */

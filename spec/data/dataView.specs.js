@@ -1,25 +1,24 @@
-describe('dataSource', function() {
-    var $DataSource = hx.get('$DataSource');
+describe('dataView', function() {
+    var $DataView = hx.get('$DataView');
 
     describe('newly created with no options specified', function() {   
         beforeEach(function() {
-            this.dataSource = $DataSource
-                                .from(this.stub());
+            this.dataView = $DataView.from(this.stub());
         }) 
 
         it('should have a data observable that is undefined', function() {
-            expect(this.dataSource.data).toBeObservable();
-            expect(this.dataSource.data()).toBeUndefined();
+            expect(this.dataView.data).toBeObservable();
+            expect(this.dataView.data()).toBeUndefined();
         })
 
         it('should have a totalCount observable that is undefined', function() {
-            expect(this.dataSource.totalCount).toBeObservable();
-            expect(this.dataSource.totalCount()).toBeUndefined();
+            expect(this.dataView.totalCount).toBeObservable();
+            expect(this.dataView.totalCount()).toBeUndefined();
         })
 
         it('should have a pageCount observable that is undefined', function() {
-            expect(this.dataSource.pageCount).toBeObservable();
-            expect(this.dataSource.pageCount()).toBeUndefined();
+            expect(this.dataView.pageCount).toBeObservable();
+            expect(this.dataView.pageCount()).toBeUndefined();
         })
     });
 
@@ -31,7 +30,7 @@ describe('dataSource', function() {
             this.whereFn = function() { return true; };
             this.mapFn = function(i) { return i; };
 
-            this.dataSource = $DataSource
+            this.dataView = $DataView
                                 .from(this.providerStub)
                                 .params({ aParam: 1 })
                                 .where(this.whereFn)
@@ -47,13 +46,13 @@ describe('dataSource', function() {
         })
 
         it('should have an empty data observable', function() {
-            expect(this.dataSource.data).toBeObservable();
-            expect(this.dataSource.data()).toBeUndefined();
+            expect(this.dataView.data).toBeObservable();
+            expect(this.dataView.data()).toBeUndefined();
         })
 
         describe('when calling load', function() {  
             beforeEach(function() {
-                this.dataSource.load();
+                this.dataView.load();
             });
 
             it('should call provider with all options given', function() {
@@ -69,7 +68,7 @@ describe('dataSource', function() {
             })
 
             it('should store return value as a data observable', function() {
-                expect(this.dataSource.data()).toEqual(this.returnValue);
+                expect(this.dataView.data()).toEqual(this.returnValue);
             })
         })
     })
@@ -86,10 +85,10 @@ describe('dataSource', function() {
         }
 
         beforeEach(function() {
-            this.dataSource = $DataSource.from(this.stub());
+            this.dataView = $DataView.from(this.stub());
 
             for(var key in options) {
-                this.dataSource[key](options[key]);
+                this.dataView[key](options[key]);
             }
         })
 
@@ -97,7 +96,7 @@ describe('dataSource', function() {
             (function capture() {
                 var optionKey = key;
                 it('should be possible to get ' + optionKey + ' option', function() {
-                    expect(this.dataSource[optionKey]()).toBe(options[optionKey]);  
+                    expect(this.dataView[optionKey]()).toBe(options[optionKey]);  
                 })
             })();
         }
@@ -110,7 +109,7 @@ describe('dataSource', function() {
 
             this.paramsObservable = ko.observable({ aParam: 1 });
 
-            this.dataSource = $DataSource
+            this.dataView = $DataView
                                 .from(this.providerStub)
                                 .params(this.paramsObservable)
                                 .orderBy(ko.observable('aProperty asc'))
@@ -124,8 +123,8 @@ describe('dataSource', function() {
         })
 
         it('should have an empty data observable', function() {
-            expect(this.dataSource.data).toBeObservable();
-            expect(this.dataSource.data()).toBeUndefined();
+            expect(this.dataView.data).toBeObservable();
+            expect(this.dataView.data()).toBeUndefined();
         })
 
         it('should not call provider after a change to observable properties', function() {
@@ -136,7 +135,7 @@ describe('dataSource', function() {
 
         describe('when calling load', function() {  
             beforeEach(function() {
-                this.dataSource.load();
+                this.dataView.load();
             });
 
             it('should call provider with all options given, unwrapped', function() {
@@ -150,7 +149,7 @@ describe('dataSource', function() {
             })
 
             it('should store return value as a data observable', function() {
-                expect(this.dataSource.data()).toEqual(this.returnValue);
+                expect(this.dataView.data()).toEqual(this.returnValue);
             })
 
             it('should call provider after a change to observable properties', function() {
@@ -172,13 +171,13 @@ describe('dataSource', function() {
             this.returnValue = ['a', 42, 5, 3, 'ds', 34]
             this.providerStub = this.stub().returns(this.returnValue);
 
-            this.dataSource = $DataSource
+            this.dataView = $DataView
                                 .from(this.providerStub)
                                 .params({ aParam: 1 })
                                 .take(15)
                                 .skip(10);
 
-            this.dataSource.load();
+            this.dataView.load();
         })
 
         it('should call provider with specified options given, others not specified', function() {
@@ -195,20 +194,20 @@ describe('dataSource', function() {
             this.returnValue = { totalCount: 25, items: ['a', 42, 5, 3, 'ds', 34] };
             this.providerStub = this.stub().returns(this.returnValue);
 
-            this.dataSource = $DataSource
+            this.dataView = $DataView
                                 .from(this.providerStub)
                                 .pageSize(20)
                                 .page(1);
 
-            this.dataSource.load();
+            this.dataView.load();
         })
 
         it('should store totalCount in totalCount observable', function() {
-            expect(this.dataSource.totalCount()).toBe(25);
+            expect(this.dataView.totalCount()).toBe(25);
         })
 
         it('should store page items in data observable', function() {
-            expect(this.dataSource.data()).toBe(this.returnValue.items);            
+            expect(this.dataView.data()).toBe(this.returnValue.items);            
         })
 
         it('should pass through pageSize and page parameters to provider', function() {
@@ -219,8 +218,8 @@ describe('dataSource', function() {
         })
 
         it('should calculate page count and store in pageCount observable', function() {
-            expect(this.dataSource.pageCount).toBeObservable();            
-            expect(this.dataSource.pageCount()).toBe(2);
+            expect(this.dataView.pageCount).toBeObservable();            
+            expect(this.dataView.pageCount()).toBe(2);
         })
     })
 
@@ -229,20 +228,20 @@ describe('dataSource', function() {
             this.returnValue = { totalCount: 0, items: [] };
             this.providerStub = this.stub().returns(this.returnValue);
 
-            this.dataSource = $DataSource
+            this.dataView = $DataView
                                 .from(this.providerStub)
                                 .pageSize(20)
                                 .page(1);
 
-            this.dataSource.load();
+            this.dataView.load();
         })
 
         it('should store totalCount in totalCount observable', function() {
-            expect(this.dataSource.totalCount()).toBe(0);
+            expect(this.dataView.totalCount()).toBe(0);
         })
 
         it('should store page items in data observable', function() {
-            expect(this.dataSource.data()).toBe(this.returnValue.items);            
+            expect(this.dataView.data()).toBe(this.returnValue.items);            
         })
     })
 
@@ -255,13 +254,13 @@ describe('dataSource', function() {
                 load: this.providerStub
             }
 
-            this.dataSource = $DataSource
+            this.dataView = $DataView
                                 .from(this.provider)
                                 .params({ aParam: 1 })
                                 .take(15)
                                 .skip(10);
 
-            this.dataSource.load();
+            this.dataView.load();
         })
 
         it('should call provider instance load function when loading', function() {
@@ -276,7 +275,7 @@ describe('dataSource', function() {
     describe('with a provider that has an initialise function', function() {   
         beforeEach(function() {
             this.returnValue = ['a', 42, 5, 3, 'ds', 34];
-            this.dataSourceInInitialise = undefined;
+            this.dataViewInInitialise = undefined;
             this.initialiseCount = 0;
 
             this.provider = {
@@ -285,18 +284,18 @@ describe('dataSource', function() {
                 load: this.stub().returns(this.returnValue)
             }
 
-            this.dataSource = $DataSource
+            this.dataView = $DataView
                                 .from(this.provider)
                                 .params({ aParam: 1 })
                                 .take(15)
                                 .skip(10);
 
-            this.dataSource.load();
-            this.dataSource.load();
+            this.dataView.load();
+            this.dataView.load();
         });
 
         it('should call initialise with dataSource argument', function() {
-            expect(this.provider.initialise).toHaveBeenCalledWith(this.dataSource);
+            expect(this.provider.initialise).toHaveBeenCalledWith(this.dataView);
         })
 
         it('should call initialise only once when load is called multiple times', function() {
@@ -315,12 +314,12 @@ describe('dataSource', function() {
                 processResult: this.stub().returns(this.normalisedReturnValue)
             }
 
-            this.dataSource = $DataSource
+            this.dataView = $DataView
                                 .from(this.provider)
                                 .take(15)
                                 .skip(10);
 
-            this.dataSource.load();
+            this.dataView.load();
         }); 
 
         it('should call normaliseResult with result from load, and loadOptions', function() {
@@ -331,8 +330,8 @@ describe('dataSource', function() {
         })
 
         it('should use return from normaliseResult', function() {
-            expect(this.dataSource.data()).toBe(this.normalisedReturnValue.items);
-            expect(this.dataSource.totalCount()).toBe(this.normalisedReturnValue.totalCount);
+            expect(this.dataView.data()).toBe(this.normalisedReturnValue.items);
+            expect(this.dataView.totalCount()).toBe(this.normalisedReturnValue.totalCount);
         })
     });
 
@@ -344,7 +343,7 @@ describe('dataSource', function() {
                 processResult: this.stub().returns(this.normalisedReturnValue)
             }
 
-            this.dataSource = $DataSource
+            this.dataView = $DataView
                                 .from(this.provider)
                                 .load();
         }); 
@@ -364,22 +363,22 @@ describe('dataSource', function() {
                 load: this.providerStub
             }
 
-            this.dataSource = $DataSource
+            this.dataView = $DataView
                                 .from(this.provider)
                                 .params({ aParam: 1 })
                                 .take(15)
                                 .skip(10);
 
-            this.dataSource.load();
+            this.dataView.load();
         })
 
         it('should not data to the returned promise', function() {
-            expect(this.dataSource.data()).toBeUndefined()
+            expect(this.dataView.data()).toBeUndefined()
         })
 
         it('should set data to the value of the resolved promise', function(){
             this.providerReturnPromise.resolve(this.returnValue);
-            expect(this.dataSource.data()).toBe(this.returnValue);
+            expect(this.dataView.data()).toBe(this.returnValue);
         })
     });
 
@@ -400,19 +399,19 @@ describe('dataSource', function() {
                 }
             }
 
-            this.dataSource = $DataSource
+            this.dataView = $DataView
                                 .from(this.provider)
                                 .odataServiceName('myServiceName')
                                 .take(15)
                                 .skip(10);
 
-            this.dataSource.load();
+            this.dataView.load();
         })
 
         it('should pass through dataSource, parameter store and any arguments client passes', function() {
             expect(this.provider.fn.odataServiceName).toHaveBeenCalled();
 
-            expect(this.calledWith.dataSource).toBe(this.dataSource);
+            expect(this.calledWith.dataSource).toBe(this.dataView);
             expect(this.calledWith.name).toBe('myServiceName');
         })
 
