@@ -4,7 +4,11 @@ describe('dataView', function() {
     describe('newly created with no options specified', function() {   
         beforeEach(function() {
             this.dataView = $DataView.from(this.stub());
-        }) 
+        })
+
+        it('should return the dataView from load function', function() {
+            expect(this.dataView.load()).toBe(this.dataView);
+        })
 
         it('should have a data observable that is undefined', function() {
             expect(this.dataView.data).toBeObservable();
@@ -25,7 +29,7 @@ describe('dataView', function() {
     it('should default to in memory provider if passed an observable', function() {
         var $InMemoryProvider = hx.get('$InMemoryProvider'),
             dataView = $DataView.from(ko.observable(['A Value']));
-            
+
         expect(dataView.$$provider instanceof $InMemoryProvider).toBe(true);
     })
 

@@ -229,6 +229,8 @@ hx.provide('$DataView', ['$InMemoryProvider'], function($InMemoryProvider) {
                 this.data(result);
             }
         }.bind(this));
+
+        return this;
     }
 
     return {
