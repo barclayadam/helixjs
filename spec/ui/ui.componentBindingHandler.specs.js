@@ -123,11 +123,11 @@ describe('component binding handler', function () {
             beforeEach(function () {
                 var _this = this;
                 this.showHadContent = void 0;
-                this.afterShowHadContent = void 0;
+                this.afterRenderHadContent = void 0;
 
                 this.beforeShowThisContextValue = void 0;
                 this.showThisContextValue = void 0;
-                this.afterShowThisContextValue = void 0;
+                this.afterRenderThisContextValue = void 0;
 
                 this.viewModel = {
                     anObservableProperty: ko.observable(),
@@ -141,9 +141,9 @@ describe('component binding handler', function () {
                         _this.showHadContent = _this.getFixtureTextContent().length > 0;
                     }),
 
-                    afterShow: this.spy(function () {
-                        _this.afterShowThisContextValue = this;
-                        _this.afterShowHadContent = _this.getFixtureTextContent().length > 0;
+                    afterRender: this.spy(function () {
+                        _this.afterRenderThisContextValue = this;
+                        _this.afterRenderHadContent = _this.getFixtureTextContent().length > 0;
                     })
                 };
 
@@ -154,16 +154,16 @@ describe('component binding handler', function () {
                 });
             });
 
-            it('should call show function before afterShow', function () {
-                expect(this.viewModel.show).toHaveBeenCalledBefore(this.viewModel.afterShow);
+            it('should call show function before afterRender', function () {
+                expect(this.viewModel.show).toHaveBeenCalledBefore(this.viewModel.afterRender);
             });
 
             it('should call show function before rendering', function () {
                 expect(this.showHadContent).toEqual(false);
             });
 
-            it('should call afterShow function before rendering', function () {
-                expect(this.afterShowHadContent).toEqual(true);
+            it('should call afterRender function before rendering', function () {
+                expect(this.afterRenderHadContent).toEqual(true);
             });
 
             it('should set viewModel as calling context (this) for beforeShow', function () {
@@ -174,8 +174,8 @@ describe('component binding handler', function () {
                 expect(this.showThisContextValue).toEqual(this.viewModel);
             });
 
-            it('should set viewModel as calling context (this) for afterShow', function () {
-                expect(this.afterShowThisContextValue).toEqual(this.viewModel);
+            it('should set viewModel as calling context (this) for afterRender', function () {
+                expect(this.afterRenderThisContextValue).toEqual(this.viewModel);
             });
         });
 
@@ -190,8 +190,8 @@ describe('component binding handler', function () {
                         $ajax.url('/Users/Managers').get();
                     }),
 
-                    afterShow: this.spy(function () {
-                        _this.afterShowHadContent = _this.getFixtureTextContent().length > 0;
+                    afterRender: this.spy(function () {
+                        _this.afterRenderHadContent = _this.getFixtureTextContent().length > 0;
                     }),
 
                     hide: this.spy()
@@ -209,9 +209,9 @@ describe('component binding handler', function () {
                 expect(document.getElementById("fixture")).toBeEmpty();
             });
 
-            it('should not call afterShow before ajax requests complete', function () {
+            it('should not call afterRender before ajax requests complete', function () {
                 // We have not responded from server yet
-                expect(this.viewModel.afterShow).toHaveNotBeenCalled();
+                expect(this.viewModel.afterRender).toHaveNotBeenCalled();
             });
 
             it('should add is-loading class to element', function () {
@@ -233,9 +233,9 @@ describe('component binding handler', function () {
                     expect(document.getElementById("fixture")).not.toBeEmpty();
                 });
 
-                it('should call afterShow before ajax requests complete', function () {
+                it('should call afterRender before ajax requests complete', function () {
                     // We have now responded from server
-                    expect(this.viewModel.afterShow).toHaveBeenCalled();
+                    expect(this.viewModel.afterRender).toHaveBeenCalled();
                 });
 
                 it('should remove is-loading class to element', function () {
@@ -304,7 +304,7 @@ describe('component binding handler', function () {
                 $templating.set('myNamedPartTemplate', 'This is the template');
 
                 this.showObservable = showObservable = ko.observable();
-                this.afterShowObservable = afterShowObservable = ko.observable();
+                this.afterRenderObservable = afterRenderObservable = ko.observable();
 
                 this.viewModel = {
                     show: this.spy(function() {
@@ -312,9 +312,9 @@ describe('component binding handler', function () {
                         showObservable();
                     }),
 
-                    afterShow: this.spy(function() {
+                    afterRender: this.spy(function() {
                         // Attach dependency
-                        afterShowObservable();
+                        afterRenderObservable();
                     })
                 };
 
@@ -328,10 +328,10 @@ describe('component binding handler', function () {
                 expect(this.viewModel.show).toHaveBeenCalledOnce()
             });
 
-            it('should not re-render when observable in "afterShow" method is updated', function () {
-                this.afterShowObservable('A new value');
+            it('should not re-render when observable in "afterRender" method is updated', function () {
+                this.afterRenderObservable('A new value');
 
-                expect(this.viewModel.afterShow).toHaveBeenCalledOnce()
+                expect(this.viewModel.afterRender).toHaveBeenCalledOnce()
             });
         });
 

@@ -141,8 +141,8 @@ hx.config(['$log', '$ajax', '$injector', '$authoriser', '$router'], function($lo
 
                             koBindingHandlers.template.update(element, templateValueAccessor, allBindingsAccessor, viewModel, innerBindingContext);
 
-                            if (component.afterShow != null) {
-                                component.afterShow.apply(component);
+                            if (component.afterRender != null) {
+                                component.afterRender.apply(component);
                             }
 
                             ko.utils.domData.set(element, '__component__currentViewModel', component);
