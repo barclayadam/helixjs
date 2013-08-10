@@ -22,6 +22,20 @@ describe('dataView', function() {
         })
     });
 
+    it('should default to in memory provider if passed an observable', function() {
+        var $InMemoryProvider = hx.get('$InMemoryProvider'),
+            dataView = $DataView.from(ko.observable(['A Value']));
+            
+        expect(dataView.$$provider instanceof $InMemoryProvider).toBe(true);
+    })
+
+    it('should default to in memory provider if passed an array', function() {
+        var $InMemoryProvider = hx.get('$InMemoryProvider'),
+            dataView = $DataView.from(['A Value']);
+
+        expect(dataView.$$provider instanceof $InMemoryProvider).toBe(true);
+    })
+
     describe('all options with static values defined, function as a provider', function() {    
         beforeEach(function() {
             this.returnValue = ['a', 42, 5, 3, 'ds', 34]

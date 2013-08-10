@@ -1,9 +1,11 @@
-hx.provide('$DataView', function() {
+hx.provide('$DataView', ['$InMemoryProvider'], function($InMemoryProvider) {
     /** 
      * @class $DataView 
      */
     function DataView(provider) {
-        if(_.isFunction(provider)) {
+        if(ko.isObservable(provider) || _.isArray(provider)) {
+            this.$$provider = $InMemoryProvider({ data: provider });
+        } else if(_.isFunction(provider)) {
             // Ensure if a function is supplied as a provider it conforms to
             // provider interface (e.g. it becomes the `load` function)
             this.$$provider = { load: provider };
