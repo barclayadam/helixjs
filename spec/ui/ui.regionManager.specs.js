@@ -22,8 +22,12 @@ describe('region manager', function () {
 
             // Typically, a region manager would be the root `app` on the
             // body, but it is not a requirement.
-            this.setHtmlFixture("<div id=\"body\" data-bind=\"regionManager: regionManager\">\n    <header id=\"header\">This is the header</header>\n\n    <region id=\"my-main-region\" class=\"region\"></region>\n\n    <footer id=\"footer\">This is the footer</footer>\n</div>");
-            
+            this.setHtmlFixture("<div id=body data-bind='regionManager: regionManager'>" +
+                                 " <header id=header>This is the header</header>" +
+                                 " <region id=my-main-region class=region></region>" +
+                                 " <footer id=footer>This is the footer</footer>" +
+                                 "</div>");
+
             this.applyBindingsToFixture({
                 regionManager: this.regionManager
             });
@@ -45,6 +49,7 @@ describe('region manager', function () {
         describe('with view model set', function () {
             beforeEach(function () {
                 $templating.set('myViewModelTemplateName', 'This is the template');
+
                 this.viewModel = {
                     templateName: 'myViewModelTemplateName'
                 };
@@ -61,6 +66,7 @@ describe('region manager', function () {
     describe('multiple regions with a default set', function () {
         beforeEach(function () {
             this.regionManager = new $RegionManager();
+            
             this.setHtmlFixture("<div id=\"body\" data-bind=\"regionManager: regionManager\">" +
                                 "  <header id='header'>This is the header</header>" +
                                 "  <region id='main' data-default='true'></region>" +

@@ -1,5 +1,11 @@
 (function() {
     hx.provide('$RegionManager', ['$injector', '$log'], function($injector, $log) {
+        function getViewModel(viewModelOrName) {
+            viewModelOrName = ko.utils.unwrapObservable(viewModelOrName);
+
+            return _.isString(viewModelOrName) ? $injector.get(viewModelOrName) : viewModelOrName;
+        }
+
         return (function () {
  
             /**
@@ -31,9 +37,9 @@
             RegionManager.prototype.showSingle = function (viewModel) {
                 // If a single region has been set use whatever name was given.
                 if (_.keys(this.regions).length === 1) {
-                    return this.regions[_.keys(this.regions)[0]](viewModel);
+                    return this.regions[_.keys(this.regions)[0]](getViewModel(viewModel));
                 } else if (this.defaultRegion != null) {
-                    return this.regions[this.defaultRegion](viewModel);
+                    return this.regions[this.defaultRegion](getViewModel(viewModel));
                 } else {
                     throw new Error('Cannot use the showSingle method when multiple regions exist');
                 }
@@ -63,7 +69,7 @@
                     if (this.regions[regionKey] === void 0) {
                         $log.debug("This region manager does not have a '" + regionKey + "' region");
                     } else {
-                        this.regions[regionKey](viewModels[regionKey]);
+                        this.regions[regionKey](getViewModel(viewModels[regionKey]));
                     }
                 }
             };
@@ -141,13 +147,7 @@
      * The above example will register a route (at URL `/manage/projects`) that will load
      * the component `manage/projects` into the `main` region.
      */
-    hx.config(['$log', '$ajax', '$injector'], function($log, $ajax, $injector) {
-        function getViewModel(viewModelOrName) {
-            viewModelOrName = ko.utils.unwrapObservable(viewModelOrName);
-
-            return _.isString(viewModelOrName) ? $injector.get(viewModelOrName) : viewModelOrName;
-        }
-
+    hx.config(function() {
         function createTemplateValueAccessor(viewModel) {
             return function() {
                 return {
