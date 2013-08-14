@@ -451,7 +451,15 @@ describe('Validation', function () {
             var isValid = rules.minDate.validator("Not a Number", 5, {});
             expect(isValid).toBe(false);
         });
+
+        it('should use hx.validation.parseDate function', function () {
+            this.stub(hx.validation, 'parseDate').returns(new Date())
+            rules.minDate.validator('Input Value', "Date", {});
+
+            expect(hx.validation.parseDate).toHaveBeenCalledWith('Input Value');
+        });
     });
+
     describe('With a max date validator', function () {
         itShouldReturnTrueForEmptyValues('maxDate');
         it('should true if property value is equal to maximum date value', function () {
@@ -470,20 +478,40 @@ describe('Validation', function () {
             var isValid = rules.maxDate.validator("Not a Number", 5, {});
             expect(isValid).toBe(false);
         });
+
+        it('should use hx.validation.parseDate function', function () {
+            this.stub(hx.validation, 'parseDate').returns(new Date())
+            rules.maxDate.validator('Input Value', "Date", {});
+
+            expect(hx.validation.parseDate).toHaveBeenCalledWith('Input Value');
+        });
     });
+
     describe('With a in the future validator', function () {
         itShouldReturnTrueForEmptyValues('inFuture');
+
         it('should true if property value is tomorrow', function () {
-            var isValid, tomorrow;
-            tomorrow = new Date();
+            var isValid,
+                tomorrow = new Date();
             tomorrow.setDate(tomorrow.getDate() + 1);
+            
             isValid = rules.inFuture.validator(tomorrow, "Date", {});
+
             expect(isValid).toBe(true);
         });
+
         it('should false if property value is today', function () {
             var isValid = rules.inFuture.validator(new Date(), "Date", {});
             expect(isValid).toBe(false);
         });
+
+        it('should use hx.validation.parseDate function', function () {
+            this.stub(hx.validation, 'parseDate').returns(new Date())
+            rules.inFuture.validator('Input Value', "Date", {});
+
+            expect(hx.validation.parseDate).toHaveBeenCalledWith('Input Value');
+        });
+
         it('should false if property value is yesterday', function () {
             var isValid, yesterday;
             yesterday = new Date();
@@ -491,10 +519,12 @@ describe('Validation', function () {
             isValid = rules.inFuture.validator(yesterday, "Date", {});
             expect(isValid).toBe(false);
         });
+
         it('should false if property is not a date', function () {
             var isValid = rules.inFuture.validator("Not a Number", "Date", {});
             expect(isValid).toBe(false);
         });
+
         it('should true if date is in the future and temporal check type is DateTime', function () {
             var isValid, tomorrow;
             tomorrow = new Date();
@@ -502,6 +532,7 @@ describe('Validation', function () {
             isValid = rules.inFuture.validator(tomorrow, "DateTime", {});
             expect(isValid).toBe(true);
         });
+
         it('should false if date is in the past and temporal check type is DateTime', function () {
             var isValid, yesterday;
             yesterday = new Date();
@@ -509,6 +540,7 @@ describe('Validation', function () {
             isValid = rules.inFuture.validator(yesterday, "DateTime", {});
             expect(isValid).toBe(false);
         });
+
         it('should true if date is one second in the future and temporal check type is DateTime', function () {
             var future, isValid;
             future = new Date();
@@ -516,6 +548,7 @@ describe('Validation', function () {
             isValid = rules.inFuture.validator(future, "DateTime", {});
             expect(isValid).toBe(true);
         });
+
         it('should false if date is one second in the past and temporal check type is DateTime', function () {
             var isValid, past;
             past = new Date();
@@ -523,10 +556,12 @@ describe('Validation', function () {
             isValid = rules.inFuture.validator(past, "DateTime", {});
             expect(isValid).toBe(false);
         });
+
         it('should false if property is not a date and temporal check type is DateTime', function () {
             var isValid = rules.inFuture.validator("Not a Number", "DateTime", {});
             expect(isValid).toBe(false);
         });
+
         it('should true if date is in the future and temporal check type is Date', function () {
             var isValid, tomorrow;
             tomorrow = new Date();
@@ -534,6 +569,7 @@ describe('Validation', function () {
             isValid = rules.inFuture.validator(tomorrow, "Date", {});
             expect(isValid).toBe(true);
         });
+
         it('should false if date is in the past and temporal check type is Date', function () {
             var isValid, yesterday;
             yesterday = new Date();
@@ -541,6 +577,7 @@ describe('Validation', function () {
             isValid = rules.inFuture.validator(yesterday, "Date", {});
             expect(isValid).toBe(false);
         });
+
         it('should false if date is one second in the future and temporal check type is Date', function () {
             var future, isValid;
             future = new Date();
@@ -548,6 +585,7 @@ describe('Validation', function () {
             isValid = rules.inFuture.validator(future, "Date", {});
             expect(isValid).toBe(false);
         });
+
         it('should false if date is one second in the past and temporal check type is Date', function () {
             var isValid, past;
             past = new Date();
@@ -556,8 +594,10 @@ describe('Validation', function () {
             expect(isValid).toBe(false);
         });
     });
+
     describe('With a in the past validator', function () {
         itShouldReturnTrueForEmptyValues('inPast');
+
         it('should false if property value is tomorrow', function () {
             var isValid, tomorrow;
             tomorrow = new Date();
@@ -565,10 +605,19 @@ describe('Validation', function () {
             isValid = rules.inPast.validator(tomorrow, "Date", {});
             expect(isValid).toBe(false);
         });
+
         it('should false if property value is today', function () {
             var isValid = rules.inPast.validator(new Date(), "Date", {});
             expect(isValid).toBe(false);
         });
+
+        it('should use hx.validation.parseDate function', function () {
+            this.stub(hx.validation, 'parseDate').returns(new Date())
+            rules.inPast.validator('Input Value', "Date", {});
+
+            expect(hx.validation.parseDate).toHaveBeenCalledWith('Input Value');
+        });
+
         it('should true if property value is yesterday', function () {
             var isValid, yesterday;
             yesterday = new Date();
@@ -576,10 +625,12 @@ describe('Validation', function () {
             isValid = rules.inPast.validator(yesterday, "Date", {});
             expect(isValid).toBe(true);
         });
+
         it('should false if property is not a date', function () {
             var isValid = rules.inPast.validator("Not a Number", "Date", {});
             expect(isValid).toBe(false);
         });
+
         it('should false if date is in the future and temporal check type is DateTime', function () {
             var isValid, tomorrow;
             tomorrow = new Date();
@@ -587,6 +638,7 @@ describe('Validation', function () {
             isValid = rules.inPast.validator(tomorrow, "DateTime", {});
             expect(isValid).toBe(false);
         });
+
         it('should true if date is in the past and temporal check type is DateTime', function () {
             var isValid, yesterday;
             yesterday = new Date();
@@ -594,6 +646,7 @@ describe('Validation', function () {
             isValid = rules.inPast.validator(yesterday, "DateTime", {});
             expect(isValid).toBe(true);
         });
+
         it('should false if date is one second in the future and temporal check type is DateTime', function () {
             var future, isValid;
             future = new Date();
@@ -601,6 +654,7 @@ describe('Validation', function () {
             isValid = rules.inPast.validator(future, "DateTime", {});
             expect(isValid).toBe(false);
         });
+
         it('should true if date is one second in the past and temporal check type is DateTime', function () {
             var isValid, past;
             past = new Date();
@@ -608,10 +662,12 @@ describe('Validation', function () {
             isValid = rules.inPast.validator(past, "DateTime", {});
             expect(isValid).toBe(true);
         });
+
         it('should false if property is not a date and temporal check type is DateTime', function () {
             var isValid = rules.inFuture.validator("Not a Number", "DateTime", {});
             expect(isValid).toBe(false);
         });
+
         it('should false if date is in the future and temporal check type is Date', function () {
             var isValid, tomorrow;
             tomorrow = new Date();
@@ -619,6 +675,7 @@ describe('Validation', function () {
             isValid = rules.inPast.validator(tomorrow, "Date", {});
             expect(isValid).toBe(false);
         });
+
         it('should true if date is in the past and temporal check type is Date', function () {
             var isValid, yesterday;
             yesterday = new Date();
@@ -626,6 +683,7 @@ describe('Validation', function () {
             isValid = rules.inPast.validator(yesterday, "Date", {});
             expect(isValid).toBe(true);
         });
+
         it('should false if date is one second in the future and temporal check type is Date', function () {
             var future, isValid;
             future = new Date();
@@ -633,6 +691,7 @@ describe('Validation', function () {
             isValid = rules.inPast.validator(future, "Date", {});
             expect(isValid).toBe(false);
         });
+
         it('should false if date is one second in the past and temporal check type is Date', function () {
             var isValid, past;
             past = new Date();
@@ -641,6 +700,7 @@ describe('Validation', function () {
             expect(isValid).toBe(false);
         });
     });
+
     describe('With a not in the past validator', function () {
         itShouldReturnTrueForEmptyValues('notInPast');
         it('should true if property value is tomorrow', function () {
@@ -724,6 +784,13 @@ describe('Validation', function () {
             past.setSeconds(past.getSeconds() - 1);
             isValid = rules.notInPast.validator(past, "Date", {});
             expect(isValid).toBe(true);
+        });
+
+        it('should use hx.validation.parseDate function', function () {
+            this.stub(hx.validation, 'parseDate').returns(new Date())
+            rules.notInPast.validator('Input Value', "Date", {});
+
+            expect(hx.validation.parseDate).toHaveBeenCalledWith('Input Value');
         });
     });
     describe('With a not in future validator', function () {
@@ -809,6 +876,13 @@ describe('Validation', function () {
             past.setSeconds(past.getSeconds() - 1);
             isValid = rules.notInFuture.validator(past, "Date", {});
             expect(isValid).toBe(true);
+        });
+
+        it('should use hx.validation.parseDate function', function () {
+            this.stub(hx.validation, 'parseDate').returns(new Date())
+            rules.notInFuture.validator('Input Value', "Date", {});
+
+            expect(hx.validation.parseDate).toHaveBeenCalledWith('Input Value');
         });
     });
     describe('with an numeric validator', function () {
