@@ -30,6 +30,14 @@
     hx.validation.parseDate = function(value) {
         if (_.isDate(value)) {
             return value;
+        }
+
+        if (typeof moment == 'function') {
+            var asMoment = moment(value);
+
+            if(asMoment.isValid()) {
+                return asMoment.toDate();
+            }
         }        
     }
 
