@@ -131,6 +131,8 @@ hx.provide('$dialog', function() {
                 currentlyShowingDialog = null;
             }
         };
+        
+        this.component.closeDialog = this.close;
     }
 
     return {

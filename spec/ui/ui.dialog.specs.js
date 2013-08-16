@@ -24,6 +24,10 @@ describe('dialog', function() {
             expect(this.createdDialog.open).toBeAFunction();
         })
 
+        it('should add the close function as a closeDialog function to the component', function() {
+            expect(this.component.closeDialog).toBe(this.createdDialog.close);
+        })
+
         it('should have a close function that works without first showing dialog', function() {
             // Execute to ensure no errors
             this.createdDialog.close();
