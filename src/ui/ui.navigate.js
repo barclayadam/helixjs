@@ -53,7 +53,7 @@ hx.config(['$router'], function($router) {
 
         update: function(element, valueAccessor, allBindingsAccessor) {
             var routeName = ko.utils.unwrapObservable(valueAccessor()),
-                parameters = allBindingsAccessor()['parameters'];
+                parameters = allBindingsAccessor()['parameters'],
                 match = $router.buildMatchedRoute(routeName, parameters);
 
             if(match) {
