@@ -99,9 +99,9 @@ describe('validation - ui', function() {
             expect(document.getElementById('validation-message-span')).toHaveClass('validation-message');
         })
 
-        it('should have no text if applied to a valid observable', function() {
-            expect(document.getElementById('validation-message')).toBeEmpty();
-            expect(document.getElementById('validation-message-span')).toBeEmpty();
+        it('should have text "Valid" if applied to a valid observable', function() {
+            expect(document.getElementById('validation-message')).toHaveText('Valid');
+            expect(document.getElementById('validation-message-span')).toHaveText('Valid');
         })   
 
         it('should add valid class when observable is valid', function() {
@@ -185,7 +185,7 @@ describe('validation - ui', function() {
             it('should show nothing when client errors have been fixed', function () {
                 this.viewModel.password('test');
 
-                expect(document.getElementById('password-validation-message')).toBeEmpty();
+                expect(document.getElementById('password-validation-message')).toHaveText('Valid');
             });            
         });
 
@@ -204,7 +204,7 @@ describe('validation - ui', function() {
             it('should clear server errors when value is updated', function () {
                 this.viewModel.password('test');               
 
-                expect(document.getElementById('password-validation-message')).toBeEmpty();
+                expect(document.getElementById('password-validation-message')).toHaveText('Valid');
             }); 
 
             it('should show just server errors when client errors have been fixed', function () {

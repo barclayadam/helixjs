@@ -82,20 +82,26 @@ hx.config(function() {
             var value = valueAccessor();
 
             if(value && value.isValid) {
-                var isValid = value.isValid() && value.serverErrors().length === 0;
+                var allErrors = _.filter(value.errors().concat(value.serverErrors()), function (x) { return x; }),
+                    isValid = allErrors.length === 0;
 
                 ko.utils.toggleDomNodeCssClass(element, 'valid', isValid);
                 ko.utils.toggleDomNodeCssClass(element, 'invalid', !isValid);
                 ko.utils.toggleDomNodeCssClass(element, 'validated', value.validated());
                 ko.utils.toggleDomNodeCssClass(element, 'is-validating', value.validating());
 
-                if(isValid) {
-                    ko.utils.emptyDomNode(element);
+                if (isValid) {
+                    ko.utils.setTextContent(element, 'Valid');
                 } else {
-                    var errorText = ko.utils.domData.get(element, '__validation_message') ||
-                                    value.errors().concat(value.serverErrors()).join("<br />");
-
-                    ko.utils.setTextContent(element, errorText);
+                    var customErrorMessage = ko.utils.domData.get(element, '__validation_message');
+                
+                    if (customErrorMessage) {
+                        ko.utils.setTextContent(element, customErrorMessage);
+                    } else if (allErrors.length === 0) {
+                        ko.utils.setTextContent(element, 'Valid');
+                    } else {
+                        ko.utils.setTextContent(element, allErrors.join('<br />'));
+                    }
                 }
             } else {
                 ko.utils.emptyDomNode(element);

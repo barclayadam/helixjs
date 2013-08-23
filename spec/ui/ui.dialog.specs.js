@@ -48,6 +48,10 @@ describe('dialog', function() {
         it('should not add the component or its contents to page', function() {
             expect(document.getElementById('my-dialog-content')).toBeNull();
         })
+
+        it('should set options to an empty object if they are passed as undefined', function() {
+            expect(this.$dialog.create(this.component, undefined).options).toEqual({});
+        })
     })
 
     describe('opening a dialog', function() {
@@ -130,7 +134,8 @@ describe('dialog', function() {
 
     describe('given an open dialog', function() {
         beforeEach(function() {
-            this.createdDialog = this.$dialog.create(this.component);
+            this.onClose = this.spy();
+            this.createdDialog = this.$dialog.create(this.component, { onClose: this.onClose });
             this.openPromise = this.createdDialog.open(); 
         })
 
@@ -158,6 +163,10 @@ describe('dialog', function() {
                 this.openPromise.done(function(resolvedValue) {
                     expect(resolvedValue).toBe(this.closeValue);
                 }.bind(this))
+            })
+
+            it('should call onClose method of options', function() {
+                expect(this.onClose).toHaveBeenCalledWith(this.closeValue);
             })
         })
     

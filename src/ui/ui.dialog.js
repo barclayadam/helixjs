@@ -118,6 +118,10 @@ hx.provide('$dialog', function() {
 
                 currentShowPromise.resolve(closeValue);
 
+                if (this.options.onClose) {
+                    this.options.onClose(closeValue);
+                }
+
                 if(previouslyActiveElement) {
                     previouslyActiveElement.focus();
                 }
@@ -130,8 +134,8 @@ hx.provide('$dialog', function() {
 
                 currentlyShowingDialog = null;
             }
-        };
-        
+        }.bind(this);
+
         this.component.closeDialog = this.close;
     }
 
