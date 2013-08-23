@@ -49,8 +49,8 @@ describe('dialog', function() {
             expect(document.getElementById('my-dialog-content')).toBeNull();
         })
 
-        it('should set options to an empty object if they are passed as undefined', function() {
-            expect(this.$dialog.create(this.component, undefined).options).toEqual({});
+        it('should set options to the defaults if they are passed as undefined', function() {
+            expect(this.$dialog.create(this.component, undefined).options).toEqual(this.$dialog.defaults());
         })
     })
 
