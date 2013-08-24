@@ -59,5 +59,6 @@
         //= ui/ui.navigate.js
         //= ui/ui.pager.js
         //= ui/ui.dialog.js
+        //= ui/ui.hasContentBindingHandler.js
     });
 })(window, document);
