@@ -36,7 +36,7 @@ describe('validation - ui', function() {
 
             function checkInputType(inputType) {
                 describe(inputType, function() {
-                    it('should apply an aria-invalid property immediately on ' + inputType, function() {
+                    it('should apply an aria-invalid property immediately', function() {
                         expect(document.getElementById('validated-' + inputType)).toHaveAttr('aria-invalid', 'false');
                     })
 
