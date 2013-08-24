@@ -17,7 +17,7 @@ describe('templating', function () {
 
     describe('when using built-in template binding handler with named template', function () {
         beforeEach(function () {
-            this.setHtmlFixture("<script type='text/html' id='named-template'>My Named Template Text</script>" +
+            this.setHtmlFixture("<div id='named-template'>My Named Template Text</div>" +
                                 "<div id=templated data-bind=\"template: { name: 'named-template' }\"></div>");
 
             this.applyBindingsToFixture({});
@@ -98,10 +98,11 @@ describe('templating', function () {
         describe('when a template name does not match an existing element, or string template it is loaded externally', function () {
             beforeEach(function () {
                 this.templateText = "A cool external template";
-                
+                this.$templating.loadingTemplate = 'Loading...'
                 this.$templating.externalPath = '/Get/Template/{name}';
                 this.respondWithTemplate('/Get/Template/myExternalTemplateSingleLoad', this.templateText);
-                this.setHtmlFixture("<div id='one' data-bind=\"template: 'myExternalTemplateSingleLoad'\"></div>\n<div id='two' data-bind=\"template: 'myExternalTemplateSingleLoad'\"></div>");
+                this.setHtmlFixture("<div id='one' data-bind=\"template: 'myExternalTemplateSingleLoad'\"></div>" +
+                                    "<div id='two' data-bind=\"template: 'myExternalTemplateSingleLoad'\"></div>");
                 
                 this.ajaxSpy = this.spy($, 'ajax');
 
@@ -116,8 +117,8 @@ describe('templating', function () {
             })
 
             it('should immediately render the loading template (this.$templating.loadingTemplate)', function () {
-                expect(this.wrapperOne).toHaveHtml(this.$templating.loadingTemplate);
-                expect(this.wrapperTwo).toHaveHtml(this.$templating.loadingTemplate);
+                expect(this.wrapperOne).toHaveText(this.$templating.loadingTemplate);
+                expect(this.wrapperTwo).toHaveText(this.$templating.loadingTemplate);
             });
 
             it('should only attempt one load of the document from the server', function () {
