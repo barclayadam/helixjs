@@ -9,7 +9,7 @@
  * styling to target only those input fields that have been marked as having content (e.g. a form
  * input that uses async validation).
  */
-koBindingHandlers.hasContent = {
+hx.bindingHandler('hasContent', {
     tag: ['input', 'textarea'],
 
     update: function(element, valueAccessor, allBindingsAccessor) {
@@ -18,4 +18,4 @@ koBindingHandlers.hasContent = {
 
         ko.utils.toggleDomNodeCssClass(element, 'has-content', ko.utils.unwrapObservable(value));
     }
-};
+});

@@ -8,6 +8,15 @@
      */
     function instantiate(injector, dependencies, func) {
         // No dependencies have been specified, just execute function.
+        if(func == undefined) {
+            if(typeof dependencies == "function") {
+                return dependencies();
+            } else {
+                return dependencies;
+            }
+        }
+        
+        // No dependencies have been specified, just execute function.
         if(dependencies == undefined) {
             if(typeof func == "function") {
                 return func();
@@ -64,6 +73,10 @@
         this.provide('$injector', this);
     }
 
+    hx.Injector.prototype.instantiate = function(dependencies, func) {
+        return instantiate(this, dependencies, func);
+    }
+
     hx.Injector.prototype.find = function(name) {
         name = ko.utils.stringTrim(name);
 
@@ -72,8 +85,6 @@
                 return this.modules[moduleName];
             }
         }
-
-        throw new Error("Cannot find module with the name '" + name + "'.");
     };
 
     /**
@@ -152,6 +163,10 @@
      */
     hx.Injector.prototype.get = function(moduleName) {
         var module = this.find(moduleName);
+
+        if (!module) {
+            throw new Error("Cannot find module with the name '" + moduleName + "'.");
+        }
 
         if(_.isArray(module)) {
             return _.map(module, function(m) { return m(); });

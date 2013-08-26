@@ -38,10 +38,6 @@ describe('region manager', function () {
             expect(document.getElementById("footer")).toHaveText("This is the footer");
         });
 
-        it('should replace region with a div tag', function () {
-            expect(document.getElementById("my-main-region").tagName.toLowerCase()).toEqual("div");
-        });
-
         it('should place no content in region if no view model has been set', function () {
             expect(document.getElementById("my-main-region")).toBeEmpty();
         });

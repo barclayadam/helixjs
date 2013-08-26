@@ -110,7 +110,7 @@
      * it comes to multiple regions within a single application, to avoid individual modules
      * and parts of the system knowing too much about these regions.
      */
-    koBindingHandlers.regionManager = {
+    hx.bindingHandler('regionManager', {
         init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
             var regionManager = ko.utils.unwrapObservable(valueAccessor()),
                 regionManagerProperties = {},
@@ -123,7 +123,7 @@
 
             return { controlsDescendantBindings: true };
         }
-    };
+    });
 
     /**
      * @bindingHandler region
@@ -147,7 +147,7 @@
      * The above example will register a route (at URL `/manage/projects`) that will load
      * the component `manage/projects` into the `main` region.
      */
-    hx.config(function() {
+    hx.bindingHandler('region', function() {
         function createTemplateValueAccessor(viewModel) {
             return function() {
                 return {
@@ -157,8 +157,8 @@
             };
         }
 
-        koBindingHandlers.region = {
-            tag: 'region->div',
+        return {
+            tag: 'region',
 
             init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
                 var regionManager = bindingContext[regionManagerContextKey],

@@ -32,47 +32,39 @@ describe('tag-based binding provider', function () {
         });
     });
 
-    describe('binding handler not specified as tag compatible', function () {
-        beforeEach(function () {
-            this.setHtmlFixture("<div id='fixture' data-option=\"'My Text'\">Existing Value</div>");
-            this.applyBindingsToFixture({});
-        });
-
-        it('should not use binding handler', function () {
-            expect(document.getElementById("fixture")).toHaveText('Existing Value');
-        });
-    });
-
-    describe('binding handler specified as tag compatible, with replacement', function () {
-        ko.bindingHandlers.tagSample = {
-            tag: 'tagSample->div',
-
-            init: function (element, valueAccessor) {
-                ko.utils.setTextContent(element, 'My New Text');
-            },
-
-            update: function (element) {
-                ko.utils.toggleDomNodeCssClass(element, 'myClass', true);
-            }
-        };
-
-        ko.bindingHandlers.complexOptionSample = {
-            tag: 'complexOptionSample->span',
-
-            init: function (element, valueAccessor) {
-            }
-        };
-
-        ko.bindingHandlers.templateTag = {
-            tag: 'templateTag->div',
-            
-            init: function (element, valueAccessor) {
-                $templating.set('myNamedTemplate', 'A Cool Template');
-                ko.renderTemplate("myNamedTemplate", {}, {}, element, "replaceChildren");
-            }
-        };
+    describe('binding handler specified as tag compatible', function () {
+        var complexOptionPassed = undefined;
 
         beforeEach(function () {
+            hx.bindingHandler('tagSample', {
+                tag: 'tagSample',
+
+                init: function (element, valueAccessor) {
+                    ko.utils.setTextContent(element, valueAccessor());
+                },
+
+                update: function (element) {
+                    ko.utils.toggleDomNodeCssClass(element, 'myClass', true);
+                }
+            });
+
+            hx.bindingHandler('complexOptionSample', {
+                tag: 'complexOptionSample',
+
+                init: function (element, valueAccessor) {
+                    complexOptionPassed = valueAccessor();
+                }
+            });
+
+            hx.bindingHandler('templateTag', {
+                tag: 'templateTag',
+                
+                init: function (element, valueAccessor) {
+                    $templating.set('myNamedTemplate', 'A Cool Template');
+                    ko.renderTemplate("myNamedTemplate", {}, {}, element, "replaceChildren");
+                }
+            });
+
             this.setHtmlFixture("<div>" +
                                  "<tagSample id=tag-sample data-option=\"'My Passed In Value'\" data-bind=\"css: { myOtherBoundClass: true }\"></tagSample>" +
                                  "<complexOptionSample id=complex-option-sample data-option=\"{ key: 'complex value' }\"></complexOptionSample>" +
@@ -82,18 +74,16 @@ describe('tag-based binding provider', function () {
             this.applyBindingsToFixture({});
         });
 
-        it('should call binding handlers init function, and allow text content of nodes to be set', function () {
-            expect(document.getElementById("tag-sample")).toHaveText('My New Text');
+        it('should use data-option for bindingHandler with same name as tag', function () {
+            expect(document.getElementById("tag-sample")).toHaveText('My Passed In Value');
+        });
+
+        it('should use data-option for bindingHandler with same name as tag, working for complex objects', function () {
+            expect(complexOptionPassed).toEqual({ key: 'complex value' });
         });
 
         it('should call binding handlers update function', function () {
             expect(document.getElementById("tag-sample")).toHaveClass('myClass');
-        });
-
-        it('should replace node using tag name specified in binding handler', function () {
-            expect(document.getElementById("tag-sample").tagName.toLowerCase()).toEqual('div');
-            expect(document.getElementById("complex-option-sample").tagName.toLowerCase()).toEqual('span');
-            expect(document.getElementById("template-tag").tagName.toLowerCase()).toEqual('div');
         });
 
         it('should work with templating', function () {
@@ -109,12 +99,12 @@ describe('tag-based binding provider', function () {
         });
     });
 
-    describe('binding handler specified as tag compatible, with replacement, and children', function () {
-        ko.bindingHandlers.tagSampleWithChildren = {
-            tag: 'tagSampleWithChildren->div'
-        };
-
+    describe('binding handler specified as tag compatible with children', function () {
         beforeEach(function () {
+            hx.bindingHandler('tagSampleWithChildren', {
+                tag: 'tagSampleWithChildren'
+            });
+
             this.setHtmlFixture("<div>" +
                                  "<tagSampleWithChildren id=\"tag-sample-with-children\">" +
                                     "<div>" + 
@@ -135,52 +125,100 @@ describe('tag-based binding provider', function () {
         });
     });
 
-    describe('binding handler specified as tag compatible, without replacement', function () {
+    describe('binding handler with same name as a supplied property', function () {
         beforeEach(function () {
-            ko.bindingHandlers.inputEnhancer = {
-                tag: 'input',
-                init: function (element, valueAccessor) {
-                    ko.utils.toggleDomNodeCssClass(element, 'a-new-class', true);
+            hx.bindingHandler('viewModelProperty', function() {
+                return {
+                    tag: ['input'],
+
+                    init: function (element, valueAccessor) {
+                        ko.utils.toggleDomNodeCssClass(element, 'a-new-class', true);
+                    }
                 }
-            };
-            this.setHtmlFixture("<div><input id='input-control' /></div>");
-            this.applyBindingsToFixture({});
+            });
+
+            this.setHtmlFixture("<div><input id=input-control data-bind='value: viewModelProperty'/></div>");
+            this.applyBindingsToFixture({ viewModelProperty: 'a value '});            
         });
 
-        it('should call binding handlers init function', function () {
+        it('should apply binding handler', function () {
             expect(document.getElementById("input-control")).toHaveClass('a-new-class');
-        });
-
-        it('should not replace the element with another', function () {
-            expect(document.getElementById("input-control").tagName).toEqual('INPUT');
         });
     });
 
-    describe('binding handler specified as tag compatible, without replacement, with explictly defined data-bind', function () {
+    describe('binding handler supplied as function, no dependencies', function () {
+        beforeEach(function () {
+            hx.bindingHandler('inputEnhancer', function() {
+                return {
+                    tag: ['input'],
+
+                    init: function (element, valueAccessor) {
+                        ko.utils.toggleDomNodeCssClass(element, 'a-new-class', true);
+                    }
+                }
+            });
+
+            this.setHtmlFixture("<div><input id=input-control /></div>");
+            this.applyBindingsToFixture({});            
+        });
+
+        it('should call binding handlers init function for all tags', function () {
+            expect(document.getElementById("input-control")).toHaveClass('a-new-class');
+        });
+    });
+
+    describe('binding handler supplied as function, with dependencies', function () {
+        var dependencyValue = { myClassName: 'my-class' };
+
+        beforeEach(function () {
+            hx.provide('bindingHandlerDependency', dependencyValue);
+
+            hx.bindingHandler('inputEnhancer', ['bindingHandlerDependency'], function(bindingHandlerDependency) {
+                return {
+                    tag: ['input'],
+
+                    init: function (element, valueAccessor) {
+                        ko.utils.toggleDomNodeCssClass(element, bindingHandlerDependency.myClassName, true);
+                    }
+                }
+            });
+
+            this.setHtmlFixture("<div><input id=input-control /></div>");
+            this.applyBindingsToFixture({});            
+        });
+
+        it('should call binding handlers init function for all tags', function () {
+            expect(document.getElementById("input-control")).toHaveClass(dependencyValue.myClassName);
+        });
+    });
+
+    describe('binding handler specified as tag compatible, with explicitly defined data-bind', function () {
         it('should not override value passed through data-bind', function () {
             var passedValue = 'My passed value';
 
-            ko.bindingHandlers.inputEnhancer = {
+            hx.bindingHandler('inputEnhancer', {
                 tag: 'input',
 
                 init: function (element, valueAccessor) {
                     expect(valueAccessor()).toBe(passedValue)
                 }
-            };
+            });
 
             this.setHtmlFixture("<input id='input-control' data-bind='inputEnhancer: passedValue' />");
             this.applyBindingsToFixture({ passedValue: passedValue });
         });
     });
 
-    describe('binding handler specified as tag compatible for multiple tags, without replacement', function () {
+    describe('binding handler specified as tag compatible for multiple tags', function () {
         beforeEach(function () {
-            ko.bindingHandlers.inputEnhancer = {
+            hx.bindingHandler('inputEnhancer', {
                 tag: ['input', 'select'],
+
                 init: function (element, valueAccessor) {
                     ko.utils.toggleDomNodeCssClass(element, 'a-new-class', true);
                 }
-            };
+            });
+
             this.setHtmlFixture("<div><input id=\"input-control\" /><input id=\"select-control\" /></div>");
             this.applyBindingsToFixture({});
         });
@@ -189,42 +227,35 @@ describe('tag-based binding provider', function () {
             expect(document.getElementById("input-control")).toHaveClass('a-new-class');
             expect(document.getElementById("select-control")).toHaveClass('a-new-class');
         });
-
-        it('should not replace the element with another', function () {
-            expect(document.getElementById("input-control").tagName).toEqual('INPUT');
-            expect(document.getElementById("select-control").tagName).toEqual('INPUT');
-        });
     });
 
-    describe('multiple binding handlers specified as tag compatible, without replacement', function () {
+    describe('multiple binding handlers specified as tag compatible', function () {
         beforeEach(function () {
             var _this = this;
             
-            ko.bindingHandlers.exampleEnhancer1 = {
+            hx.bindingHandler('exampleEnhancer1', {
                 tag: 'example',
+
                 init: function (element, valueAccessor) {
                     ko.utils.toggleDomNodeCssClass(element, 'a-new-class', true);
                 }
-            };
+            });
 
-            ko.bindingHandlers.exampleEnhancer2 = {
+            hx.bindingHandler('exampleEnhancer2', {
                 tag: 'example',
+
                 init: function (element, valueAccessor) {
                     ko.utils.toggleDomNodeCssClass(element, 'another-new-class', true);
                 }
-            };
+            });
 
-            this.setHtmlFixture("<div>\n    <example id=\"example-control\" />\n</div>");
+            this.setHtmlFixture("<div><example id=example-control /></div>");
             this.applyBindingsToFixture({});
         });
 
         it('should call all binding handlers init function', function () {
             expect(document.getElementById("example-control")).toHaveClass('a-new-class');
             expect(document.getElementById("example-control")).toHaveClass('another-new-class');
-        });
-
-        it('should not replace the element with another', function () {
-            expect(document.getElementById("example-control").tagName).toEqual('EXAMPLE');
         });
     });
 });

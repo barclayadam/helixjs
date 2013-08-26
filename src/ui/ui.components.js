@@ -72,7 +72,7 @@
  * will use a region manager to determine what component to show, delegating all rendering
  * and management of individual components to this binding handler.
  */
-hx.config(['$log', '$ajax', '$injector', '$authoriser', '$router'], function($log, $ajax, $injector, $authoriser, $router) {
+hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$router'], function($log, $ajax, $injector, $authoriser, $router) {
     function getComponent(componentOrName) {
         componentOrName = ko.utils.unwrapObservable(componentOrName);
 
@@ -88,12 +88,10 @@ hx.config(['$log', '$ajax', '$injector', '$authoriser', '$router'], function($lo
         };
     }
 
-    koBindingHandlers.component = {
-        tag: 'component->div',
+    return {
+        tag: 'component',
 
-        init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-            var component = getComponent(valueAccessor());
-
+        init: function (element) {
             return koBindingHandlers.template.init(element, function() { return { data: {} }; });
         },
 

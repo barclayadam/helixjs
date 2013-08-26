@@ -1,159 +1,80 @@
-hx.singleton('$hxBindingsProvider', function() {
+(function() {
+    var tagToBindingHandlerNames = {},
+        requiresReplace = {};
 
-    /**
-     * A binding handler that identifies it should directly apply to any
-     * elements with a given name with should have a `tag` property that
-     * is either a `string` or an `object`. 
-     *
-     * A string representation takes the form of
-     * `appliesToTagName[->replacedWithTagName]`, for example 'input'
-     * or 'tab->div' to indicate a binding handler that applies to
-     * an input element but requires no transformation and a binding
-     * handler that should replace any `tab` elements with a `div` element.
-     *
-     * An object can be specified instead of a string which consists of the
-     * following properties:
-     * 
-     * * `appliesTo`: The name of the tag the binding handler applies to and should be
-     *    data-bound to in all cases.
-     * 
-     * * `replacedWith`: An optional property that identifies the name of the
-     *    tag that the element should be replaced with. This is needed to support
-     *    older versions of IE that can not properly support custom, non-standard
-     *    elements out-of-the-box.
-    */
-    var hasProcessed = false,
-        tagNameToBindingHandlers = {};
+    function processTag(tagName) {
+        if(requiresReplace[tagName] === undefined) {            
+            var div = document.createElement('div');
+            div.innerHTML = '<' + tagName + '></' + tagName + '>';
 
-    function processBindingHandlerTagDefinitionInstance(tag, bindingHandler, name) {
-        var description = { name: name, bindingHandler: bindingHandler};
+            requiresReplace[tagName] = div.childNodes.length === 0;
 
-        if(_.isString(tag)) {
-            var split = tag.split("->"),
-                appliesToTag = split[0];
+            if (window.html5) {
+                if (window.html5.elements.indexOf(tagName) === -1) {
+                    //change the html5shiv options object 
+                    window.html5.elements += ' ' + tagName;
 
-            description.appliesTo = appliesToTag;
-
-            if (split.length === 2) {
-                description.replacedWith = split[1];
+                    //and re-invoke the `shivDocument` method
+                    html5.shivDocument(document);
+                }
             }
-        } else {
-            description.appliesTo = tag.appliesTo;
-            description.replacedWith = tag.replacedWith;
-        }
-
-        description.appliesTo = description.appliesTo.toUpperCase();
-
-        if(tagNameToBindingHandlers[description.appliesTo]) {
-            tagNameToBindingHandlers[description.appliesTo].push(description);
-        } else {
-            tagNameToBindingHandlers[description.appliesTo] = [description];
         }
     }
 
-    /*
-      The definition of what tag to apply a binding handler, and the
-      optional replacement element name can be defined as a string
-      which needs to be parsed.
+    function processBindingHandlerTags(name, bindingHandler) {
+        if(bindingHandler.tag) {
+            var tags = _.isArray(bindingHandler.tag) ? bindingHandler.tag : [bindingHandler.tag];
 
-      In addition we store the mapping from tagName to bindingHandler
-      for quick lookups.
-    */
-    function processBindingHandlerTagDefinition(bindingHandler, name) {
-        if (bindingHandler.tag) {
-            if(_.isArray(bindingHandler.tag)) {
-                _.each(bindingHandler.tag, function(t) {
-                    processBindingHandlerTagDefinitionInstance(t, bindingHandler, name);
-                });
-            } else {
-                processBindingHandlerTagDefinitionInstance(bindingHandler.tag, bindingHandler, name);
-            }
-        }
-    };
+            _.each(tags, function(t) {
+                var lowerCaseTag = t.toLowerCase();
 
-    function processAllBindingHandlers() {
-        if(hasProcessed == false) {
-            _.each(koBindingHandlers, processBindingHandlerTagDefinition);
+                tagToBindingHandlerNames[lowerCaseTag] = tagToBindingHandlerNames[lowerCaseTag] || [];
+                tagToBindingHandlerNames[lowerCaseTag].push(name); 
 
-            hasProcessed = true
+                processTag(lowerCaseTag);
+            });
         }
     }
 
     function mergeAllAttributes (source, destination) {
         if (document.body.mergeAttributes) {
             destination.mergeAttributes(source, false);
-        } else {
-            var attr, _i, _len;
-
-            for (_i = 0, _len = source.attributes.length; _i < _len; _i++) {
-                attr = source.attributes[_i];
-                destination.setAttribute(attr.name, attr.value);
+        } else { 
+            for (var i = 0; i < source.attributes.length; i++) {
+                destination.setAttribute(source.attributes[i].name, source.attributes[i].value);
             }
-        }
-    };
-
-    function findTagCompatibleBindingHandlers (node) {
-        return tagNameToBindingHandlers[node.tagName] || [];
-    };
-     
-    function applyTagBasedDataBindValues(node, additionalDataBindValues) {
-        var asDataBindString = '',
-            originalDataBindAttribute = node.getAttribute('data-bind');
-
-        for(var dataBindKey in additionalDataBindValues) {
-            if(asDataBindString.length > 0) {
-                asDataBindString += ', ';
-            }
-            
-            asDataBindString += dataBindKey + ': ' + additionalDataBindValues[dataBindKey];
-        }
-
-        if(originalDataBindAttribute) {
-            node.setAttribute('data-bind', asDataBindString + ', ' + originalDataBindAttribute);
-        } else {
-            node.setAttribute('data-bind', asDataBindString);
         }
     }
 
-    /**
-     * Preprocesses a node by looking for any binding handlers that have been specified
-     * as tag replacement handlers, those that will change a tag not supported by standard
-     * HTML (e.g. <tab>) into a supported tag (e.g. <div>)
-     *
-     * @param {Element} node - The node that is being processed
-     */
     function preprocessNode (node) {
-        processAllBindingHandlers();
+        if (node.nodeType === 1) {
+            var nodeTagNameLower = node.tagName.toLowerCase(),
+                tagHandlers = tagToBindingHandlerNames[nodeTagNameLower],
+                dataOption = node.getAttribute('data-option'),
+                dataBind = node.getAttribute('data-bind') || '';
 
-        if(node.nodeType === 1) {
-            var tagBindingHandlers = findTagCompatibleBindingHandlers(node),
-                nodeReplacement,
-                replacementRequiredBindingHandlers;
+            if (tagHandlers && tagHandlers.length > 0) {
+                for (var i = 0; i < tagHandlers.length; i++) {
+                    var tagBindingHandlerName = tagHandlers[i];
 
-            // We assume that if this is for a 'tag binding handler' it refers to an unknown
-            // node so we use the specified replacement node from the binding handler's
-            // tag option.
-            if (tagBindingHandlers.length > 0) {
-                var additionalDataBindValues = {};
+                    // Do not override anything explicitly added
+                    if (dataBind.indexOf(tagBindingHandlerName + ':') === -1)  {
+                        if (dataBind.length > 0) {
+                            dataBind += ', ';
+                        }
 
-                for (var i = 0; i < tagBindingHandlers.length; i++) {
-                    var tagBindingHandlerName = tagBindingHandlers[i].name;
-
-                    additionalDataBindValues[tagBindingHandlerName] = 'true';
+                        if (dataOption && tagBindingHandlerName.toLowerCase() === nodeTagNameLower) {
+                            dataBind += tagBindingHandlerName + ': ' + dataOption;
+                        } else {
+                            dataBind += tagBindingHandlerName + ': true';
+                        }
+                    }
                 }
+                
+                node.setAttribute('data-bind', dataBind);
 
-                replacementRequiredBindingHandlers = _.filter(tagBindingHandlers, function (description) {
-                    return description.replacedWith != null;
-                });
-
-                if (replacementRequiredBindingHandlers.length > 1) {
-                    throw new Error("More than one binding handler specifies a replacement node for the node with name '" + node.tagName + "'.");
-                }
-
-                if (replacementRequiredBindingHandlers.length === 1) {
-                    // A replacement tag binding handler exists so we must create a new node, copy across any
-                    // attributes, apply the otehr tag binding handlers and then return this replacement
-                    nodeReplacement = document.createElement(replacementRequiredBindingHandlers[0].replacedWith);
+                if (requiresReplace[nodeTagNameLower] === true) {
+                    var nodeReplacement = document.createElement('div');
                     mergeAllAttributes(node, nodeReplacement);
 
                     // Copy all children across to new element
@@ -161,41 +82,29 @@ hx.singleton('$hxBindingsProvider', function() {
                         nodeReplacement.appendChild(node.removeChild(node.firstChild));
                     }
 
-                    if(node.getAttribute('data-option')) {
-                        additionalDataBindValues[replacementRequiredBindingHandlers[0].name] = node.getAttribute('data-option');
-                    }
-
-                    applyTagBasedDataBindValues(nodeReplacement, additionalDataBindValues);
-
                     ko.utils.replaceDomNodes(node, [nodeReplacement]);
 
                     return [nodeReplacement];
-                } else {
-                    // We just want to apply the tag-based data-bind attributes here
-                    applyTagBasedDataBindValues(node, additionalDataBindValues);
                 }
             }
         }
     };
 
-    /** @namespace $hxBindingsProvider */
-    return {
-        /**
-         * Configures the `ko.bindingProvider` instance to be a new instance of the tag binding provider,
-         * a binding provider that supports the ability of using custom tags in the HTML source that are
-         * transformed into 'standard' elements when binding.
-         *
-         * @memberOf $hxBindingsProvider
-         */
-        configure: function() {
-            hasProcessed = false;
-            tagNameToBindingHandlers = {};
-
-            ko.bindingProvider.instance.preprocessNode = preprocessNode;
-        }
+    function registerBindingHandler(name, bindingHandler) {
+        koBindingHandlers[name] = bindingHandler;
+        processBindingHandlerTags(name, bindingHandler);
     }
-})
 
-hx.config(['$hxBindingsProvider'], function($hxBindingsProvider) {
-    $hxBindingsProvider.configure();
-});
+    /**
+     * Registers a binding handler of the given name, a binding handler that may have dependencies
+     * or is registered as a 'tag' binding handler, one that can be automatically applied to
+     * elements (e.g. to all `input` elements, or even custom elements such as `tab` or `region`).
+     */
+    hx.bindingHandler = function(name, bindingHandlerOrDependencies, bindingHandler) {
+        hx.config(function() {
+            registerBindingHandler(name, hx.get('$injector').instantiate(bindingHandlerOrDependencies, bindingHandler));
+        })
+    }
+
+    ko.bindingProvider.instance.preprocessNode = preprocessNode;
+}());

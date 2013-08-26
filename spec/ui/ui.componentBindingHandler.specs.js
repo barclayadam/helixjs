@@ -61,7 +61,7 @@ describe('component binding handler', function () {
 
     describe('binding a plain object with named view', function () {
         beforeEach(function () {
-            $templating.set('myNamedPartTemplate', '<span id=plain-text>This is the template.</span> <span data-bind=\"test1: anObservableProperty\">');
+            $templating.set('myNamedPartTemplate', '<div><span id=plain-text>This is the template.</span> <span data-bind=\"test1: anObservableProperty\"></span></div>');
 
             ko.bindingHandlers.test1 = {
                 init: this.spy(),
@@ -147,7 +147,7 @@ describe('component binding handler', function () {
                     })
                 };
 
-                this.setHtmlFixture("<div id=\"fixture\" data-bind=\"component: viewModel\">\n    This is the template\n</div>");
+                this.setHtmlFixture("<div id=fixture data-bind='component: viewModel'>This is the template</div>");
                 
                 this.applyBindingsToFixture({
                     viewModel: this.viewModel

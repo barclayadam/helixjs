@@ -5,7 +5,7 @@ describe('pager', function() {
             this.pageCount = ko.observable(0);
 
             this.setHtmlFixture(
-                "<pager id='pager' data-option='{ pageCount: pageCount, page: page }' />");
+                "<pager id='pager' data-option='{ pageCount: pageCount, page: page }'></pager>");
 
             this.applyBindingsToFixture({
                 pageCount: this.pageCount,
@@ -237,7 +237,7 @@ describe('pager', function() {
                 });
             });
         })
-    })
+    });
 
     describe('overriding template parts', function() {
         beforeEach(function() {

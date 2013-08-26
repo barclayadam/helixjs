@@ -28,17 +28,17 @@ function getFixtureNode() {
 }
 
 function setFixtures(html) {
-    var container= document.getElementById(fixtureId);
-
-    if (!container) {
-      var container = document.createElement('div');
-      container.style.display = "none";
-      container.id = fixtureId;
-
-      document.body.appendChild(container);
+    var container = document.getElementById(fixtureId);
+    if(container) {
+        ko.removeNode(container);
     }
 
+    var container = (window.html5 || document).createElement('div');
+    container.style.display = "none";
+    container.id = fixtureId;
     container.innerHTML = html;
+
+    document.body.appendChild(container);
 }
 
 jasmine.slow.enable(); 
@@ -57,7 +57,7 @@ beforeEach(function () {
     window.localStorage.clear();
 
     this.getFixtureTextContent = function() {
-        return getFixtureNode().innerText || getFixtureNode().textContent;
+        return getFixtureNode().innerText || getFixtureNode().textContent || '';
     };
 
     this.setHtmlFixture = function (html) {

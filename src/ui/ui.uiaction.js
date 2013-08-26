@@ -163,7 +163,7 @@
      * @example
      *     <a id='action-link' data-bind='action: action, onDisabled: "hide"'>Execute Action</a>
      */
-    koBindingHandlers.action = {
+    hx.bindingHandler('action', {
         init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
             var shouldHide = allBindingsAccessor()['onDisabled'] === 'hide',
                 uiAction = valueAccessor(),
@@ -198,7 +198,7 @@
                 ko.utils.domData.set(element, '$formAction', uiAction);
             }         
         }
-    };
+    });
 
     /** 
      * @bindingHandler
@@ -210,7 +210,7 @@
      *
      * This binding handler should not be applied manually, it is applied to all buttons automatically.
      */
-    koBindingHandlers.actionSubmitDisplay = {
+    hx.bindingHandler('actionSubmitDisplay', {
         tag: ['button', 'input'],
 
         update: function(element, valueAccessor, allBindingsAccessor) {
@@ -230,5 +230,5 @@
                 }
             }
         }
-    };
+    });
 }());
