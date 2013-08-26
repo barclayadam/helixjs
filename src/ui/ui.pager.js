@@ -153,7 +153,7 @@
      * </myWidget>
      */
     koBindingHandlers.part = {
-        tag: 'part',
+        tag: 'part->div',
 
         prepare: function(element, bindingContext) {
             var child, nextChild = element.firstChild;
@@ -170,6 +170,7 @@
                             container = ko.utils.moveCleanedNodesToContainerElement(templateNodes); // This also removes the nodes from their current parent
 
                         new ko.templateSources.anonymousTemplate(container)['nodes'](container);
+                        
                         bindingContext['$override-for-' + id] = container;
                     }
                 }

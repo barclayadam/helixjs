@@ -224,11 +224,11 @@ describe('action binding handler', function() {
             this.deferred.resolve()
             expect(document.getElementById('submit-action-form')).not.toHaveClass('is-executing')          
         })
+    })
 
-        it('should work with other descendant binding controlling handlers', function() {
-            this.setHtmlFixture("<form id='action-form' data-bind='with: true, action: action'></form>");
-            
-            this.applyBindingsToFixture({ action: this.action });
-        })
+    it('should work with other descendant binding controlling handlers', function() {
+        this.setHtmlFixture("<div><form id='action-form' data-bind='with: true, action: action'></form></div>");
+        
+        this.applyBindingsToFixture({ action: uiAction(function() {}) });
     })
 })

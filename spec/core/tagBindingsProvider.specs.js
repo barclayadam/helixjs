@@ -74,9 +74,9 @@ describe('tag-based binding provider', function () {
 
         beforeEach(function () {
             this.setHtmlFixture("<div>" +
-                                 "<tagSample id=\"tag-sample\" data-option=\"'My Passed In Value'\" data-bind=\"css: { myOtherBoundClass: true }\"></tagSample>" +
-                                 "<complexOptionSample id=\"complex-option-sample\" data-option=\"{ key: 'complex value' }\"></complexOptionSample>" +
-                                 "<templateTag id=\"template-tag\" class=\"my-class\"></templateTag>" +
+                                 "<tagSample id=tag-sample data-option=\"'My Passed In Value'\" data-bind=\"css: { myOtherBoundClass: true }\"></tagSample>" +
+                                 "<complexOptionSample id=complex-option-sample data-option=\"{ key: 'complex value' }\"></complexOptionSample>" +
+                                 "<templateTag id=template-tag class=my-class></templateTag>" +
                                 "</div>");
 
             this.applyBindingsToFixture({});
@@ -143,7 +143,7 @@ describe('tag-based binding provider', function () {
                     ko.utils.toggleDomNodeCssClass(element, 'a-new-class', true);
                 }
             };
-            this.setHtmlFixture("<div>\n    <input id=\"input-control\" />\n</div>");
+            this.setHtmlFixture("<div><input id='input-control' /></div>");
             this.applyBindingsToFixture({});
         });
 

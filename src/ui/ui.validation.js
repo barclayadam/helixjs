@@ -16,28 +16,33 @@ hx.config(function() {
     koBindingHandlers.validated = {
         tag: ['input', 'select', 'textarea'],
 
-        update: function(element, valueAccessor, allBindingsAccessor) {
+        init: function(element, valueAccessor, allBindingsAccessor) {
             var passedValue = valueAccessor(),
                 validatedObservable = passedValue === true ? allBindingsAccessor()['value'] : passedValue;
 
-            if (validatedObservable) {
-                if (validatedObservable.isValid) {
-                    element.setAttribute('aria-invalid', !validatedObservable.isValid());
+            ko.computed(function() {
+                if(validatedObservable) {
+                    if (validatedObservable.isValid) {
+                        console.log('tagName is ' + element.tagName)
+                        console.log('value is ' + validatedObservable())
+                        console.log('setting aria-invalid ' + '' + !validatedObservable.isValid())
+                        element.setAttribute('aria-invalid', '' + !validatedObservable.isValid());
 
-                    ko.utils.toggleDomNodeCssClass(element, 'validated', validatedObservable.validated());
-                    ko.utils.toggleDomNodeCssClass(element, 'is-validating', validatedObservable.validating());
+                        ko.utils.toggleDomNodeCssClass(element, 'validated', validatedObservable.validated());
+                        ko.utils.toggleDomNodeCssClass(element, 'is-validating', validatedObservable.validating());
+                    }
+
+                    if (validatedObservable.validationRules) {
+                        _.each(validatedObservable.validationRules(), function(options, key) {
+                            var rule = hx.validation.rules[key];
+
+                            if(rule && rule.modifyElement) {
+                                rule.modifyElement(element, options);
+                            }
+                        })
+                    }
                 }
-
-                if (validatedObservable.validationRules) {
-                    _.each(validatedObservable.validationRules(), function(options, key) {
-                        var rule = hx.validation.rules[key];
-
-                        if(rule && rule.modifyElement) {
-                            rule.modifyElement(element, options);
-                        }
-                    })
-                }
-            }
+            });
         }
     }
 
