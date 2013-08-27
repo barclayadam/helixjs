@@ -47,7 +47,7 @@ describe('pager', function() {
             });
 
             it('should disable the first page link', function() {
-                expect(document.getElementsByClassName('hx-pager--first')[0]).toBeDisabled();
+                expect(document.getElementsByClassName('hx-pager--first')[0]).toHaveClass('disabled');
             });
 
             it('should have previous link', function() {
@@ -55,7 +55,7 @@ describe('pager', function() {
             });
 
             it('should disable the previous link', function() {
-                expect(document.getElementsByClassName('hx-pager--previous')[0]).toBeDisabled();
+                expect(document.getElementsByClassName('hx-pager--previous')[0]).toHaveClass('disabled');
             });
 
             it('should have a single page link', function() {
@@ -71,7 +71,7 @@ describe('pager', function() {
             });
 
             it('should disable the next link', function() {
-                expect(document.getElementsByClassName('hx-pager--next')[0]).toBeDisabled();
+                expect(document.getElementsByClassName('hx-pager--next')[0]).toHaveClass('disabled');
             });
 
             it('should have last page link', function() {
@@ -79,10 +79,9 @@ describe('pager', function() {
             });
 
             it('should disable the last page link', function() {
-                expect(document.getElementsByClassName('hx-pager--last')[0]).toBeDisabled();
+                expect(document.getElementsByClassName('hx-pager--last')[0]).toHaveClass('disabled');
             });
         })
-
 
         describe('When bound to a paged data source with two pages', function () {
             beforeEach(function () {
@@ -95,11 +94,11 @@ describe('pager', function() {
                 });
 
                 it('should disable the first page link', function () {
-                    expect(document.getElementsByClassName('hx-pager--first')[0]).toBeDisabled();
+                    expect(document.getElementsByClassName('hx-pager--first')[0]).toHaveClass('disabled');
                 });
 
                 it('should disable the previous link', function () {
-                    expect(document.getElementsByClassName('hx-pager--previous')[0]).toBeDisabled();
+                    expect(document.getElementsByClassName('hx-pager--previous')[0]).toHaveClass('disabled');
                 });
 
                 it('should have two page links', function () {
@@ -115,11 +114,11 @@ describe('pager', function() {
                 });
 
                 it('should enable the next link', function () {
-                    expect(document.getElementsByClassName('hx-pager--next')[0]).not.toBeDisabled();
+                    expect(document.getElementsByClassName('hx-pager--next')[0]).not.toHaveClass('disabled');
                 });
 
                 it('should enable the last page link', function () {
-                    expect(document.getElementsByClassName('hx-pager--last')[0]).not.toBeDisabled();
+                    expect(document.getElementsByClassName('hx-pager--last')[0]).not.toHaveClass('disabled');
                 });
 
                 it('should go to the last page when last page link clicked', function () {
@@ -139,11 +138,11 @@ describe('pager', function() {
                 });
 
                 it('should enable the first page link', function () {
-                    expect(document.getElementsByClassName('hx-pager--first')[0]).not.toBeDisabled();
+                    expect(document.getElementsByClassName('hx-pager--first')[0]).not.toHaveClass('disabled');
                 });
 
                 it('should enable the previous link', function () {
-                    expect(document.getElementsByClassName('hx-pager--previous')[0]).not.toBeDisabled();
+                    expect(document.getElementsByClassName('hx-pager--previous')[0]).not.toHaveClass('disabled');
                 });
 
                 it('should have two page links', function () {
@@ -159,11 +158,11 @@ describe('pager', function() {
                 });
 
                 it('should disable the next link', function () {
-                    expect(document.getElementsByClassName('hx-pager--next')[0]).toBeDisabled();
+                    expect(document.getElementsByClassName('hx-pager--next')[0]).toHaveClass('disabled');
                 });
 
                 it('should disable the last page link', function () {
-                    expect(document.getElementsByClassName('hx-pager--last')[0]).toBeDisabled();
+                    expect(document.getElementsByClassName('hx-pager--last')[0]).toHaveClass('disabled');
                 });
 
                 it('should go to the first page when first page link clicked', function () {
@@ -237,6 +236,66 @@ describe('pager', function() {
                 });
             });
         })
+    });
+
+    describe('bound to a non-paged dataView', function() {
+        beforeEach(function() {            
+            this.dataView = hx.get('$DataView')
+                              .from(ko.observable([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]))
+                              .load();
+
+            this.setHtmlFixture(
+                "<pager id='pager' data-option='dataView'></pager>");
+
+            this.applyBindingsToFixture({
+                dataView: this.dataView
+            });
+
+            this.pager = document.getElementById('pager')
+        })
+
+        it('should not render any pages', function () {
+            expect(document.getElementsByClassName('hx-pager--page').length).toEqual(0);
+        });
+    });
+
+    describe('bound to a paged dataView', function() {
+        beforeEach(function() {            
+            this.dataView = hx.get('$DataView')
+                              .from(ko.observable([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]))
+                              .pageSize(5);
+
+            this.setHtmlFixture(
+                "<pager id='pager' data-option='dataView'></pager>");
+
+            this.applyBindingsToFixture({
+                dataView: this.dataView
+            });
+
+            this.pager = document.getElementById('pager')
+        })
+
+        describe('that has not been loaded', function() {
+            it('should not render any pages', function () {
+                expect(document.getElementsByClassName('hx-pager--page').length).toEqual(0);
+            });
+        });
+
+        describe('that has been loaded', function() {
+            beforeEach(function() {
+                this.dataView.load();
+            })
+
+            it('should correctly show number of pages', function () {
+                expect(document.getElementsByClassName('hx-pager--page').length).toEqual(2);
+            });
+
+            it('should change page in dataView when clicking a page link', function () {
+                expect(this.dataView.page()).toEqual(1);
+                ko.utils.triggerEvent(document.getElementsByClassName('hx-pager--page')[1], 'click');
+                expect(this.dataView.page()).toEqual(2);
+            });
+        });
     });
 
     describe('overriding template parts', function() {

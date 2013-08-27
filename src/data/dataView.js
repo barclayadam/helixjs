@@ -68,17 +68,27 @@ hx.provide('$DataView', ['$InMemoryProvider'], function($InMemoryProvider) {
          * @observable
          * @property pageCount
          */
-        this.pageCount = ko.observable();
+        this.pageCount = ko.observable();       
     }
 
-    function createParamMethod(propertyName) {
+    function createParamMethod(propertyName, onChange) {
         return function(value) {
-            if(value) {
-                this.$$parameters[propertyName] = value;
+            var current = this.$$parameters[propertyName];
+
+            if (value) {
+                if (!current) {
+                    current = this.$$parameters[propertyName] = ko.observable();
+                }
+
+                current(value);
+
+                if (onChange) {
+                    onChange.apply(this, [value]);
+                }
 
                 return this;
             } else {
-                return this.$$parameters[propertyName];
+                return current ? current() : undefined;
             }
         }
     }
@@ -166,7 +176,11 @@ hx.provide('$DataView', ['$InMemoryProvider'], function($InMemoryProvider) {
      * @param {integer} pageSize - The size of the page to retrieve
      * @return {DataView} - Returns this data source, to allow chaining further calls.
      */
-    DataView.prototype.pageSize = createParamMethod('pageSize');
+    DataView.prototype.pageSize = createParamMethod('pageSize', function() {
+        if (!this.page()) {
+            this.page(1);
+        }
+    });
 
     /**
      * Specifies a mapping function, a function that will be passed each data item that has been
@@ -200,17 +214,7 @@ hx.provide('$DataView', ['$InMemoryProvider'], function($InMemoryProvider) {
 
         if(this.$$paramsObservable == undefined) {
             this.$$paramsObservable = ko.computed(function() {
-                var raw = ko.toJS(this.$$parameters);
-                
-                if (this.$$parameters.where) { 
-                    raw.where = this.$$parameters.where;
-                }
-                
-                if (this.$$parameters.map) { 
-                    raw.map = this.$$parameters.map;
-                }
-
-                return raw;
+                return ko.toJS(this.$$parameters);
             }.bind(this))
 
             this.$$paramsObservable.subscribe(this.load, this);

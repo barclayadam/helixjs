@@ -70,6 +70,7 @@ describe('dataView', function() {
 
         describe('when calling load', function() {  
             beforeEach(function() {
+                debugger
                 this.dataView.load();
             });
 
@@ -209,15 +210,20 @@ describe('dataView', function() {
 
     describe('with paging specified', function() {
         beforeEach(function() {
-            this.returnValue = { totalCount: 25, items: ['a', 42, 5, 3, 'ds', 34] };
+            this.returnValue = { totalCount: 25, items: _.range(0, 25) };
             this.providerStub = this.stub().returns(this.returnValue);
 
             this.dataView = $DataView
                                 .from(this.providerStub)
-                                .pageSize(20)
+                                .pageSize(5)
                                 .page(1);
 
             this.dataView.load();
+        })
+
+        it('should default page to 1', function() {
+            var dataView = $DataView.from(this.providerStub).pageSize(20);
+            expect(dataView.page()).toBe(1);
         })
 
         it('should store totalCount in totalCount observable', function() {
@@ -230,14 +236,23 @@ describe('dataView', function() {
 
         it('should pass through pageSize and page parameters to provider', function() {
             expect(this.providerStub).toHaveBeenCalledWith({
-                pageSize: 20,
+                pageSize: 5,
                 page: 1
             })            
         })
 
         it('should calculate page count and store in pageCount observable', function() {
             expect(this.dataView.pageCount).toBeObservable();            
-            expect(this.dataView.pageCount()).toBe(2);
+            expect(this.dataView.pageCount()).toBe(5);
+        })
+
+        it('should re-page when page number is set', function() {
+            this.dataView.page(3);
+
+            expect(this.providerStub).toHaveBeenCalledWith({
+                pageSize: 5,
+                page: 3
+            })            
         })
     })
 

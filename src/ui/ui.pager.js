@@ -115,8 +115,8 @@ hx.bindingHandler('pager', '$templating', function($templating) {
     $templating.set('$hx-pager',
         ' <!-- ko if: pageCount() > 0 -->' +
         '   <part data-option="\'backward-links\'">' +
-        '    <a href="#" class="hx-pager--first" data-bind="enable: !isFirstPage(), click: firstPage">First</a>' +
-        '    <a href="#" class="hx-pager--previous" data-bind="enable: !isFirstPage(), click: previousPage">Previous</a>' +
+        '    <a href="#" class="hx-pager--first" data-bind="css: { disabled: isFirstPage() }, click: firstPage">First</a>' +
+        '    <a href="#" class="hx-pager--previous" data-bind="css: { disabled: isFirstPage() }, click: previousPage">Previous</a>' +
         '   </part>' +
         '' +
         '   <part data-option="\'page-links\'">' +
@@ -126,8 +126,8 @@ hx.bindingHandler('pager', '$templating', function($templating) {
         '   </part>' +
         '' +
         '   <part data-option="\'forward-links\'">' +
-        '    <a href="#" class="hx-pager--next" data-bind="enable: !isLastPage(), click: nextPage">Next</a>' +
-        '    <a href="#" class="hx-pager--last" data-bind="enable: !isLastPage(), click: lastPage">Last</a>' +
+        '    <a href="#" class="hx-pager--next" data-bind="css: { disabled: isLastPage() }, click: nextPage">Next</a>' +
+        '    <a href="#" class="hx-pager--last" data-bind="css: { disabled: isLastPage() }, click: lastPage">Last</a>' +
         '   </part>' +
         ' <!-- /ko -->'
     );
@@ -135,8 +135,17 @@ hx.bindingHandler('pager', '$templating', function($templating) {
 
     function createModel(data) {
         return {
-            pageCount: data.pageCount,
-            page: data.page,
+            pageCount: ko.computed({ 
+                read: function() { return data.pageCount(); },
+
+                write: function(value) { data.pageCount(value); }
+            }),
+
+            page: ko.computed({ 
+                read: function() { return data.page(); },
+
+                write: function(value) { data.page(value); }
+            }),
 
             isFirstPage: ko.computed(function() {
                 return data.page() === 1;
@@ -157,6 +166,10 @@ hx.bindingHandler('pager', '$templating', function($templating) {
                     pageNumber = data.page(),
                     maximumPages = data.maximumPages,
                     startPage, endPage;
+
+                if (pageCount === undefined || pageNumber === undefined) {
+                    return [];
+                }
 
                 startPage = pageNumber - (maximumPages / 2);
                 startPage = Math.max(1, Math.min(pageCount - maximumPages + 1, startPage));
