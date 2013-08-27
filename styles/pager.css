@@ -1,0 +1,21 @@
+.hx-pager {
+    display: inline-block;        
+    margin: 10px auto;
+}
+
+.hx-pager--pages {
+    list-style: none;   
+}
+
+.hx-pager--page {
+    display: inline-block;
+
+    width: 50px;
+    height: 50px;
+
+    cursor: pointer;
+}
+
+.hx-pager--page.disabled {
+    cursor: default;
+}

@@ -69,7 +69,7 @@ hx.bindingHandler('part', {
         var name = valueAccessor(),
             overridingPartTemplate = bindingContext['$override-for-' + name];
 
-        if(overridingPartTemplate) {
+        if (overridingPartTemplate) {
             ko.renderTemplate(overridingPartTemplate, bindingContext, {}, element, 'replaceNode');
 
             return { "controlsDescendantBindings" : true };
@@ -114,21 +114,23 @@ hx.bindingHandler('part', {
 hx.bindingHandler('pager', '$templating', function($templating) {
     $templating.set('$hx-pager',
         ' <!-- ko if: pageCount() > 0 -->' +
-        '   <part data-option="\'backward-links\'">' +
-        '    <a href="#" class="hx-pager--first" data-bind="css: { disabled: isFirstPage() }, click: firstPage">First</a>' +
-        '    <a href="#" class="hx-pager--previous" data-bind="css: { disabled: isFirstPage() }, click: previousPage">Previous</a>' +
-        '   </part>' +
+        '   <ol class="hx-pager--pages">' +
+        '     <part data-option="\'backward-links\'">' +
+        '      <li class="hx-pager--page hx-pager--first" data-bind="css: { disabled: isFirstPage() }, click: firstPage"><a href="#">&laquo;</a></li>' +
+        '      <li class="hx-pager--page hx-pager--previous" data-bind="css: { disabled: isFirstPage() }, click: previousPage"><a href="#">&lsaquo;</a></li>' +
+        '     </part>' +
         '' +
-        '   <part data-option="\'page-links\'">' +
-        '    <ol class="hx-pager--pages" data-bind="foreach: pages">' +
-        '        <li class="hx-pager--page" data-bind="click: $parent.page, css: { \'is-selected\': $data == $parent.page() }"><a href="#" data-bind="text: $data"></a></li>' +
-        '    </ol>' +
-        '   </part>' +
+        '     <part data-option="\'page-links\'">' +
+        '       <!-- ko foreach: pages -->' +
+        '         <li class="hx-pager--page" data-bind="click: $parent.page, css: { \'is-selected\': $data == $parent.page() }"><a href="#" data-bind="text: $data"></a></li>' +
+        '       <!-- /ko -->' +
+        '     </part>' +
         '' +
-        '   <part data-option="\'forward-links\'">' +
-        '    <a href="#" class="hx-pager--next" data-bind="css: { disabled: isLastPage() }, click: nextPage">Next</a>' +
-        '    <a href="#" class="hx-pager--last" data-bind="css: { disabled: isLastPage() }, click: lastPage">Last</a>' +
-        '   </part>' +
+        '     <part data-option="\'forward-links\'">' +
+        '      <li class="hx-pager--page"  class="hx-pager--next" data-bind="css: { disabled: isLastPage() }, click: nextPage"><a href="#">&rsaquo;</a></li>' +
+        '      <li class="hx-pager--page"  class="hx-pager--last" data-bind="css: { disabled: isLastPage() }, click: lastPage"><a href="#">&raquo;</a></li>' +
+        '     </part>' +
+        '   </ol>' +
         ' <!-- /ko -->'
     );
 
