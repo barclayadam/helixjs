@@ -59,11 +59,11 @@ describe('pager', function() {
             });
 
             it('should have a single page link', function() {
-                expect(document.getElementsByClassName('hx-pager--page').length).toEqual(1);
+                expect(document.getElementsByClassName('hx-pager--page-link').length).toEqual(1);
             });
 
             it('should have a single page link that has is-selected class', function() {
-                expect(document.getElementsByClassName('hx-pager--page')[0]).toHaveClass('is-selected');
+                expect(document.getElementsByClassName('hx-pager--page-link')[0]).toHaveClass('is-selected');
             });
 
             it('should have next page link', function() {
@@ -102,15 +102,15 @@ describe('pager', function() {
                 });
 
                 it('should have two page links', function () {
-                    expect(document.getElementsByClassName('hx-pager--page').length).toEqual(2);
+                    expect(document.getElementsByClassName('hx-pager--page-link').length).toEqual(2);
                 });
 
                 it('should mark the first page as selected', function () {
-                    expect(document.getElementsByClassName('hx-pager--page')[0]).toHaveClass('is-selected');
+                    expect(document.getElementsByClassName('hx-pager--page-link')[0]).toHaveClass('is-selected');
                 });
 
                 it('should not mark the second page as selected', function () {
-                    expect(document.getElementsByClassName('hx-pager--page')[1]).not.toHaveClass('is-selected');
+                    expect(document.getElementsByClassName('hx-pager--page-link')[1]).not.toHaveClass('is-selected');
                 });
 
                 it('should enable the next link', function () {
@@ -146,15 +146,15 @@ describe('pager', function() {
                 });
 
                 it('should have two page links', function () {
-                    expect(document.getElementsByClassName('hx-pager--page').length).toEqual(2);
+                    expect(document.getElementsByClassName('hx-pager--page-link').length).toEqual(2);
                 });
 
                 it('should not mark the first page as selected', function () {
-                    expect(document.getElementsByClassName('hx-pager--page')[0]).not.toHaveClass('is-selected');
+                    expect(document.getElementsByClassName('hx-pager--page-link')[0]).not.toHaveClass('is-selected');
                 });
 
                 it('should mark the second page as selected', function () {
-                    expect(document.getElementsByClassName('hx-pager--page')[1]).toHaveClass('is-selected');
+                    expect(document.getElementsByClassName('hx-pager--page-link')[1]).toHaveClass('is-selected');
                 });
 
                 it('should disable the next link', function () {
@@ -188,15 +188,15 @@ describe('pager', function() {
                 });
 
                 it('should have the first 10 pages shown only', function () {
-                    expect(document.getElementsByClassName('hx-pager--page').length).toEqual(10);
+                    expect(document.getElementsByClassName('hx-pager--page-link').length).toEqual(10);
                 });
 
                 it('should start at page 1', function () {
-                    expect(document.getElementsByClassName('hx-pager--page')[0]).toHaveText('1');
+                    expect(document.getElementsByClassName('hx-pager--page-link')[0]).toHaveText('1');
                 });
 
                 it('should finish on page 10', function () {
-                    expect(document.getElementsByClassName('hx-pager--page')[9]).toHaveText('10');
+                    expect(document.getElementsByClassName('hx-pager--page-link')[9]).toHaveText('10');
                 });
             });
 
@@ -206,15 +206,15 @@ describe('pager', function() {
                 });
 
                 it('should have the last ten pages shown only', function () {
-                    expect(document.getElementsByClassName('hx-pager--page').length).toEqual(10);
+                    expect(document.getElementsByClassName('hx-pager--page-link').length).toEqual(10);
                 });
 
                 it('should start at page 11', function () {
-                    expect(document.getElementsByClassName('hx-pager--page')[0]).toHaveText('11');
+                    expect(document.getElementsByClassName('hx-pager--page-link')[0]).toHaveText('11');
                 });
 
                 it('should finish on page 20', function () {
-                    expect(document.getElementsByClassName('hx-pager--page')[9]).toHaveText('20');
+                    expect(document.getElementsByClassName('hx-pager--page-link')[9]).toHaveText('20');
                 });
             });
 
@@ -224,15 +224,15 @@ describe('pager', function() {
                 });
 
                 it('should have ten pages shown only', function () {
-                    expect(document.getElementsByClassName('hx-pager--page').length).toEqual(10);
+                    expect(document.getElementsByClassName('hx-pager--page-link').length).toEqual(10);
                 });
 
                 it('should start at page 5', function () {
-                    expect(document.getElementsByClassName('hx-pager--page')[0]).toHaveText('5');
+                    expect(document.getElementsByClassName('hx-pager--page-link')[0]).toHaveText('5');
                 });
 
                 it('should finish on page 14', function () {
-                    expect(document.getElementsByClassName('hx-pager--page')[9]).toHaveText('14');
+                    expect(document.getElementsByClassName('hx-pager--page-link')[9]).toHaveText('14');
                 });
             });
         })
@@ -255,7 +255,7 @@ describe('pager', function() {
         })
 
         it('should not render any pages', function () {
-            expect(document.getElementsByClassName('hx-pager--page').length).toEqual(0);
+            expect(document.getElementsByClassName('hx-pager--page-link').length).toEqual(0);
         });
     });
 
@@ -277,7 +277,7 @@ describe('pager', function() {
 
         describe('that has not been loaded', function() {
             it('should not render any pages', function () {
-                expect(document.getElementsByClassName('hx-pager--page').length).toEqual(0);
+                expect(document.getElementsByClassName('hx-pager--page-link').length).toEqual(0);
             });
         });
 
@@ -287,12 +287,12 @@ describe('pager', function() {
             })
 
             it('should correctly show number of pages', function () {
-                expect(document.getElementsByClassName('hx-pager--page').length).toEqual(2);
+                expect(document.getElementsByClassName('hx-pager--page-link').length).toEqual(2);
             });
 
             it('should change page in dataView when clicking a page link', function () {
                 expect(this.dataView.page()).toEqual(1);
-                ko.utils.triggerEvent(document.getElementsByClassName('hx-pager--page')[1], 'click');
+                ko.utils.triggerEvent(document.getElementsByClassName('hx-pager--page-link')[1], 'click');
                 expect(this.dataView.page()).toEqual(2);
             });
         });

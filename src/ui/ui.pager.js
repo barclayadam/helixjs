@@ -122,13 +122,13 @@ hx.bindingHandler('pager', '$templating', function($templating) {
         '' +
         '     <part data-option="\'page-links\'">' +
         '       <!-- ko foreach: pages -->' +
-        '         <li class="hx-pager--page" data-bind="click: $parent.page, css: { \'is-selected\': $data == $parent.page() }"><a href="#" data-bind="text: $data"></a></li>' +
+        '         <li class="hx-pager--page hx-pager--page-link" data-bind="click: $parent.page, css: { \'is-selected\': $data == $parent.page() }"><a href="#" data-bind="text: $data"></a></li>' +
         '       <!-- /ko -->' +
         '     </part>' +
         '' +
         '     <part data-option="\'forward-links\'">' +
-        '      <li class="hx-pager--page"  class="hx-pager--next" data-bind="css: { disabled: isLastPage() }, click: nextPage"><a href="#">&rsaquo;</a></li>' +
-        '      <li class="hx-pager--page"  class="hx-pager--last" data-bind="css: { disabled: isLastPage() }, click: lastPage"><a href="#">&raquo;</a></li>' +
+        '      <li class="hx-pager--page hx-pager--next" data-bind="css: { disabled: isLastPage() }, click: nextPage"><a href="#">&rsaquo;</a></li>' +
+        '      <li class="hx-pager--page hx-pager--last" data-bind="css: { disabled: isLastPage() }, click: lastPage"><a href="#">&raquo;</a></li>' +
         '     </part>' +
         '   </ol>' +
         ' <!-- /ko -->'
