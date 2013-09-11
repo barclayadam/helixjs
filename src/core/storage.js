@@ -8,7 +8,7 @@
     ko.extenders[type + 'Storage'] = function (target, key) {
         var stored = window[type + 'Storage'].getItem(key);
         
-        if (stored != null) {
+        if (stored != null && ko.isWriteableObservable(target)) {
             target((JSON.parse(stored)).value);
         }
 

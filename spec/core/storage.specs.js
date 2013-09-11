@@ -1,6 +1,9 @@
 function createStorageSpecs(type) {
     return function() {
-        var storage = window[type + 'Storage'];
+        var storage = window[type + 'Storage'],
+            extensions = {};
+        
+        extensions[type + 'Storage'] = 'myKey';
 
         describe('with no items', function () {
             it('should have a length of 0', function () {
@@ -51,9 +54,6 @@ function createStorageSpecs(type) {
         });
 
         describe('with extender for simple property', function () {
-            var extensions = {};
-            extensions[type + 'Storage'] = 'myKey';
-
             describe('with no existing data in storage', function () {
                 beforeEach(function () {
                     this.observable = ko.observable('myValue').extend(extensions);
@@ -83,8 +83,7 @@ function createStorageSpecs(type) {
 
             describe('with existing data in storage', function () {
                 beforeEach(function () {
-                    var existing;
-                    existing = ko.observable().extend(extensions);
+                    var existing = ko.observable().extend(extensions);
                     existing('myValue');
                     this.observable = ko.observable('a value to override').extend(extensions);
                 });
@@ -151,17 +150,32 @@ function createStorageSpecs(type) {
                 });
 
                 it('should store the value in storage when observable changes', function () {
-                    var newObservable;
                     this.observable({
                         aProperty: 'anotherValue'
                     });
                     
-                    newObservable = ko.observable().extend(extensions);
-
-                    expect(newObservable()).toEqual({
+                    expect(ko.observable().extend(extensions)()).toEqual({
                         aProperty: 'anotherValue'
                     });
                 });
+            });
+        });
+
+        describe('with extender for read-only computed observable', function () {
+            beforeEach(function () {
+                var existing = ko.observable().extend(extensions);
+
+                existing({
+                    aProperty: 'myValue'
+                });
+            });
+
+            it('should not override the existing value on creation', function () {
+                // The act of creating the observable will check it does not try to write to it,
+                // as it would throw an exception if it did
+                ko.computed(function() {
+                    return 'a computed value'
+                }).extend(extensions);               
             });
         });
     }
