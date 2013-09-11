@@ -135,15 +135,17 @@ hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$r
                             var templateValueAccessor = createTemplateValueAccessor(component),
                                 innerBindingContext = bindingContext.extend();
 
-                            ko.utils.toggleDomNodeCssClass(element, 'is-loading', false);
+                            $ajax.listen(function() {
+                                koBindingHandlers.template.update(element, templateValueAccessor, allBindingsAccessor, viewModel, innerBindingContext);
+                            }).done(function() {
+                                ko.utils.toggleDomNodeCssClass(element, 'is-loading', false);
 
-                            koBindingHandlers.template.update(element, templateValueAccessor, allBindingsAccessor, viewModel, innerBindingContext);
+                                if (component.afterRender != null) {
+                                    component.afterRender.apply(component);
+                                }
 
-                            if (component.afterRender != null) {
-                                component.afterRender.apply(component);
-                            }
-
-                            ko.utils.domData.set(element, '__component__currentViewModel', component);
+                                ko.utils.domData.set(element, '__component__currentViewModel', component);
+                            });
                         });
                     })
                     .fail(function() {

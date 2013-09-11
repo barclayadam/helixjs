@@ -244,6 +244,70 @@ describe('component binding handler', function () {
             });
         });
 
+        describe('with AJAX requests to get template', function () {
+            beforeEach(function () {
+                var _this = this;
+
+                $templating.externalPath = '/Get/Template/{name}';
+                this.templateText = 'This is the template text!'
+
+                // We need to force an AJAX request for every test so a new template name is
+                // required (else the result is cached for subsequent tests)
+                this.templateName = 'myTemplateName' + Math.random();
+                this.respondWithTemplate('/Get/Template/' + this.templateName, this.templateText);
+
+                this.viewModel = {
+                    templateName: this.templateName,
+
+                    afterRender: this.spy(function () {
+                        _this.afterRenderHadContent = _this.getFixtureTextContent().length > 0;
+                    })
+                };
+
+                this.setHtmlFixture("<div id=fixture data-bind='component: viewModel'></div>");
+                
+                this.applyBindingsToFixture({
+                    viewModel: this.viewModel
+                });
+            });
+
+            it('should not render template before ajax requests complete', function () {
+                // We have not responded from server yet
+                expect(document.getElementById("fixture")).not.toHaveText(this.templateText);
+            });
+
+            it('should not call afterRender before ajax requests complete', function () {
+                // We have not responded from server yet
+                expect(this.viewModel.afterRender).toHaveNotBeenCalled();
+            });
+
+            it('should add is-loading class to element', function () {
+                // We have not responded from server yet
+                expect(document.getElementById("fixture")).toHaveClass('is-loading');
+            });
+
+            describe('after AJAX requests complete', function () {
+                beforeEach(function () {
+
+                    this.server.respond();
+                });
+
+                it('should render template', function () {
+                    // We have now responded from server
+                    expect(document.getElementById("fixture")).toHaveText(this.templateText);
+                });
+
+                it('should call afterRender once ajax requests complete', function () {
+                    // We have now responded from server
+                    expect(this.viewModel.afterRender).toHaveBeenCalled();
+                });
+
+                it('should remove is-loading class to element', function () {
+                    expect(document.getElementById("fixture")).not.toHaveClass('is-loading');
+                });
+            });
+        });
+
         describe('switching view models', function () {
             beforeEach(function () {
                 var _this = this;
