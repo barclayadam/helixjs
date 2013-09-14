@@ -2,7 +2,7 @@ hx.config('$templating', function($templating) {
     $templating.set('$hx-dialog',
         '<div class=hx-dialog tabindex=-1 role=dialog data-bind="css: { \'hx-dialog__modal\': options.modal }">' +
         '  <div class=hx-dialog--inner>' +
-        '    <div class=hx-dialog--content data-bind="component: component" />' +
+        '    <div class=hx-dialog--content data-bind="component: component, parameters: parameters" />' +
         '  </div>' +
         '' +
         '  <a href="#!" class=hx-dialog--close title=Close data-bind="click: close, visible: options.closeControls">×</a>' +
@@ -60,7 +60,8 @@ hx.provide('$dialog', function() {
             previouslyActiveElement;
 
         this.component = component;
-        this.options = _.extend({}, defaultOptions, options);
+        this.options = _.extend({}, defaultOptions, options);        
+        this.parameters = this.options.parameters;
 
         /**
          * Opens this dialog.

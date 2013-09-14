@@ -7,7 +7,7 @@ describe('dialog', function() {
     })
 
     beforeEach(function() {        
-        this.component = { templateName: 'myDialogTemplate' };
+        this.component = { templateName: 'myDialogTemplate', show: this.spy() };
     })
 
     describe('creating a dialog', function() {
@@ -56,7 +56,8 @@ describe('dialog', function() {
 
     describe('opening a dialog', function() {
         beforeEach(function() {
-            this.createdDialog = this.$dialog.create(this.component);
+            this.parameters = { aParam: 45 };
+            this.createdDialog = this.$dialog.create(this.component, { parameters: this.parameters });
             this.openPromise = this.createdDialog.open();
         })
 
@@ -70,6 +71,10 @@ describe('dialog', function() {
 
         it('should use component to render dialog contents', function() {
             expect(document.getElementById('my-dialog-content')).not.toBeNull();
+        })
+
+        it('should pass parameters from options to the component', function() {
+            expect(this.component.show).toHaveBeenCalledWith(this.parameters);
         })
 
         it('should return a promise', function() {
