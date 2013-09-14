@@ -74,7 +74,7 @@ describe('dialog', function() {
         })
 
         it('should pass parameters from options to the component', function() {
-            expect(this.component.show).toHaveBeenCalledWith(this.parameters);
+            expect(this.component.show.getCall(0).args[0].aParam).toEqual(this.parameters.aParam);
         })
 
         it('should return a promise', function() {
