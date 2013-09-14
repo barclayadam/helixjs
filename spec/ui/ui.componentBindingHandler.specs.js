@@ -1,6 +1,7 @@
 describe('component binding handler', function () {
     var $templating = hx.get('$templating'),
-        $ajax = hx.get('$ajax');
+        $ajax = hx.get('$ajax'),
+        $router = hx.get('$router');
 
     describe('binding undefined view model', function () {
         beforeEach(function () {
@@ -115,6 +116,89 @@ describe('component binding handler', function () {
 
         it('should use injector to load the view module', function () {
             expect(this.viewModelModuleCreator).toHaveBeenCalled();
+        });
+    });
+
+    describe('parameters', function () {
+        describe('without parameters binding handler', function () {
+            beforeEach(function () {
+                this.currentRouterParameters = { aParam: 4 };
+                $router.current({ parameters: this.currentRouterParameters });
+
+                this.viewModel = {
+                    beforeShow: this.spy(),
+
+                    show: this.spy(),
+
+                    afterRender: this.spy(),
+
+                    isAuthorised: this.stub().returns(true)
+                };
+
+                this.setHtmlFixture("<div id=fixture data-bind='component: viewModel'>This is the template</div>");
+                
+                this.applyBindingsToFixture({
+                    viewModel: this.viewModel
+                });
+            });
+
+            it('should call beforeShow with router parameters', function () {
+                expect(this.viewModel.beforeShow).toHaveBeenCalledWith(this.currentRouterParameters);
+            });
+
+            it('should call show with router parameters', function () {
+                expect(this.viewModel.show).toHaveBeenCalledWith(this.currentRouterParameters);
+            });
+
+            it('should call afterRender with router parameters', function () {
+                expect(this.viewModel.afterRender).toHaveBeenCalledWith(this.currentRouterParameters);
+            });
+
+            it('should call isAuthorised with router parameters', function () {
+                expect(this.viewModel.isAuthorised).toHaveBeenCalledWith(this.currentRouterParameters);
+            });
+        });
+
+        describe('parameters binding handler', function () {
+            beforeEach(function () {
+                this.currentRouterParameters = { aParam: 4, bParam: 6 };
+                this.viewModelParameters = { aParam: 2, cParam: 10 };
+
+                $router.current({ parameters: this.currentRouterParameters });
+
+                this.viewModel = {
+                    beforeShow: this.spy(),
+
+                    show: this.spy(),
+
+                    afterRender: this.spy(),
+
+                    isAuthorised: this.stub().returns(true)
+                };
+
+                this.setHtmlFixture("<div id=fixture data-bind='component: viewModel, parameters: viewModelParameters'>This is the template</div>");
+                
+                this.applyBindingsToFixture({
+                    viewModel: this.viewModel,
+                    viewModelParameters: this.viewModelParameters
+                });
+            });
+
+            it('should call beforeShow with router parameters, combined with explicit parameters (taking precendence)', function () {
+                expect(this.viewModel.beforeShow).toHaveBeenCalledWith(_.extend({}, this.currentRouterParameters, this.viewModelParameters));
+            });
+
+            it('should call show with router parameters, combined with explicit parameters (taking precendence)', function () {
+                expect(this.viewModel.show).toHaveBeenCalledWith(_.extend({}, this.currentRouterParameters, this.viewModelParameters));
+            });
+
+            it('should call afterRender with router parameters, combined with explicit parameters (taking precendence)', function () {
+                expect(this.viewModel.afterRender).toHaveBeenCalledWith(_.extend({}, this.currentRouterParameters, this.viewModelParameters));
+            });
+
+            it('should call isAuthorised with router parameters, combined with explicit parameters (taking precendence)', function () {
+                expect(this.viewModel.isAuthorised).toHaveBeenCalledWith(_.extend({}, this.currentRouterParameters, this.viewModelParameters));
+            });
         });
     });
 

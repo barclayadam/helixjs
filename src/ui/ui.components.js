@@ -100,7 +100,8 @@ hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$r
             
             ko.dependencyDetection.ignore(function() {
                 var component = getComponent(viewModelName),
-                    lastComponent = ko.utils.domData.get(element, '__component__currentViewModel');
+                    lastComponent = ko.utils.domData.get(element, '__component__currentViewModel'),
+                    parameters = _.extend({}, $router.current().parameters, allBindingsAccessor()['parameters']);
 
                 if (lastComponent && lastComponent.hide) {
                     lastComponent.hide.apply(lastComponent);
@@ -112,19 +113,19 @@ hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$r
                 }
 
                 $authoriser
-                    .authorise(component, $router.current().parameters)
+                    .authorise(component, parameters)
                     .done(function() {
                         ko.utils.toggleDomNodeCssClass(element, 'is-loading', true);
 
                         var showDeferred = new jQuery.Deferred();
 
                         if (component.beforeShow != null) {                
-                            component.beforeShow.apply(component);
+                            component.beforeShow.call(component, parameters);
                         }
 
                         if (component.show != null) {
                             showDeferred = $ajax.listen(function() {
-                                component.show.apply(component);
+                                component.show.call(component, parameters);
                             });
                         } else {
                             // Resolve immediately, nothing to wait for
@@ -141,7 +142,7 @@ hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$r
                                 ko.utils.toggleDomNodeCssClass(element, 'is-loading', false);
 
                                 if (component.afterRender != null) {
-                                    component.afterRender.apply(component);
+                                    component.afterRender.call(component, parameters);
                                 }
 
                                 ko.utils.domData.set(element, '__component__currentViewModel', component);
