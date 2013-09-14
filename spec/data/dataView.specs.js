@@ -70,7 +70,6 @@ describe('dataView', function() {
 
         describe('when calling load', function() {  
             beforeEach(function() {
-                debugger
                 this.dataView.load();
             });
 
