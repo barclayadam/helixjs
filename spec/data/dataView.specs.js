@@ -170,16 +170,23 @@ describe('dataView', function() {
                 expect(this.dataView.data()).toEqual(this.returnValue);
             })
 
-            it('should call provider after a change to observable properties', function() {
-                this.paramsObservable({ anotherParam: 3 });
-
-                expect(this.providerStub).toHaveBeenCalledWith({
-                    params: { anotherParam: 3 },
-                    orderBy: 'aProperty asc',
-                    groupBy: 'aProperty',
-                    take: 15,
-                    skip: 10
+            it('should call provider after a change to observable properties', function() {          
+                runs(function() {
+                    this.paramsObservable({ anotherParam: 3 });
                 })
+
+                // Changes are throttled
+                waits(25);
+
+                runs(function() {
+                    expect(this.providerStub).toHaveBeenCalledWith({
+                        params: { anotherParam: 3 },
+                        orderBy: 'aProperty asc',
+                        groupBy: 'aProperty',
+                        take: 15,
+                        skip: 10
+                    })
+                });
             })
         })
     })
@@ -246,12 +253,19 @@ describe('dataView', function() {
         })
 
         it('should re-page when page number is set', function() {
-            this.dataView.page(3);
+            runs(function() {
+                this.dataView.page(3);
+            })
 
-            expect(this.providerStub).toHaveBeenCalledWith({
-                pageSize: 5,
-                page: 3
-            })            
+            // Changes are throttled
+            waits(25);
+
+            runs(function() {
+                expect(this.providerStub).toHaveBeenCalledWith({
+                    pageSize: 5,
+                    page: 3
+                })   
+            });         
         })
     })
 

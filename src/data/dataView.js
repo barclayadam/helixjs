@@ -215,7 +215,7 @@ hx.provide('$DataView', ['$InMemoryProvider'], function($InMemoryProvider) {
         if(this.$$paramsObservable == undefined) {
             this.$$paramsObservable = ko.computed(function() {
                 return ko.toJS(this.$$parameters);
-            }.bind(this))
+            }, this).extend({ throttle: 15 })
 
             this.$$paramsObservable.subscribe(this.load, this);
         }
