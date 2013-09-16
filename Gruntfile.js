@@ -90,34 +90,36 @@ module.exports = function (grunt) {
 
         'saucelabs-jasmine': {
             all: {
-                username: 'barclayadam', // if not provided it'll default to ENV SAUCE_USERNAME (if applicable)
-                key: saucekey,
+                options: {
+                    username: 'barclayadam', // if not provided it'll default to ENV SAUCE_USERNAME (if applicable)
+                    key: saucekey,
 
-                urls: ['http://localhost:9001/spec/runner.html'],
+                    urls: ['http://localhost:9001/spec/runner.html'],
 
-                concurrency: '3',
+                    concurrency: '3',
 
-                testTimeout: 35000,
-                testInterval: 1500,
+                    testTimeout: 35000,
+                    testInterval: 1500,
 
-                testname: 'HelixJS test suite',
+                    testname: 'HelixJS test suite',
 
-                browsers: [
-                    { browserName: 'chrome', platform: 'Windows 2008' }, 
-                    { browserName: 'chrome', platform: 'Windows 2003' }, 
-                    { browserName: 'chrome', platform: 'Linux' }, 
-                    { browserName: 'chrome', platform: 'Mac 10.8' }, 
+                    browsers: [
+                        { browserName: 'chrome', platform: 'Windows 2008' }, 
+                        { browserName: 'chrome', platform: 'Windows 2003' }, 
+                        { browserName: 'chrome', platform: 'Linux' }, 
+                        { browserName: 'chrome', platform: 'Mac 10.8' }, 
 
-                    { browserName: 'internet explorer', version: 9, platform: "Windows 2008" }, 
-                    { browserName: 'internet explorer', version: 10, platform: "Windows 2012" }, 
+                        { browserName: 'internet explorer', version: 9, platform: "Windows 2008" }, 
+                        { browserName: 'internet explorer', version: 10, platform: "Windows 2012" }, 
 
-                    { browserName: 'firefox', platform: "Windows 2008" }, 
-                    { browserName: 'firefox', platform: "Linux" }, 
-                    { browserName: 'firefox', platform: "Mac 10.6" }
+                        { browserName: 'firefox', platform: "Windows 2008" }, 
+                        { browserName: 'firefox', platform: "Linux" }, 
+                        { browserName: 'firefox', platform: "Mac 10.6" }
 
-                    // TODO: Fix in this combination  { browserName: 'internet explorer', version: 8, platform: "Windows 2008" },
-                    // TODO: Having connection issues { browserName: 'opera', platform: "Windows 2008" }
-                ]
+                        // TODO: Fix in this combination  { browserName: 'internet explorer', version: 8, platform: "Windows 2008" },
+                        // TODO: Having connection issues { browserName: 'opera', platform: "Windows 2008" }
+                    ]
+                }
             }
         }
     });
