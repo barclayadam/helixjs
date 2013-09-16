@@ -113,8 +113,8 @@ module.exports = function (grunt) {
                         { browserName: 'internet explorer', version: 10, platform: "Windows 2012" }, 
 
                         { browserName: 'firefox', platform: "Windows 2008" }, 
-                        { browserName: 'firefox', platform: "Linux" }, 
-                        { browserName: 'firefox', platform: "Mac 10.6" }
+                        // { browserName: 'firefox', platform: "Linux" }, <- Not currently working in saucelabs
+                        // { browserName: 'firefox', platform: "Mac 10.6" } <- Not currently working in saucelabs
 
                         // TODO: Fix in this combination  { browserName: 'internet explorer', version: 8, platform: "Windows 2008" },
                         // TODO: Having connection issues { browserName: 'opera', platform: "Windows 2008" }
