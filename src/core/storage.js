@@ -13,9 +13,13 @@
         }
 
         target.subscribe(function (newValue) {
-            window[type + 'Storage'].setItem(key, JSON.stringify({
-                value: newValue
-            }));
+            if (newValue) {
+                window[type + 'Storage'].setItem(key, JSON.stringify({
+                    value: newValue
+                }));
+            } else {
+                window[type + 'Storage'].removeItem(key);
+            }
         });
 
         return target;

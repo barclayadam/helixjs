@@ -69,6 +69,18 @@ function createStorageSpecs(type) {
                     newObservable = ko.observable().extend(extensions);
                     expect(newObservable()).toEqual(123456);
                 });
+
+                it('should remove item from storage when setting to undefined', function () {
+                    this.observable(undefined);
+
+                    expect(storage.getItem('myKey')).toBeNull();
+                });
+
+                it('should remove item from storage when setting to null', function () {
+                    this.observable(null);
+
+                    expect(storage.getItem('myKey')).toBeNull();
+                });
             });
 
             describe('with empty string (crashes IE8 storing empty string in storage)', function () {
