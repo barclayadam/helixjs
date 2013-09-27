@@ -148,7 +148,7 @@ if (!('indexOf' in Array.prototype)) {
 
     toHaveText: function(text)
     {
-      return (this.actual.textContent||this.actual.innerText) === text;
+      return (this.actual.textContent||this.actual.innerText||'').replace(/^\s*|\s*$/g, '') === text;
     },
 
     toHaveValue: function(value)

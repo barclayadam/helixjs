@@ -50,6 +50,7 @@
         //= messaging/messaging.query.js
         //= messaging/messaging.command.js
 
+        //= ui/ui.part.js
         //= ui/ui.uiaction.js
         //= ui/ui.regions.js
         //= ui/ui.components.js
