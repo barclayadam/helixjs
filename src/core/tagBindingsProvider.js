@@ -54,6 +54,11 @@
                 dataBind = node.getAttribute('data-bind') || '';
 
             if (tagHandlers && tagHandlers.length > 0) {
+                // When applied as tag we allow using data-option attribute to avoid repeating binding
+                // handler name in data-bind (e.g. data-option="{ prop: value }" is equivalent to 
+                // data-bind="handlerName: { prop: value }"). Integration of tag-based binding handlers
+                // is done by creating a data-bind that would have been used had the binding handler been applied
+                // manually.
                 for (var i = 0; i < tagHandlers.length; i++) {
                     var tagBindingHandlerName = tagHandlers[i];
 
@@ -71,6 +76,7 @@
                     }
                 }
                 
+                node.removeAttribute('data-option');
                 node.setAttribute('data-bind', dataBind);
 
                 if (requiresReplace[nodeTagNameLower] === true) {
