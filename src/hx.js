@@ -60,6 +60,7 @@
         //= ui/ui.navigate.js
         //= ui/ui.pager.js
         //= ui/ui.dialog.js
+        //= ui/ui.expandable.js
         //= ui/ui.hasContentBindingHandler.js
     });
 })(window, document);
