@@ -34,7 +34,6 @@ function setFixtures(html) {
     }
 
     var container = (window.html5 || document).createElement('div');
-    container.style.display = "none";
     container.id = fixtureId;
     container.innerHTML = html;
 
