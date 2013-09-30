@@ -111,7 +111,7 @@ describe('part binding handler', function() {
         beforeEach(function(){
             this.setHtmlFixture(
                 "<partSingleOverrideAndContent>" +
-                  "<part id=my-override-part><p id=override-paragraph>This will be within the wrapper</p></part>" +
+                  "<part id=my-override-part><p id=override-paragraph class=override-paragraph>This will be within the wrapper</p></part>" +
                   "<p id=content-paragraph>This is the content</p>" +
                 "</partSingleOverride>");
 
@@ -124,6 +124,10 @@ describe('part binding handler', function() {
 
         it('should include non-overriding elements at content part', function() {
            expect(document.getElementById('content-paragraph').parentNode.id).toBe('wrapper-for-content'); 
+        })
+
+        it('should not include part overrides in content part', function() {
+           expect(document.getElementsByClassName('override-paragraph').length).toBe(1); 
         })
     });   
 });

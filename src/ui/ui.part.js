@@ -52,14 +52,16 @@ hx.bindingHandler('part', {
             if (child.nodeType === 1 && child.tagName.toLowerCase() === "part") {
                 var id = child.id;
 
-                if(id) {
+                if (id) {
                     // It's an anonymous template - store the element contents, then clear the element
-                    var templateNodes = child.nodeType == 1 ? child.childNodes : ko.virtualElements.childNodes(element),
+                    var templateNodes = child.nodeType == 1 ? child.childNodes : ko.virtualElements.childNodes(child),
                         container = ko.utils.moveCleanedNodesToContainerElement(templateNodes); // This also removes the nodes from their current parent
 
                     new ko.templateSources.anonymousTemplate(container)['nodes'](container);
                     
                     bindingContext['$override-for-' + id] = container;
+
+                    child.parentNode.removeChild(child);
                 }
             }
         }
