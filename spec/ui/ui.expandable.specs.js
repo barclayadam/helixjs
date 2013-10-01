@@ -2,14 +2,18 @@ describe('expandable', function() {
     describe('basic - no overrides', function() {
         beforeEach(function() {
             this.setHtmlFixture("<expandable id=expandable data-option=\"{ title: 'My cool title' }\">" +
-                                "  <p id=expandable-content>This is the content</p>" +
+                                "  <p id=expandable-content data-bind='text: content'></p>" +
                                 "</expandable>");
             
-            this.applyBindingsToFixture({});
+            this.applyBindingsToFixture({ content: 'This is the content' });
         });
 
         it('should hide the content by default', function() {
             expect(document.getElementById('expandable-content')).toBeHidden();
+        })
+
+        it('should maintain view model as current binding context', function() {
+            expect(document.getElementById('expandable-content')).toHaveText('This is the content');
         })
 
         it('should toggle visibility when clicking the header', function() {

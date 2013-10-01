@@ -44,13 +44,15 @@
     	);
 
 	function createModel(data) {
+        var open = data.open || ko.observable(false);
+
         return {
             title: data.title || '',
 
-            open: data.open || ko.observable(false),
+            open: open,
 
             toggle: function() {
-            	this.open(!this.open());
+            	open(!open());
             }
         }
     }
@@ -65,7 +67,7 @@
             koBindingHandlers.part.prepare(element, bindingContext);
 
             ko.utils.toggleDomNodeCssClass(element, 'expandable', true);
-            ko.renderTemplate('$hx-expandable', bindingContext.createChildContext(model), {}, element, 'replaceChildren');
+            ko.renderTemplate('$hx-expandable', bindingContext.extend(model), {}, element, 'replaceChildren');
 
             ko.computed({
                 read: function() {
