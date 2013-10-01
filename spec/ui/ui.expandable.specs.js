@@ -16,6 +16,17 @@ describe('expandable', function() {
             ko.utils.triggerEvent(document.getElementById('expandable').getElementsByTagName('header')[0], 'click');
             expect(document.getElementById('expandable-content')).not.toBeHidden();
         })
+
+        it('should add open class to expandable element when opened', function() {
+            ko.utils.triggerEvent(document.getElementById('expandable').getElementsByTagName('header')[0], 'click');
+            expect(document.getElementById('expandable')).toHaveClass('open');
+        })
+
+        it('should remove open class to expandable element when closed', function() {
+            ko.utils.triggerEvent(document.getElementById('expandable').getElementsByTagName('header')[0], 'click');
+            ko.utils.triggerEvent(document.getElementById('expandable').getElementsByTagName('header')[0], 'click');
+            expect(document.getElementById('expandable')).not.toHaveClass('open');
+        })
     })
 
     describe('external open observable', function() {

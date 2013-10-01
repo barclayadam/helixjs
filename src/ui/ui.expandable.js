@@ -36,7 +36,11 @@
     	'' +
     	'<div class=panel data-bind="visible: open">' +
     	'  <part id=content></part>' +
-    	'</div>'
+    	'</div>' +
+        '' +
+        '<footer>' +
+        '  <part id=footer></part>' +
+        '</footer>'
     	);
 
 	function createModel(data) {
@@ -55,12 +59,21 @@
     	tag: 'expandable',
 
         init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) { 
-            var value = ko.utils.unwrapObservable(valueAccessor());
-
-            ko.utils.toggleDomNodeCssClass(element, 'expandable', true);
+            var value = ko.utils.unwrapObservable(valueAccessor()),
+                model = createModel(value);
 
             koBindingHandlers.part.prepare(element, bindingContext);
-            ko.renderTemplate('$hx-expandable', bindingContext.createChildContext(createModel(value)), {}, element, 'replaceChildren');
+
+            ko.utils.toggleDomNodeCssClass(element, 'expandable', true);
+            ko.renderTemplate('$hx-expandable', bindingContext.createChildContext(model), {}, element, 'replaceChildren');
+
+            ko.computed({
+                read: function() {
+                    ko.utils.toggleDomNodeCssClass(element, 'open', model.open());
+                },
+
+                disposeWhenNodeIsRemoved: element
+            });
 
             return { "controlsDescendantBindings" : true }
         }
