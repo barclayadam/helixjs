@@ -28,7 +28,7 @@
  */
  hx.bindingHandler('expandable', '$templating', function($templating) {
     $templating.set('$hx-expandable',    	    	
-    	'<header data-bind="click: toggle">' +
+    	'<header data-bind="action: toggle">' +
     	'  <part id=header>' + 
     	'    <span class=title data-bind="text: title"></span>' +
     	'  </part>' +

@@ -136,6 +136,25 @@
 
         ko.utils.toggleDomNodeCssClass(element, 'is-executing', isExecuting);
     }
+
+    function handleAction(event) {
+        var element = event.target;
+
+        do {        
+            var elementAction = ko.utils.domData.get(element, '__action');
+
+            if (elementAction && event.type === ko.utils.domData.get(element, '__actionEventType')) {
+                elementAction();
+
+                event.preventDefault();
+            }
+
+            element = element.parentNode;
+        } while(element);
+    }
+
+    ko.utils.registerEventHandler(document, 'click', handleAction);
+    ko.utils.registerEventHandler(document, 'submit', handleAction);
      
     /**
      * @bindingHandler action
@@ -176,11 +195,8 @@
                 });
             }
 
-            ko.utils.registerEventHandler(element, isForm ? 'submit' : 'click', function(e) {
-                uiAction();
-
-                e.preventDefault();
-            })
+            ko.utils.domData.set(element, '__action', uiAction);
+            ko.utils.domData.set(element, '__actionEventType', isForm ? 'submit' : 'click');
 
             if(shouldHide) {
                 ko.utils.domData.set(element, '__original_display', element.style.display);
