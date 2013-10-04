@@ -56,42 +56,6 @@ describe('templating', function () {
                 expect(this.wrapper).toHaveText('A Cool Template 2');
             });
         });
-
-        describe('when a named template is an observable', function () {
-            beforeEach(function () {
-                this.template = ko.observable('A Cool Template');
-                this.$templating.set('myObservableNamedTemplate', this.template);
-                this.setHtmlFixture("<div id=\"templated\" data-bind=\"template: 'myObservableNamedTemplate'\"></div>");
-                this.applyBindingsToFixture({});
-                this.wrapper = document.getElementById('templated');
-            });
-
-            afterEach(function() {
-                this.$templating.remove('myObservableNamedTemplate')
-            })
-
-            it('should render the template', function () {
-                expect(this.wrapper).toHaveText(this.template());
-            });
-
-            describe('that is updated', function () {
-                beforeEach(function () {
-                    this.template('Some other cool template');
-                });
-                it('should re-render the template', function () {
-                    expect(this.wrapper).toHaveText('Some other cool template');
-                });
-            });
-
-            describe('that is set again', function () {
-                beforeEach(function () {
-                    this.$templating.set('myObservableNamedTemplate', 'Explicitly set template again');
-                });
-                it('should re-render the template', function () {
-                    expect(this.wrapper).toHaveText('Explicitly set template again');
-                });
-            });
-        });
     });
 
     describe('external templates', function () {

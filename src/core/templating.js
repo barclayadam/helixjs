@@ -7,32 +7,37 @@ hx.singleton('$templating', ['$ajax'], function($ajax) {
      *
      * @class StringTemplateSource
      */
-    function StringTemplateSource(templateName) {
-        this.templateName = templateName;
+    function StringTemplateSource(templateText) {
+        this.templateText = ko.observable(templateText);
+        this.parsedNodes = ko.observable(ko.utils.parseHtmlFragment('<div>' + templateText + '</div>')[0]);
+    }
+
+    StringTemplateSource.prototype.set = function(templateText) {
+        this.templateText(templateText);
+        this.parsedNodes(ko.utils.parseHtmlFragment('<div>' + templateText + '</div>')[0]);
     }
 
     StringTemplateSource.prototype.text = function (value) {
-        return ko.utils.unwrapObservable(templating.templates[this.templateName]);
+        return this.templateText();
     };
 
-    function ExternalTemplateSource(templateName) {
-        this.templateName = templateName;
-    }
+    StringTemplateSource.prototype.nodes = function (value) {
+        return this.parsedNodes();
+    };
 
-    ExternalTemplateSource.prototype.text = function (value) {
-        var loadingPromise, template;
-
-        if (!templating.templates[this.templateName]) {
-            template = ko.observable(templating.loadingTemplate);
-            templating.set(this.templateName, template);
-
-            loadingPromise = templating.loadExternalTemplate(this.templateName);
-
-            loadingPromise.done(template);
+    function loadExternalTemplate(templateName) {
+        if (templating.templates[templateName]) {
+            return templating.templates[templateName];
         }
-    
-        return ko.utils.unwrapObservable(templating.templates[this.templateName]);    
-    };
+        
+        templating.set(templateName, templating.loadingTemplate);
+
+        templating.loadExternalTemplate(templateName).done(function(templateText) {
+            templating.set(templateName, templateText);
+        });
+
+        return templating.templates[templateName];
+    }
 
     /**
       Creates the custom `HelixJS` templating engine by augmenting the given templating
@@ -48,15 +53,18 @@ hx.singleton('$templating', ['$ajax'], function($ajax) {
         templateEngine.makeTemplateSource = function (template, templateDocument) {
             var templateElement;
 
-            if (templating.templates[template] != null) {
-                return new StringTemplateSource(template);
+            if (template.text && template.data) {
+                // Already a template source
+                return template;
+            } else if (templating.templates[template] != null) {
+                return templating.templates[template];
             } else if (template.nodeType === 1 || template.nodeType === 8) {
                 return new ko.templateSources.anonymousTemplate(template);
             } else if (_.isString(template)) {
                 templateElement = (templateDocument || document).getElementById(template);
 
                 if (!templateElement) {
-                    return new ExternalTemplateSource(template);
+                    return loadExternalTemplate(template);
                 } else {
                     return new ko.templateSources.domElement(templateElement);
                 }
@@ -127,11 +135,13 @@ hx.singleton('$templating', ['$ajax'], function($ajax) {
        contents of the template.
     */
     templating.set = function (name, template) {
-        if (ko.isWriteableObservable(templating.templates[name])) {
-            templating.templates[name](template);
+        if (templating.templates[name]) {
+            templating.templates[name].set(template);
         } else {
-            templating.templates[name] = template;
+            templating.templates[name] = new StringTemplateSource(template);
         }
+
+        return templating.templates[name];
     };
 
     templating.templates = {
