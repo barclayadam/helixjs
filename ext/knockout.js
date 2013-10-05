@@ -2083,7 +2083,6 @@ ko.exportSymbol('bindingProvider', ko.bindingProvider);
     // The ko.bindingContext constructor is only called directly to create the root context. For child
     // contexts, use bindingContext.createChildContext or bindingContext.extend.
     ko.bindingContext = function(dataItemOrAccessor, parentContext, dataItemAlias, extendCallback) {
-
         // The binding context object includes static properties for the current, parent, and root view models.
         // If a view model is actually stored in an observable, the corresponding binding context object, and
         // any child contexts, must be updated when the view model is changed.
@@ -3338,28 +3337,43 @@ ko.exportSymbol('__tr_ambtns', ko.templateRewriting.applyMemoizedBindingsToNextS
     // using and overriding "makeTemplateSource" to return an instance of your custom template source.
 
     ko.templateSources = {};
-
+    
     // ---- ko.templateSources.domElement -----
 
+    var parsedDomElementNodeKey = "__ko_parsed_dom_element__";
     ko.templateSources.domElement = function(element) {
+        var tagNameLower = ko.utils.tagNameLower(this.domElement);
+
+        this.elemContentsProperty = tagNameLower === "script" ? "text"
+                                  : tagNameLower === "textarea" ? "value"
+                                  : "innerHTML";
+
         this.domElement = element;
     }
 
     ko.templateSources.domElement.prototype['text'] = function(/* valueToWrite */) {
-        var tagNameLower = ko.utils.tagNameLower(this.domElement),
-            elemContentsProperty = tagNameLower === "script" ? "text"
-                                 : tagNameLower === "textarea" ? "value"
-                                 : "innerHTML";
-
         if (arguments.length == 0) {
-            return this.domElement[elemContentsProperty];
+            return this.domElement[this.elemContentsProperty];
         } else {
             var valueToWrite = arguments[0];
-            if (elemContentsProperty === "innerHTML")
+            if (this.elemContentsProperty === "innerHTML")
                 ko.utils.setHtml(this.domElement, valueToWrite);
             else
-                this.domElement[elemContentsProperty] = valueToWrite;
+                this.domElement[this.elemContentsProperty] = valueToWrite;
+
+            ko.utils.domData.set(this.domElement, parsedDomElementNodeKey, null); 
         }
+    };
+
+    ko.templateSources.domElement.prototype['nodes'] = function(/* valueToWrite */) {
+        var parsedNodes = ko.utils.domData.get(this.domElement, parsedDomElementNodeKey);
+
+        if (!parsedNodes) {
+            parsedNodes = ko.utils.parseHtmlFragment('<div>' + this.domElement[this.elemContentsProperty] + '</div>')[0];
+            ko.utils.domData.set(this.domElement, parsedDomElementNodeKey, parsedNodes); 
+        }
+
+        return parsedNodes;
     };
 
     ko.templateSources.domElement.prototype['data'] = function(key /*, valueToWrite */) {
@@ -3392,7 +3406,7 @@ ko.exportSymbol('__tr_ambtns', ko.templateRewriting.applyMemoizedBindingsToNextS
             ko.utils.domData.set(this.domElement, anonymousTemplatesDomDataKey, {textData: valueToWrite});
         }
     };
-    ko.templateSources.domElement.prototype['nodes'] = function(/* valueToWrite */) {
+    ko.templateSources.anonymousTemplate.prototype['nodes'] = function(/* valueToWrite */) {
         if (arguments.length == 0) {
             var templateData = ko.utils.domData.get(this.domElement, anonymousTemplatesDomDataKey) || {};
             return templateData.containerData;
