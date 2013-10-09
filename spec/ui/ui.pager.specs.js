@@ -81,6 +81,16 @@ describe('pager', function() {
             it('should disable the last page link', function() {
                 expect(document.getElementsByClassName('hx-pager--last')[0]).toHaveClass('disabled');
             });
+
+            it('should not decrement page when clicking previous', function () {
+                ko.utils.triggerEvent(document.getElementsByClassName('hx-pager--previous')[0], 'click')
+                expect(this.page()).toEqual(1);
+            });
+
+            it('should not increment page when clicking next', function () {
+                ko.utils.triggerEvent(document.getElementsByClassName('hx-pager--next')[0], 'click')
+                expect(this.page()).toEqual(1);
+            });
         })
 
         describe('When bound to a paged data source with two pages', function () {

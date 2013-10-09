@@ -78,10 +78,19 @@ hx.bindingHandler('pager', '$templating', function($templating) {
             }),
 
             firstPage: function() { data.page(1); },
-            previousPage: function() { data.page(data.page() - 1); },
+            lastPage: function() { data.page(data.pageCount()); },
 
-            nextPage: function() { return data.page(data.page() + 1); },
-            lastPage: function() { return data.page(data.pageCount()); },
+            previousPage: function() { 
+                if (data.page() > 1) {
+                    data.page(data.page() - 1); 
+                }
+            },
+
+            nextPage: function() { 
+                if(data.page() < data.pageCount()) { 
+                    data.page(data.page() + 1); 
+                } 
+            },
 
             pages: ko.computed(function() {
                 var pageCount = data.pageCount(),
