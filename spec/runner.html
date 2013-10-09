@@ -70,10 +70,17 @@
 </head>
 <body>
 
-  <script type="text/javascript">
-    jasmine.getEnv().addReporter(new jasmine.HtmlReporter());
-    jasmine.getEnv().execute();
-  </script>
+    <script type="text/javascript">
+      (function() {
+        var jasmineEnv = jasmine.getEnv();
+
+        var htmlReporter = new jasmine.HtmlReporter();
+        jasmineEnv.addReporter(htmlReporter);
+        jasmineEnv.specFilter = htmlReporter.specFilter;
+
+        jasmineEnv.execute();
+      })();
+    </script>
 
 </body>
 </html>
