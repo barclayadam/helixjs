@@ -121,9 +121,14 @@ hx.bindingHandler('pager', '$templating', function($templating) {
 
             ko.utils.toggleDomNodeCssClass(element, 'hx-pager', true);
 
-            ko.computed(function() {
-                ko.utils.toggleDomNodeCssClass(element, 'no-pages', value.pageCount() == 0);
-            })
+            ko.computed({
+                read: function() {
+                    ko.utils.toggleDomNodeCssClass(element, 'no-pages', value.pageCount() == 0);
+                    ko.utils.toggleDomNodeCssClass(element, 'single-page', value.pageCount() == 1);
+                },
+
+                disposeWhenNodeIsRemoved: element
+            });            
 
             koBindingHandlers.part.prepare(element, bindingContext);
 

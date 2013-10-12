@@ -42,6 +42,10 @@ describe('pager', function() {
                 expect(this.pager).not.toHaveClass('no-pages')
             })
 
+            it('should add the single-page class', function() {
+                expect(this.pager).toHaveClass('single-page')
+            })
+
             it('should have first page link', function() {
                 expect(document.getElementsByClassName('hx-pager--first')[0]).toExist();
             });
