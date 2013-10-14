@@ -28,13 +28,13 @@
  */
  hx.bindingHandler('expandable', '$templating', function($templating) {
     $templating.set('$hx-expandable',    	    	
-    	'<header data-bind="action: toggle">' +
+    	'<header>' +
     	'  <part id=header>' + 
-    	'    <span class=title data-bind="text: title"></span>' +
+    	'    <span class=title data-bind="text: title, action: toggle"></span>' +
     	'  </part>' +
     	'</header>' +    	
     	'' +
-    	'<div class=panel data-bind="visible: open">' +
+    	'<div class=panel>' +
     	'  <part id=content></part>' +
     	'</div>' +
         '' +
@@ -72,6 +72,7 @@
             ko.computed({
                 read: function() {
                     ko.utils.toggleDomNodeCssClass(element, 'open', model.open());
+                    ko.utils.toggleDomNodeCssClass(element, 'closed', !model.open());
                 },
 
                 disposeWhenNodeIsRemoved: element
