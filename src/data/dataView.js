@@ -34,6 +34,14 @@ hx.provide('$DataView', ['$InMemoryProvider'], function($InMemoryProvider) {
         this.$$parameters = {};
 
         /**
+         * An observable that indicates when this data view is loading data.
+         *
+         * @observable
+         * @property isLoading
+         */
+        this.isLoading = ko.observable(false);
+
+        /**
          * Stores the data that has been loaded by this data source, which will be an array
          * of (optionally) mapped items.
          *
@@ -204,6 +212,8 @@ hx.provide('$DataView', ['$InMemoryProvider'], function($InMemoryProvider) {
      * @method load
      */
     DataView.prototype.load = function() {
+        this.isLoading(true);
+
         if(!this.$$initialisedProvider) {
             if(this.$$provider.initialise) {
                 this.$$provider.initialise(this);
@@ -242,6 +252,8 @@ hx.provide('$DataView', ['$InMemoryProvider'], function($InMemoryProvider) {
 
                 this.data(result);
             }
+
+            this.isLoading(false);
         }.bind(this));
 
         return this;

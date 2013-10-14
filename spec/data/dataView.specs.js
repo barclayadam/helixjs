@@ -41,15 +41,21 @@ describe('dataView', function() {
     })
 
     describe('all options with static values defined, function as a provider', function() {    
-        beforeEach(function() {
-            this.returnValue = ['a', 42, 5, 3, 'ds', 34]
-            this.providerStub = this.stub().returns(this.returnValue);
+        var returnValue = ['a', 42, 5, 3, 'ds', 34];
+
+        beforeEach(function() {    
+            var self = this;
+
+            this.providerSpy = this.spy(function() {
+                self.isLoadingValueDuringLoad = self.dataView.isLoading();
+                return returnValue;  
+            });
 
             this.whereFn = function() { return true; };
             this.mapFn = function(i) { return i; };
 
             this.dataView = $DataView
-                                .from(this.providerStub)
+                                .from(this.providerSpy)
                                 .params({ aParam: 1 })
                                 .where(this.whereFn)
                                 .orderBy('aProperty asc')
@@ -60,7 +66,11 @@ describe('dataView', function() {
         })
 
         it('should not immediately call the provider', function() {
-            expect(this.providerStub).toHaveNotBeenCalled();
+            expect(this.providerSpy).toHaveNotBeenCalled();
+        })
+
+        it('should have isLoading observable with value of false', function() {
+            expect(this.dataView.isLoading()).toBe(false);
         })
 
         it('should have an empty data observable', function() {
@@ -74,7 +84,7 @@ describe('dataView', function() {
             });
 
             it('should call provider with all options given', function() {
-                expect(this.providerStub).toHaveBeenCalledWith({
+                expect(this.providerSpy).toHaveBeenCalledWith({
                     params: { aParam: 1 },
                     orderBy: 'aProperty asc',
                     groupBy: 'aProperty',
@@ -85,8 +95,16 @@ describe('dataView', function() {
                 })
             })
 
+            it('should set isLoading to true during load', function() {
+                expect(this.isLoadingValueDuringLoad).toBe(true);
+            })
+
+            it('should set isLoading to false after load', function() {
+                expect(this.dataView.isLoading()).toBe(false);
+            })
+
             it('should store return value as a data observable', function() {
-                expect(this.dataView.data()).toEqual(this.returnValue);
+                expect(this.dataView.data()).toEqual(returnValue);
             })
         })
     })
