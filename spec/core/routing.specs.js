@@ -18,7 +18,7 @@ function itShouldReturnMatchedRoute(options) {
     });
 };
 
-describe('Routing:', function () {
+describe('routing', function () {
     var $bus = hx.get('$bus');
 
     beforeEach(function () {
@@ -234,6 +234,50 @@ describe('Routing:', function () {
                     parameters: {}
                 });
             });
+        });
+    });
+
+    describe('Single no-param route, with callback instead of options', function () {
+        beforeEach(function () {
+            this.callback = this.stub();
+            this.router.route('Contact Us', '/Contact Us', this.callback);
+            this.contactUsRoute = this.router.getNamedRoute('Contact Us');
+        });
+
+        describe('navigateTo route', function () {
+            beforeEach(function () {
+                this.router.navigateTo('Contact Us');
+            });
+
+            it('should publish a routeNavigated message', function () {
+                expect("routeNavigated:Contact Us").toHaveBeenPublishedWith({
+                    route: this.contactUsRoute,
+                    parameters: {}
+                });
+            });
+
+            it('should execute callback with empty parameters object', function () {
+                expect(this.callback).toHaveBeenCalledWith({});
+            });
+        });
+
+        describe('callback returns false', function () {
+            beforeEach(function () {
+                this.callback.returns(false);
+                this.router.navigateTo('Contact Us');
+            });
+
+            it('should not publish a routeNavigated message', function () {
+                expect("routeNavigated:Contact Us").not.toHaveBeenPublishedWith({
+                    route: this.contactUsRoute,
+                    parameters: { category: 'A Category' }
+                });
+            });
+
+            it('should not change $location.routePath', function() {
+                expect(this.routePathStub).not.toHaveBeenCalledWith();
+
+            })
         });
     });
 
@@ -555,6 +599,34 @@ describe('Routing:', function () {
             });
         });
     });
+
+    describe('Single one-param route, with callback instead of options', function () {
+        beforeEach(function () {
+            this.callback = this.spy();
+            this.router.route('Contact Us', '/Contact Us/{category}', this.callback);
+            this.contactUsRoute = this.router.getNamedRoute('Contact Us');
+        });
+
+        describe('navigateTo route', function () {
+            beforeEach(function () {
+                this.router.navigateTo('Contact Us', {
+                    category: 'A Category'
+                });
+            });
+
+            it('should publish a routeNavigated message', function () {
+                expect("routeNavigated:Contact Us").toHaveBeenPublishedWith({
+                    route: this.contactUsRoute,
+                    parameters: { category: 'A Category' }
+                });
+            });
+
+            it('should execute callback with populated parameters object', function () {
+                expect(this.callback).toHaveBeenCalledWith({ category: 'A Category' });
+            });
+        });
+    });
+
     describe('Single two-param route', function () {
         beforeEach(function () {
             this.router.route('Contact Us', '/Contact Us/{category}/{param2}');

@@ -38,6 +38,11 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location', '$injector', '$authorise
             this.requiredParams = [];
             this.paramNames = [];
 
+            if (_.isFunction(this.options)) {
+                this.callback = this.options;
+                this.options = {};
+            }
+
             routeDefinitionAsRegex = this.url.replace(paramRegex, function (_, mode, name) {
                 _this.paramNames.push(name);
 
@@ -168,17 +173,27 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location', '$injector', '$authorise
             msg = {
                 route: match.route,
                 parameters: match.parameters
-            };
+            },
+            navigationDeferred = jQuery.Deferred();
 
-        return match.authorise()
+        match.authorise()
             .done(function() {
                 self.current(match);
 
+                if (match.route.callback) {
+                    if (match.route.callback(match.parameters) === false) {
+                        return;
+                    }
+                }
+
+                navigationDeferred.resolve();
                 $bus.publish("routeNavigated:" + match.route.name, msg);
             })
             .fail(function() {
                 $bus.publish("unauthorisedRoute:" + match.route.name, msg);
             });
+
+        return navigationDeferred.promise();
     };
 
     /**
