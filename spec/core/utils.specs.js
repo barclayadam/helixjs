@@ -97,6 +97,29 @@ describe('utils', function () {
         });
     });
 
+    describe('When converting to css class', function () {
+        it('should handle non-string values by calling toString', function () {
+            expect(hx.utils.toCssClass(void 0)).toBe('');
+        });
+
+        it('should lowercase the first character of subsequent words in the string, separated by dash', function () {
+            expect(hx.utils.toCssClass('myElephant')).toEqual('my-elephant');
+        });
+
+        it('should handle long strings', function () {
+            expect(hx.utils.toCssClass('thisIsMyVeryLargeVIPElephant')).toEqual('this-is-my-very-large-vip-elephant');
+        });
+
+        it('should split numbers from words', function () {
+            expect(hx.utils.toCssClass('AddressLine1')).toEqual('address-line-1');
+        });
+
+        it('should convert words as part of a larger sentence', function () {
+            expect(hx.utils.toCssClass('This is MY VeryLargeElephant')).toEqual('this-is-my-very-large-elephant');
+        });
+    });
+
+
     describe('When converting to an observable', function () {
         it('should return an observable array if it is an array', function () {
             var converted, rawValue;

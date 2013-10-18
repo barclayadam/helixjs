@@ -83,6 +83,28 @@ hx.utils = {
         }
     },
 
+    toCssClass: function (str, insertSpaces) {
+        if (str == null) {
+            return '';
+        }
+
+        function convertWord(match) {
+            // insert a dash between lower & upper / numbers
+            match = match.replace(/([a-z])([A-Z0-9])/g, function (_, one, two) {
+                return one + '-' + two;
+            }); 
+
+            // space before last upper in a sequence followed by lower
+            match = match.replace(/\b([A-Z]+)([A-Z])([a-z])/, function (_, one, two, three) {
+                return one + '-' + two + three;
+            });
+
+            return match.toLowerCase();            
+        };
+
+        return str.toString().replace(/\b[a-zA-Z0-9]+\b/g, convertWord).replace(/\s/g, '-');
+    },
+
     /**
      * Given a value will convert it to an observable, using the following rules:
      * 
