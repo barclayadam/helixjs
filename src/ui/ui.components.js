@@ -79,11 +79,11 @@ hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$r
         return _.isString(componentOrName) ? $injector.get(componentOrName) : componentOrName;
     }
 
-    function createTemplateValueAccessor(component) {
+    function createTemplateValueAccessor(component, componentName, useConvention) {
         return function() {
             return {
                 data: component,
-                name: component.templateName
+                name: component.templateName || (useConvention && _.isString(componentName) ? componentName : undefined)
             }
         };
     }
@@ -92,19 +92,22 @@ hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$r
         tag: 'component',
 
         init: function (element) {
+            ko.utils.domData.set(element, '__component_hasAnonymousTemplate', element.childNodes.length > 0);
+
             return koBindingHandlers.template.init(element, function() { return { data: {} }; });
         },
 
         update: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-            var viewModelName = ko.utils.unwrapObservable(valueAccessor());
+            var componentName = ko.utils.unwrapObservable(valueAccessor());
             
             ko.dependencyDetection.ignore(function() {
-                var component = getComponent(viewModelName),
+                var component = getComponent(componentName),
                     lastComponent = ko.utils.domData.get(element, '__component__currentViewModel'),
                     parameters = _.extend({}, $router.current().parameters, allBindingsAccessor()['parameters']);
 
                 if (lastComponent && lastComponent.hide) {
                     lastComponent.hide.apply(lastComponent);
+                    lastComponent = null;
                 }
 
                 if (!component) {
@@ -133,7 +136,7 @@ hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$r
                         }
 
                         showDeferred.done(function () {
-                            var templateValueAccessor = createTemplateValueAccessor(component),
+                            var templateValueAccessor = createTemplateValueAccessor(component, componentName, ko.utils.domData.get(element, '__component_hasAnonymousTemplate') === false),
                                 innerBindingContext = bindingContext.extend();
 
                             $ajax.listen(function() {

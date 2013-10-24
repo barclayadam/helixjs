@@ -102,20 +102,77 @@ describe('component binding handler', function () {
     });
 
     describe('binding to a registered module view model', function () {
-        beforeEach(function () {
-            this.viewModelModuleCreator = this.stub().returns({ aProp: 'a value'});
+        var $injector = hx.get('$injector');
 
-            hx.provide('myInjectedViewModel', this.viewModelModuleCreator);            
+        beforeEach(function() {
+            this.spy($injector, 'get');              
+        })
 
-            this.setHtmlFixture("<div id=\"fixture\" data-bind=\"component: 'myInjectedViewModel'\"><span data-bind='text: aProp'></span></div>");
+        describe('anonymous template', function() {
+            hx.provide('myInjectedViewModel', function() { 
+                return { aProp: 'a value'}; 
+            });   
 
-            this.applyBindingsToFixture();
+            beforeEach(function () {  
+                this.setHtmlFixture("<div id=\"fixture\" data-bind=\"component: 'myInjectedViewModel'\"><span id=bound-span data-bind='text: aProp'></span></div>");
 
-            this.wrapper = document.getElementById("fixture");
+                this.applyBindingsToFixture();
+            });
+
+            it('should use injector to load the view module', function () {
+                expect($injector.get).toHaveBeenCalled();
+            });
+
+            it('should use constructed component as view model', function () {
+                expect(document.getElementById('bound-span')).toHaveText('a value');
+            });
         });
 
-        it('should use injector to load the view module', function () {
-            expect(this.viewModelModuleCreator).toHaveBeenCalled();
+        describe('named template', function() {
+            $templating.set('myInjectedViewModelNamedTemplate', '<span id=bound-span data-bind="text: aProp"></span>');
+
+            hx.provide('myInjectedViewModelWithNamedTemplate', function() { 
+                return {
+                    templateName: 'myInjectedViewModelNamedTemplate',
+                    aProp: 'a value'
+                }; 
+            });   
+
+            beforeEach(function () {
+                this.setHtmlFixture("<div id=\"fixture\" data-bind=\"component: 'myInjectedViewModelWithNamedTemplate'\"></div>");
+
+                this.applyBindingsToFixture();
+            });
+
+            it('should use injector to load the view module', function () {
+                expect($injector.get).toHaveBeenCalled();
+            });
+
+            it('should use named template', function () {
+                expect(document.getElementById('bound-span')).toHaveText('a value');
+            });
+        });
+
+        describe('conventional template', function() {
+            $templating.set('myInjectedViewModelWithTemplateByConvention', '<span id=bound-span data-bind="text: aProp"></span>');
+
+            hx.provide('myInjectedViewModelWithTemplateByConvention', function() { 
+                return { aProp: 'a value'}; 
+            });   
+
+            beforeEach(function () {
+                this.setHtmlFixture("<div id=fixture data-bind=\"component: 'myInjectedViewModelWithTemplateByConvention'\"></div>");
+
+                this.applyBindingsToFixture();
+            });
+
+            it('should use injector to load the view module', function () {
+                expect($injector.get).toHaveBeenCalled();
+            });
+
+            it('should use template with same named as the component', function () {
+                expect(document.getElementById('bound-span')).toHaveText('a value');
+            });
         });
     });
 
@@ -281,7 +338,7 @@ describe('component binding handler', function () {
                     hide: this.spy()
                 };
 
-                this.setHtmlFixture("<div id=\"fixture\" data-bind=\"component: viewModel\">\n    This is the template\n</div>");
+                this.setHtmlFixture("<div id=\"fixture\" data-bind=\"component: viewModel\">This is the template</div>");
                 
                 this.applyBindingsToFixture({
                     viewModel: this.viewModel
