@@ -21,7 +21,7 @@
     /**
      * Registers a `config` block that will be executed (with the (optionally) specified
      * dependencies injected) on app start, used to configure existing services, once all
-     * services have been registered ({@link hx.provide).
+     * services have been registered ({@link hx.provide}).
      *
      * @method config
      * @static
