@@ -35,14 +35,13 @@
     "test": "grunt test"
   },
   "testling": {
-    "preprocess": "grunt build",
+    "preprocess": "grunt rig",
     "html": "spec/runner.html?testling=true",
     "browsers": [
       "ie/8..latest",
-      "chrome/20..latest",
-      "firefox/3..latest",
+      "chrome/24..latest",
+      "firefox/4..latest",
       "safari/5.0.5..latest",
-      "opera/11.0..latest",
       "iphone/6..latest",
       "ipad/6..latest"
     ]
