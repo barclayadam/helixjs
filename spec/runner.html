@@ -5,6 +5,7 @@
 
   <script type="text/javascript" src="/ext/jasmine/jasmine.js"></script>
   <script type="text/javascript" src="/ext/jasmine/jasmine-html.js"></script>
+  <script type="text/javascript" src="/ext/jasmine/jasmine-tap.js"></script>
   <script type="text/javascript" src="/ext/jasmine/jasmine.slow.js"></script>
   <script type="text/javascript" src="/ext/jasmine/jasmine.title.reporter.js"></script>
   <script type="text/javascript" src="/ext/jasmine/jasmine-dom-matchers.js"></script>
@@ -77,6 +78,10 @@
         var htmlReporter = new jasmine.HtmlReporter();
         jasmineEnv.addReporter(htmlReporter);
         jasmineEnv.specFilter = htmlReporter.specFilter;
+
+        var testlingParam = /[?&]testling=true/.test(location.href);
+        if (testlingParam)
+            jasmineEnv.addReporter(new jasmine.TapReporter()); // For Testling CI
 
         jasmineEnv.execute();
       })();

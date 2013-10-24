@@ -34,6 +34,19 @@
     "start": "grunt",
     "test": "grunt test"
   },
+  "testling": {
+    "preprocess": "grunt build",
+    "html": "spec/runner.html?testling=true",
+    "browsers": [
+      "ie/8..latest",
+      "chrome/20..latest",
+      "firefox/3..latest",
+      "safari/5.0.5..latest",
+      "opera/11.0..latest",
+      "iphone/6..latest",
+      "ipad/6..latest"
+    ]
+  },
   "devDependencies": {
     "grunt": "~0.4",
     "rigger": "0.3.20",
