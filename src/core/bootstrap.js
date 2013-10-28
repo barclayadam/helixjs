@@ -59,24 +59,11 @@
     function startApp(element) {
         var $location = hx.get('$location'),
             $bus = hx.get('$bus'),
-            $RegionManager = hx.get('$RegionManager'),
             $ajax = hx.get('$ajax');
 
         ko.utils.toggleDomNodeCssClass(element, 'loading', true);
 
-        var appRegionManager = new $RegionManager();
-        hx.provide('$appRegionManager', appRegionManager);
-
         hx.runConfigBlocks();
-
-        // Tie together routing with the application's main region manager
-        $bus.subscribe('routeNavigated', function(msg) {
-            var components = msg.route.getComponents();
-            
-            if (components != null) {
-                appRegionManager.show(components);
-            }
-        });
 
         $ajax.listen(function() {
             $bus.publish('preload-data', {});
@@ -84,8 +71,6 @@
             // Once the app has been bootstrapped we want to set-up the region manager
             // before the app is properly 'started' (e.g. location services is initialised)
             var bindingContext = new ko.bindingContext({});
-                bindingContext['$regionManager'] = appRegionManager;
-
             ko.applyBindingsToDescendants(bindingContext, element);
 
             $location.initialise();

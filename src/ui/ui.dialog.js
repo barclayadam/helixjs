@@ -2,7 +2,7 @@ hx.config('$templating', function($templating) {
     $templating.set('$hx-dialog',
         '<div class=hx-dialog tabindex=-1 role=dialog data-bind="css: { \'hx-dialog__modal\': options.modal }">' +
         '  <div class=hx-dialog--inner>' +
-        '    <div class=hx-dialog--content data-bind="component: component, parameters: parameters" />' +
+        '    <div class=hx-dialog--content data-bind="component: component, parameters: parameters, onComponentCreated: configureComponent" />' +
         '  </div>' +
         '' +
         '  <a href="#!" class=hx-dialog--close title=Close data-bind="click: close, visible: options.closeControls">×</a>' +
@@ -63,6 +63,10 @@ hx.provide('$dialog', function() {
         this.options = _.extend({}, defaultOptions, options);        
         this.parameters = this.options.parameters;
 
+        this.configureComponent = function(createdComponent) {
+            createdComponent.closeDialog = this.close;
+        }.bind(this);
+
         /**
          * Opens this dialog.
          *
@@ -96,7 +100,7 @@ hx.provide('$dialog', function() {
             previouslyActiveElement = document.activeElement;
             currentDialogElement.focus();
 
-            // Add a class to body, which can be used to styling hooks if necessary
+            // Add a class to body, which can be used as styling hooks if necessary
             ko.utils.toggleDomNodeCssClass(document.body, 'dialog-open', true);
 
             currentlyShowingDialog = this;
@@ -136,8 +140,6 @@ hx.provide('$dialog', function() {
                 currentlyShowingDialog = null;
             }
         }.bind(this);
-
-        this.component.closeDialog = this.close;
     }
 
     return {

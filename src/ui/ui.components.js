@@ -115,6 +115,10 @@ hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$r
                     return;
                 }
 
+                if (allBindingsAccessor()['onComponentCreated'] && _.isFunction(allBindingsAccessor()['onComponentCreated'])) {
+                    allBindingsAccessor()['onComponentCreated'](component);
+                }
+
                 $authoriser
                     .authorise(component, parameters)
                     .done(function() {

@@ -28,20 +28,17 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location', '$injector', '$authorise
         var paramRegex = /{(\*?)(\w+)}/g;
 
         /** Constructs a new route, with a name and route url. */
-        function Route(name, url, options) {
+        function Route(options) {
             var routeDefinitionAsRegex,
             _this = this;
 
-            this.name = name;
-            this.url = url;
+            this.name = options.name;
+            this.url = options.url || '';
+            this.callback = options.callback;
             this.options = options;
+
             this.requiredParams = [];
             this.paramNames = [];
-
-            if (_.isFunction(this.options)) {
-                this.callback = this.options;
-                this.options = {};
-            }
 
             routeDefinitionAsRegex = this.url.replace(paramRegex, function (_, mode, name) {
                 _this.paramNames.push(name);
@@ -104,7 +101,7 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location', '$injector', '$authorise
         };
 
         Route.prototype.getComponents = function() {
-            return this.options.components;
+            return this.options.component;
         }
 
         return Route;
@@ -126,10 +123,13 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location', '$injector', '$authorise
      * view all of the components that this route represents.
      */
     MatchedRoute.prototype.authorise = function() {
-        var componentsOption = this.route.getComponents(),
-            components = _.values(componentsOption);
-
-        return $authoriser.authoriseAll(_.map(components, createComponent), this.parameters);
+        if(this.route.options.component) {
+            return $authoriser.authorise(createComponent(this.route.options.component), this.parameters);
+        } else {
+            var deferred = jQuery.Deferred();
+            deferred.resolve();
+            return deferred.promise();
+        }
     }
 
     // Defines the root of this application, which will typically be the
@@ -206,8 +206,8 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location', '$injector', '$authorise
      *
      * @member route
      */
-    RouteTable.prototype.route = function (name, url, options) {
-        this._routes[name] = new Route(name, url, options || {});
+    RouteTable.prototype.route = function (options) {
+        this._routes[options.name] = new Route(options);
 
         return this;
     };

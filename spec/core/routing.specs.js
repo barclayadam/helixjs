@@ -65,8 +65,7 @@ describe('routing', function () {
 
     describe('Single no-param route', function () {
         beforeEach(function () {
-            this.contactUsOptions = { anOptions: 'A Value' };
-            this.router.route('Contact Us', '/Contact Us', this.contactUsOptions);
+            this.router.route({ name: 'Contact Us', url: '/Contact Us' });
             this.contactUsRoute = this.router.getNamedRoute('Contact Us');
         });
 
@@ -216,10 +215,7 @@ describe('routing', function () {
 
     describe('Single no-param route, with options', function () {
         beforeEach(function () {
-            this.options = {
-                anOption: 'some text'
-            };
-            this.router.route('Contact Us', '/Contact Us', this.options);
+            this.router.route({ name: 'Contact Us', url: '/Contact Us' });
             this.contactUsRoute = this.router.getNamedRoute('Contact Us');
         });
 
@@ -240,7 +236,7 @@ describe('routing', function () {
     describe('Single no-param route, with callback instead of options', function () {
         beforeEach(function () {
             this.callback = this.stub();
-            this.router.route('Contact Us', '/Contact Us', this.callback);
+            this.router.route({ name: 'Contact Us', url: '/Contact Us', callback: this.callback });
             this.contactUsRoute = this.router.getNamedRoute('Contact Us');
         });
 
@@ -286,8 +282,8 @@ describe('routing', function () {
             this.contactUsOptions = {};
             this.aboutUsOptions = {};
 
-            this.router.route('Contact Us', '/Contact Us', this.contactUsOptions);
-            this.router.route('About Us', '/About Us', this.aboutUsOptions);
+            this.router.route({ name: 'Contact Us', url: '/Contact Us' });
+            this.router.route({ name: 'About Us', url: '/About Us' });
 
             this.contactUsRoute = this.router.getNamedRoute('Contact Us');
             this.aboutUsRoute = this.router.getNamedRoute('About Us');
@@ -375,8 +371,8 @@ describe('routing', function () {
 
     describe('Multiple routes that match the same URL', function () {
         beforeEach(function () {
-            this.router.route('Contact Us', '/Contact Us');
-            this.router.route('Contact Us 2', '/Contact Us');
+            this.router.route({ name: 'Contact Us', url: '/Contact Us' });
+            this.router.route({ name: 'Contact Us 2', url: '/Contact Us' });
 
             this.contactUsRoute = this.router.getNamedRoute('Contact Us');
             this.contactUs2Route = this.router.getNamedRoute('Contact Us 2');
@@ -411,7 +407,7 @@ describe('routing', function () {
     describe('Single one-param route', function () {
         beforeEach(function () {
             this.routeNavigatedStub = this.stub();
-            this.router.route('Contact Us', '/Contact Us/{category}', this.routeNavigatedStub);
+            this.router.route({ name: 'Contact Us', url: '/Contact Us/{category}', callback: this.routeNavigatedStub });
 
             this.contactUsRoute = this.router.getNamedRoute('Contact Us');
         });
@@ -603,7 +599,7 @@ describe('routing', function () {
     describe('Single one-param route, with callback instead of options', function () {
         beforeEach(function () {
             this.callback = this.spy();
-            this.router.route('Contact Us', '/Contact Us/{category}', this.callback);
+            this.router.route({ name: 'Contact Us', url: '/Contact Us/{category}', callback: this.callback });
             this.contactUsRoute = this.router.getNamedRoute('Contact Us');
         });
 
@@ -629,7 +625,7 @@ describe('routing', function () {
 
     describe('Single two-param route', function () {
         beforeEach(function () {
-            this.router.route('Contact Us', '/Contact Us/{category}/{param2}');
+            this.router.route({ name: 'Contact Us', url: '/Contact Us/{category}/{param2}' });
             this.contactUsRoute = this.router.getNamedRoute('Contact Us');
         });
 
@@ -702,7 +698,7 @@ describe('routing', function () {
 
     describe('Single one-param catch-all route', function () {
         beforeEach(function () {
-            this.router.route('File', '/File/{*path}');
+            this.router.route({ name: 'File', url: '/File/{*path}' });
             this.fileRoute = this.router.getNamedRoute('File');
         });
 
@@ -790,7 +786,7 @@ describe('routing', function () {
         beforeEach(function () {
             this.authComponent = { isAuthorised: this.stub() };
 
-            this.router.route('AuthRoute', '/auth-route', { components: { main: this.authComponent } });
+            this.router.route({ name: 'AuthRoute', url: '/auth-route', component: this.authComponent });
         });
 
         it('should call isAuthorised of created component when calling matchedRoute.authorise', function() {

@@ -52,8 +52,8 @@
 
         //= ui/ui.part.js
         //= ui/ui.uiaction.js
-        //= ui/ui.regions.js
         //= ui/ui.components.js
+        //= ui/ui.router.js
 
         //= ui/ui.validation.js
 

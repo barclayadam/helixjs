@@ -8,7 +8,6 @@ describe('ui - navigation', function() {
 
     describe('missing route', function() {
         beforeEach(function() {
-
             this.setHtmlFixture("<a id='my-page-link' data-bind=\"navigate: 'A route that does not exist'\">A Link</a>");
             this.applyBindingsToFixture({});
         })
@@ -20,7 +19,7 @@ describe('ui - navigation', function() {
 
     describe('route with no parameters', function() {
         beforeEach(function() {
-            router.route('My Page', '/my-page');
+            router.route({ name: 'My Page', url: '/my-page' });
 
             this.setHtmlFixture(
                 "<a id='my-page-link' data-bind=\"navigate: 'My Page'\">A Link</a>" +
@@ -48,8 +47,8 @@ describe('ui - navigation', function() {
 
     describe('route with required parameters', function() {
         beforeEach(function() {
-            router.route('My Page', '/my-page/{category}');
-            router.route('My Other Page', '/my-other-page/{category}');
+            router.route({ name: 'My Page', url: '/my-page/{category}' });
+            router.route({ name: 'My Other Page', url: '/my-other-page/{category}' });
         });
 
         describe('parameters specified as static values', function() {
@@ -112,7 +111,7 @@ describe('ui - navigation', function() {
         beforeEach(function() {
             this.component = { isAuthorised: this.stub().returns(false) };
 
-            router.route('My Page', '/my-page', { components: { 'main': this.component } });
+            router.route({ name: 'My Page', url: '/my-page', component: this.component });
 
             this.setHtmlFixture("<a id='my-page-link' data-bind=\"navigate: 'My Page'\">A Link</a>");
             this.applyBindingsToFixture({});
@@ -139,7 +138,7 @@ describe('ui - navigation', function() {
 
             this.spy(this.component.isAuthorised);
 
-            router.route('My Page', '/my-page', { components: { 'main': this.component } });
+            router.route({ name: 'My Page', url: '/my-page', component: this.component });
 
             this.setHtmlFixture("<a id='my-page-link' data-bind=\"navigate: 'My Page'\">A Link</a>");
             this.applyBindingsToFixture({});

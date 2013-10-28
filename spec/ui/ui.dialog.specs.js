@@ -3,11 +3,11 @@ describe('dialog', function() {
         this.$dialog = hx.get('$dialog');
         this.$templating = hx.get('$templating');
 
-        this.$templating.set('myDialogTemplate', '<div id=my-dialog-content><h3>My Dialog Content</h3><input id=my-dialog-input /></div>');
-    })
+        this.$templating.set('myDialogComponent', '<div id=my-dialog-content><h3>My Dialog Content</h3><input id=my-dialog-input /></div>');
+    });
 
     beforeEach(function() {        
-        this.component = { templateName: 'myDialogTemplate', show: this.spy() };
+        this.component = { templateName: 'myDialogComponent', show: this.spy() };
     })
 
     describe('creating a dialog', function() {
@@ -22,10 +22,6 @@ describe('dialog', function() {
 
         it('should have a close function', function() {
             expect(this.createdDialog.open).toBeAFunction();
-        })
-
-        it('should add the close function as a closeDialog function to the component', function() {
-            expect(this.component.closeDialog).toBe(this.createdDialog.close);
         })
 
         it('should have a close function that works without first showing dialog', function() {
@@ -144,6 +140,19 @@ describe('dialog', function() {
             this.openPromise = this.createdDialog.open(); 
         })
 
+        describe('closing a dialog in component code', function() {
+            beforeEach(function() {
+                this.closeValue = 'This is the close value';
+
+                // Simulate the component calling the injected 'closeDialog' function
+                this.component.closeDialog(this.closeValue);
+            })
+
+            it('should hide the dialog', function() {
+                expect(document.getElementsByClassName('hx-dialog').length).toBe(0);
+            })
+        });
+
         describe('closing a dialog in code', function() {
             beforeEach(function() {
                 this.closeValue = 'This is the close value';
@@ -210,6 +219,30 @@ describe('dialog', function() {
                 expect(this.openPromise.state()).toBe('resolved');
             })
         })
+    });
+
+    describe('given a component by name', function() {        
+        beforeEach(function() {
+            this.component = { };
+            hx.singleton('myDialogComponent', this.component);
+
+            this.onClose = this.spy();
+            this.createdDialog = this.$dialog.create('myDialogComponent', { onClose: this.onClose });
+            this.openPromise = this.createdDialog.open(); 
+        })
+
+        describe('closing a dialog in component code', function() {
+            beforeEach(function() {
+                this.closeValue = 'This is the close value';
+
+                // Simulate the component calling the injected 'closeDialog' function
+                this.component.closeDialog(this.closeValue);
+            })
+
+            it('should hide the dialog', function() {
+                expect(document.getElementsByClassName('hx-dialog').length).toBe(0);
+            })
+        });
     })
 
     describe('managing focus', function() {
