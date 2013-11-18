@@ -17,7 +17,7 @@ hx.bindingHandler('validated', {
 
     update: function(element, valueAccessor, allBindingsAccessor) {
         var passedValue = valueAccessor(),
-            validatedObservable = passedValue === true ? allBindingsAccessor()['value'] : passedValue;
+            validatedObservable = passedValue === true ? allBindingsAccessor.get('value') : passedValue;
 
         if(validatedObservable) {
             if (validatedObservable.isValid) {

@@ -103,7 +103,7 @@ hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$r
             ko.dependencyDetection.ignore(function() {
                 var component = getComponent(componentName),
                     lastComponent = ko.utils.domData.get(element, '__component__currentViewModel'),
-                    parameters = _.extend({}, $router.current().parameters, allBindingsAccessor()['parameters']);
+                    parameters = _.extend({}, $router.current().parameters, allBindingsAccessor.get('parameters'));
 
                 if (lastComponent && lastComponent.hide) {
                     lastComponent.hide.apply(lastComponent);
@@ -115,8 +115,8 @@ hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$r
                     return;
                 }
 
-                if (allBindingsAccessor()['onComponentCreated'] && _.isFunction(allBindingsAccessor()['onComponentCreated'])) {
-                    allBindingsAccessor()['onComponentCreated'](component);
+                if (allBindingsAccessor.get('onComponentCreated') && _.isFunction(allBindingsAccessor.get('onComponentCreated'))) {
+                    allBindingsAccessor.get('onComponentCreated')(component);
                 }
 
                 $authoriser

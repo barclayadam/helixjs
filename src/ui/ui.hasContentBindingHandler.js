@@ -14,7 +14,7 @@ hx.bindingHandler('hasContent', {
 
     update: function(element, valueAccessor, allBindingsAccessor) {
         var passedValue = valueAccessor(),
-            value = passedValue === true ? allBindingsAccessor()['value'] : passedValue
+            value = passedValue === true ? allBindingsAccessor.get('value') : passedValue
 
         ko.utils.toggleDomNodeCssClass(element, 'has-content', ko.utils.unwrapObservable(value));
     }

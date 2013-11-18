@@ -184,7 +184,7 @@
      */
     hx.bindingHandler('action', {
         init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-            var shouldHide = allBindingsAccessor()['onDisabled'] === 'hide',
+            var shouldHide = allBindingsAccessor.get('onDisabled') === 'hide',
                 uiAction = valueAccessor(),
                 isForm = element.tagName === 'FORM';
 
@@ -203,7 +203,7 @@
             }
 
             ko.computed(function() {
-                updateElementBasedOnUiAction(element, uiAction, allBindingsAccessor()['onDisabled'] === 'hide');
+                updateElementBasedOnUiAction(element, uiAction, allBindingsAccessor.get('onDisabled') === 'hide');
             }, 
             { disposeWhenNodeIsRemoved: element });
 
@@ -230,7 +230,7 @@
         tag: ['button', 'input'],
 
         update: function(element, valueAccessor, allBindingsAccessor) {
-            if(element.getAttribute('type') === 'submit' && !allBindingsAccessor()['action']) {
+            if(element.getAttribute('type') === 'submit' && !allBindingsAccessor.get('action')) {
                 var parentForm = element.parentNode;
 
                 while(parentForm && parentForm.tagName !== 'FORM') {
@@ -241,7 +241,7 @@
                     var formAction = ko.utils.domData.get(parentForm, '$formAction');
 
                     if(formAction) {
-                        updateElementBasedOnUiAction(element, formAction, allBindingsAccessor()['onDisabled'] === 'hide');   
+                        updateElementBasedOnUiAction(element, formAction, allBindingsAccessor.get('onDisabled') === 'hide');   
                     }
                 }
             }
