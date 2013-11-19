@@ -58,13 +58,26 @@ describe('action binding handler', function() {
                 expect(document.getElementById('action-link')).not.toHaveAttr('disabled')
             })
         })
+    });
 
-        describe('onDisabled:"hide" option', function() {
+    describe('onDisabled:"hide" option', function() {
+        beforeEach(function() {
+            this.enabled = ko.observable(true);
+            this.actionSpy = this.spy();
+            this.action = uiAction({
+                enabled: this.enabled,
+                action: this.actionSpy
+            });
+
+            this.setHtmlFixture("<div>" +
+                                " <a id='action-link' data-bind='action: action, onDisabled: \"hide\"'>Execute Action</a>" +
+                                "</div>");
+        });
+
+        describe('initially disabled', function() {
             beforeEach(function() {
-                this.setHtmlFixture("<div>" +
-                                    " <a id='action-link' data-bind='action: action, onDisabled: \"hide\"'>Execute Action</a>" +
-                                    "</div>");
-                
+                this.enabled(false);
+
                 this.applyBindingsToFixture({
                     action: this.action
                 });
@@ -72,7 +85,7 @@ describe('action binding handler', function() {
                 ko.utils.triggerEvent(document.getElementById('action-link'), 'click');
             });
 
-            it('should set display:none when disabled', function() {
+            it('should set display:none immediately', function() {
                 expect(document.getElementById('action-link')).toBeHidden()
             })
 
@@ -93,6 +106,26 @@ describe('action binding handler', function() {
                 this.enabled.valueHasMutated()
                 this.enabled(true)
 
+                expect(document.getElementById('action-link')).not.toBeHidden()
+
+                // When no styling originally applied, display property would be empty
+                expect(document.getElementById('action-link').style.display).toEqual("");
+            })
+
+        })
+        
+        describe('initially enabled', function() {
+            beforeEach(function() {
+                this.enabled(true);
+
+                this.applyBindingsToFixture({
+                    action: this.action
+                });
+
+                ko.utils.triggerEvent(document.getElementById('action-link'), 'click');
+            });
+
+            it('should not set display:none immediately', function() {
                 expect(document.getElementById('action-link')).not.toBeHidden()
 
                 // When no styling originally applied, display property would be empty

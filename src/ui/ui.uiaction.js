@@ -116,25 +116,30 @@
         return makeUiAction;
     });
 
-    function updateElementBasedOnUiAction(element, uiAction, shouldHide) {
-        var isEnabled = uiAction.enabled(),
-            isExecuting = uiAction.executing();
+    function setupElementUpdateSubscriptions(element, uiAction, shouldHide) {
+        ko.computed(function() {
+            var isEnabled = uiAction.enabled();
 
-        if(isEnabled) {
-            element.removeAttribute('disabled');
-        } else {
-            element.setAttribute('disabled', 'disabled')
-        }
-
-        if(shouldHide) {
-            if(isEnabled) {
-                element.style.display = ko.utils.domData.get(element, '__original_display') || '';
+            if (isEnabled) {
+                element.removeAttribute('disabled');
             } else {
-                element.style.display = "none";
+                element.setAttribute('disabled', 'disabled');
             }
-        } 
 
-        ko.utils.toggleDomNodeCssClass(element, 'is-executing', isExecuting);
+            if (shouldHide) {
+                if (isEnabled && element.style.display != '') {
+                    element.style.display = '';
+                } else if (!isEnabled && element.style.display != 'none') {
+                    element.style.display = 'none';
+                }
+            } 
+        }, 
+        { disposeWhenNodeIsRemoved: element });
+
+        ko.computed(function() {
+            ko.utils.toggleDomNodeCssClass(element, 'is-executing', uiAction.executing());
+        }, 
+        { disposeWhenNodeIsRemoved: element });
     }
 
     function handleAction(event) {
@@ -183,7 +188,7 @@
      *     <a id='action-link' data-bind='action: action, onDisabled: "hide"'>Execute Action</a>
      */
     hx.bindingHandler('action', {
-        init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+        init: function(element, valueAccessor, allBindingsAccessor, viewModel) {
             var shouldHide = allBindingsAccessor.get('onDisabled') === 'hide',
                 uiAction = valueAccessor(),
                 isForm = element.tagName === 'FORM';
@@ -198,14 +203,7 @@
             ko.utils.domData.set(element, '__action', uiAction);
             ko.utils.domData.set(element, '__actionEventType', isForm ? 'submit' : 'click');
 
-            if(shouldHide) {
-                ko.utils.domData.set(element, '__original_display', element.style.display);
-            }
-
-            ko.computed(function() {
-                updateElementBasedOnUiAction(element, uiAction, allBindingsAccessor.get('onDisabled') === 'hide');
-            }, 
-            { disposeWhenNodeIsRemoved: element });
+            setupElementUpdateSubscriptions(element, uiAction, shouldHide);
 
             if(isForm) {
                 // The actionSubmitDisplay binding handler needs access to the action on
@@ -229,19 +227,21 @@
     hx.bindingHandler('actionSubmitDisplay', {
         tag: ['button', 'input'],
 
-        update: function(element, valueAccessor, allBindingsAccessor) {
-            if(element.getAttribute('type') === 'submit' && !allBindingsAccessor.get('action')) {
+        init: function(element, valueAccessor, allBindingsAccessor) {
+            var shouldHide = allBindingsAccessor.get('onDisabled') === 'hide';
+
+            if (element.getAttribute('type') === 'submit' && !allBindingsAccessor.get('action')) {
                 var parentForm = element.parentNode;
 
-                while(parentForm && parentForm.tagName !== 'FORM') {
+                while (parentForm && parentForm.tagName !== 'FORM') {
                     parentForm = parentForm.parentNode;
                 }
 
-                if(parentForm) {
+                if (parentForm) {
                     var formAction = ko.utils.domData.get(parentForm, '$formAction');
 
-                    if(formAction) {
-                        updateElementBasedOnUiAction(element, formAction, allBindingsAccessor.get('onDisabled') === 'hide');   
+                    if (formAction) {
+                        setupElementUpdateSubscriptions(element, formAction, shouldHide);
                     }
                 }
             }
