@@ -22,6 +22,27 @@ describe('action binding handler', function() {
         })
     })
 
+    describe('cascading click event', function() {
+        beforeEach(function() {
+            this.actionSpy = this.spy();
+            this.action = uiAction(this.actionSpy);
+
+            this.setHtmlFixture("<div>" +
+                                " <a id='action-link' data-bind='action: action'><span id=inner-span>Execute Action</span></a>" +
+                                "</div>");
+            
+            this.applyBindingsToFixture({
+                action: this.action
+            });
+
+            ko.utils.triggerEvent(document.getElementById('inner-span'), 'click');
+        });
+
+        it('should execute action when click event trigger', function() {
+            expect(this.actionSpy).toHaveBeenCalledOnce();
+        })
+    })
+
     describe('sync action - disabled', function() {
         beforeEach(function() {
             this.enabled = ko.observable(false)
@@ -223,6 +244,12 @@ describe('action binding handler', function() {
             this.applyBindingsToFixture({
                 action: this.action
             });
+
+            // When triggering events they bubble. This does not reflect browser behaviour, so
+            // manually stop by adding an event handler
+            ko.utils.registerEventHandler(document.getElementById('action-form'), 'submit', function(ev) {
+                ev.stopPropagation();
+            })
 
             // Click the submit button, which will result in a submission of the form
             ko.utils.triggerEvent(document.getElementById('action-form'), 'submit');

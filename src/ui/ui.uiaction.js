@@ -141,25 +141,6 @@
         }, 
         { disposeWhenNodeIsRemoved: element });
     }
-
-    function handleAction(event) {
-        var element = event.target;
-
-        do {        
-            var elementAction = ko.utils.domData.get(element, '__action');
-
-            if (elementAction && event.type === ko.utils.domData.get(element, '__actionEventType')) {
-                elementAction();
-
-                event.preventDefault();
-            }
-
-            element = element.parentNode;
-        } while(element);
-    }
-
-    ko.utils.registerEventHandler(document, 'click', handleAction);
-    ko.utils.registerEventHandler(document, 'submit', handleAction);
      
     /**
      * @bindingHandler action
@@ -200,16 +181,24 @@
                 });
             }
 
+            function handleAction(event) {
+                uiAction();
+                event.preventDefault();
+            }
+
             ko.utils.domData.set(element, '__action', uiAction);
-            ko.utils.domData.set(element, '__actionEventType', isForm ? 'submit' : 'click');
 
             setupElementUpdateSubscriptions(element, uiAction, shouldHide);
 
-            if(isForm) {
+            if (isForm) {
                 // The actionSubmitDisplay binding handler needs access to the action on
                 // its parent's form. Cannot modify binding context to take over descendant binding as needs
                 // to work with other controlling binding handlers.         
                 ko.utils.domData.set(element, '$formAction', uiAction);
+
+                ko.utils.registerEventHandler(element, 'submit', handleAction);
+            } else {
+                ko.utils.registerEventHandler(element, 'click', handleAction);
             }         
         }
     });
