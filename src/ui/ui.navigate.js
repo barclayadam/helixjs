@@ -18,7 +18,7 @@
  *
  * <a data-bind="navigate: 'View User', parameters: { userId: 4 }>View User 4</a>"
  */
-hx.bindingHandler('navigate', ['$router'], function($router) {
+hx.bindingHandler('navigate', ['$router', '$log'], function($router, $log) {
     ko.utils.registerEventHandler(document, 'click', function(event) {
         var element = event.target;
 
@@ -44,11 +44,25 @@ hx.bindingHandler('navigate', ['$router'], function($router) {
 
     return {
         init: function(element, valueAccessor) {            
-            var routeName = ko.utils.unwrapObservable(valueAccessor());
+            var routeName = ko.utils.unwrapObservable(valueAccessor()),
+                route = $router.getNamedRoute(routeName);
 
-            $router.current.subscribe(function(current) {
-                ko.utils.toggleDomNodeCssClass(element, 'active', current.route.name === routeName);
-            })
+            if (!route) {
+                $log.warn('Route "' + routeName + "' does not exist");
+            } else {
+                function update(current) {
+                    if (current.route) {
+                        ko.utils.toggleDomNodeCssClass(element, 'nav-active', current.route.name === routeName);
+                        ko.utils.toggleDomNodeCssClass(element, 'sub-nav-active', current.url.indexOf(route.url) === 0);
+                    } else {
+                        ko.utils.toggleDomNodeCssClass(element, 'nav-active', false);
+                        ko.utils.toggleDomNodeCssClass(element, 'sub-nav-active', false);
+                    }
+                }
+
+                $router.current.subscribe(update);
+                update($router.current());
+            }
         },
 
         update: function(element, valueAccessor, allBindingsAccessor) {

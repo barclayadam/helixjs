@@ -91,20 +91,55 @@ describe('ui - navigation', function() {
 
                 expect(router.navigateTo).toHaveBeenCalledWith('My Page', { category: this.category() });
             })
-
-            it('should add active class when navigated', function() {
-                ko.utils.triggerEvent(document.getElementById('my-page-link'), 'click');
-
-                expect(document.getElementById('my-page-link')).toHaveClass('active');
-            })
-
-            it('should remove active class when another route navigated', function() {
-                ko.utils.triggerEvent(document.getElementById('my-page-link'), 'click');
-                ko.utils.triggerEvent(document.getElementById('my-other-page-link'), 'click');
-
-                expect(document.getElementById('my-page-link')).not.toHaveClass('active');
-            })
         });
+    })
+
+    describe('active route classes', function() {
+        beforeEach(function() {
+            router.route({ name: 'My Page', url: '/my-page/' });
+            router.route({ name: 'My Sub Page', url: '/my-page/sub-page' });
+            router.route({ name: 'My Other Page', url: '/my-other-page/' });
+
+            this.category = ko.observable('some-category');
+
+            this.setHtmlFixture("<div>" +
+                                " <a id='my-page-link' data-bind=\"navigate: 'My Page'\">A Link</a>" +    
+                                " <a id='my-sub-page-link' data-bind=\"navigate: 'My Sub Page'\">A Sub Link</a>" +                                     
+                                " <a id='my-other-page-link' data-bind=\"navigate: 'My Other Page'\">Another Link</a>" +
+                                "</div>");
+
+
+            router.navigateTo('My Other Page');
+
+            this.applyBindingsToFixture({
+                category: this.category
+            });
+
+        })
+
+        it('should add nav-active class if route is already active', function() {
+            expect(document.getElementById('my-other-page-link')).toHaveClass('nav-active');
+        })
+
+        it('should add nav-active class when navigated', function() {
+            ko.utils.triggerEvent(document.getElementById('my-page-link'), 'click');
+
+            expect(document.getElementById('my-page-link')).toHaveClass('nav-active');
+        })
+
+        it('should add sub-nav-active class when route url begins with same as nav', function() {
+            ko.utils.triggerEvent(document.getElementById('my-sub-page-link'), 'click');
+
+            expect(document.getElementById('my-page-link')).toHaveClass('sub-nav-active');
+        })
+
+        it('should remove nav-active class when another route navigated', function() {
+            ko.utils.triggerEvent(document.getElementById('my-page-link'), 'click');
+            ko.utils.triggerEvent(document.getElementById('my-other-page-link'), 'click');
+
+            expect(document.getElementById('my-page-link')).not.toHaveClass('nav-active');
+        })
+
     })
 
     describe('authorised route components - failing authorisation', function() {
