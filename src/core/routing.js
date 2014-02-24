@@ -50,7 +50,7 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location', '$injector', '$authorise
                 if (mode === '*') {
                     return '(.*)';
                 } else {
-                    return '([^/]*)';
+                    return '([^/]+)';
                 }
             });
 

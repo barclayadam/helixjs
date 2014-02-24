@@ -548,6 +548,12 @@ describe('routing', function () {
         });
 
         describe('getting route from URL', function () {
+            it('should not match if param not specified in URL', function() {
+                var matchedRoute = this.router.getMatchedRouteFromUrl('/Contact Us/');
+                
+                expect(matchedRoute).toBeUndefined();
+            });
+
             itShouldReturnMatchedRoute({
                 name: 'exact match URL with no query string',
                 inputUrl: '/Contact Us/My Category',
