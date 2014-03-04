@@ -34,9 +34,9 @@ hx.singleton('$InMemoryProvider', function() {
      */
     $InMemoryProvider.prototype.initialise = function(dataSource) {
         if(ko.isObservable(this.options.data)){
-            this.options.data.subscribe(function() {
+            this.options.data.subscribe(_.debounce(function() {
                 dataSource.load();
-            });
+            }, 50));
         }
     }
 
