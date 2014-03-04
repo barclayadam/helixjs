@@ -218,7 +218,12 @@ describe('dataView providers - memory', function() {
         // Change to a simple array
         this.data([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
 
-        expect(this.dataView.data()).toEqual([4, 5, 6, 7, 8])
+        // Throttling is involved in memory provider, wait for that timeout.
+        waits(100);
+
+        runs(function() {
+            expect(this.dataView.data()).toEqual([4, 5, 6, 7, 8])
+        });
 
     })
 })

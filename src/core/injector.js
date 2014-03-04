@@ -41,7 +41,7 @@
             });
 
         return func.apply(null, arguments);
-    };
+    }
 
     function annotate(injector, funcOrDependencies, func) {
         if(!func) {
@@ -58,7 +58,11 @@
                 return func;
             }
         }
-    };
+    }
+
+    function normaliseModuleName(name) {
+        return ko.utils.stringTrim(name).toLowerCase();
+    }
 
     /**
      * An injector provides simple IoC semantics that allow for the registering of
@@ -78,13 +82,7 @@
     }
 
     hx.Injector.prototype.find = function(name) {
-        name = ko.utils.stringTrim(name);
-
-        for (var moduleName in this.modules) {
-            if (moduleName.toUpperCase() == name.toUpperCase()) {
-                return this.modules[moduleName];
-            }
-        }
+        return this.modules[normaliseModuleName(name)];
     };
 
     /**
@@ -110,20 +108,16 @@
      *   to be called on each creation
      */
     hx.Injector.prototype.provide = function(name, creatorOrDependencies, creator) {
-        name = ko.utils.stringTrim(name);
+        name = normaliseModuleName(name);
 
         var annotatedCreator = annotate(this, creatorOrDependencies, creator),
             currentModule = this.modules[name];
 
-        if(currentModule) {
-            if(_.isArray(currentModule)) {
-                currentModule.push(annotatedCreator)
-            } else {
-                this.modules[name] = [currentModule, annotatedCreator]
-            }
-        } else {
-            this.modules[name] = annotatedCreator;
+        if (currentModule) {
+            console.log('Overriding module ' + name);
         }
+
+        this.modules[name] = annotatedCreator;
     };
 
     /**
@@ -168,10 +162,6 @@
             throw new Error("Cannot find module with the name '" + moduleName + "'.");
         }
 
-        if(_.isArray(module)) {
-            return _.map(module, function(m) { return m(); });
-        } else {
-            return module();
-        }
+        return module();
     };
 }());

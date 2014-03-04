@@ -282,13 +282,13 @@ describe('injector', function() {
 
             // Dependent module
             this.dependentModuleStub = this.stub();
-            this.dependent = this.injector.provide('dependent', [['$dependencyA']], this.dependentModuleStub);
+            this.dependent = this.injector.provide('dependent', ['$dependencyA'], this.dependentModuleStub);
         });
 
-        it('should return an array of dependencies', function() {
+        it('should use only the last provider dependency', function() {
             this.injector.get('dependent');
 
-            expect(this.dependentModuleStub).toHaveBeenCalledWith([this.dependencyAReturn, this.dependencyAReturn2])
+            expect(this.dependentModuleStub).toHaveBeenCalledWith(this.dependencyAReturn2)
         })
     })
 })

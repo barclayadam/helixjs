@@ -1,6 +1,7 @@
 (function() {
     // The main injector into which all modules will be loaded via calls to hx.provide
     var injector = new hx.Injector(),
+        configBlocks = [],
         configBlocksRun = false;
 
     // Expose methods of the single internal injector as 'globals'.
@@ -36,7 +37,7 @@
         if(configBlocksRun) {
             injector.instantiate(blockOrDependencies, block);
         } else {
-            injector.provide('$configBlocks', blockOrDependencies, block);
+            configBlocks.push([blockOrDependencies, block]);
         }
     };
  
@@ -49,10 +50,11 @@
      * @for hx 
      */
     hx.runConfigBlocks = function() {
-        // By getting the config blocks they will be executed, with dependencies
-        // injected, therefore no further work is required here
-        injector.get('$configBlocks');
+        for (var i in configBlocks) {
+            injector.instantiate.apply(this, configBlocks[i]);
+        }
 
+        configBlocks = [];
         configBlocksRun = true;
     }
 
