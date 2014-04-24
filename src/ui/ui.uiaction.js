@@ -58,9 +58,13 @@
 
                 ret = action.apply(funcOrOptions.context || this, arguments);
 
-                hx.utils.asPromise(ret).always(function () {
-                    executing(false);
-                });
+                Promise.resolve(ret)
+                    .then(function () {
+                        executing(false);
+                    })
+                    .catch(function () {
+                        executing(false);
+                    });;
 
                 return ret;
             }

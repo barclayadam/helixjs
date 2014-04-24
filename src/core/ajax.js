@@ -34,72 +34,66 @@ hx.singleton('$ajax', ['$bus'], function($bus) {
     }
 
     function doCall(httpMethod, requestBuilder) {
-        /*
-            TODO: Extract extension of deferred to give non-failure
-            handling semantics that could be used elsewhere.
-        */
-        var ajaxRequest, failureHandlerRegistered, getDeferred, promise, requestOptions;
+        var failureHandlerRegistered = false,
+            promise = new Promise(function(resolve, reject) {
+                var requestOptions = _.defaults(requestBuilder.properties, {
+                        url: requestBuilder.url,
+                        type: httpMethod,
+                        contentType: "application/json; charset=utf-8"
+                    }),
+                    ajaxRequest = jQuery.ajax(requestOptions);
 
-        getDeferred = jQuery.Deferred();
-        promise = getDeferred.promise();
+                $bus.publish("ajaxRequestSent:" + requestBuilder.url, {
+                    path: requestBuilder.url,
+                    method: httpMethod
+                });
 
-        failureHandlerRegistered = false;
+                ajaxRequest.done(function (response, textStatus, jqXHR) {
+                    $bus.publish("ajaxResponseReceived:success:" + requestBuilder.url, {
+                        path: requestBuilder.url,
+                        method: httpMethod,
+                        response: response,
+                        status: 200,
+                        success: true,
+                        headers: parseResponseHeaders(jqXHR.getAllResponseHeaders())
+                    });
 
-        requestOptions = _.defaults(requestBuilder.properties, {
-            url: requestBuilder.url,
-            type: httpMethod,
-            contentType: "application/json; charset=utf-8"
-        });
+                    resolve(response);
+                });
 
-        ajaxRequest = jQuery.ajax(requestOptions);
+                ajaxRequest.fail(function (response) {
+                    var failureMessage = {
+                        path: requestBuilder.url,
+                        method: httpMethod,
+                        responseText: response.responseText,
+                        status: response.status,
+                        success: false,
+                        headers: parseResponseHeaders(response.getAllResponseHeaders())
+                    };
 
-        $bus.publish("ajaxRequestSent:" + requestBuilder.url, {
-            path: requestBuilder.url,
-            method: httpMethod
-        });
+                    $bus.publish("ajaxResponseReceived:failure:" + requestBuilder.url, failureMessage);
 
-        ajaxRequest.done(function (response, textStatus, jqXHR) {
-            $bus.publish("ajaxResponseReceived:success:" + requestBuilder.url, {
-                path: requestBuilder.url,
-                method: httpMethod,
-                response: response,
-                status: 200,
-                success: true,
-                headers: parseResponseHeaders(jqXHR.getAllResponseHeaders())
+                    if (!failureHandlerRegistered) {
+                        $bus.publish("ajaxResponseFailureUnhandled:" + requestBuilder.url, failureMessage);
+                    }
+
+                    reject(response);
+                });
             });
 
-            return getDeferred.resolve(response);
-        });
+        var originalCatch = promise.catch;
+            originalThen = promise.then;
 
-        ajaxRequest.fail(function (response) {
-            var failureMessage = {
-                path: requestBuilder.url,
-                method: httpMethod,
-                responseText: response.responseText,
-                status: response.status,
-                success: false,
-                headers: parseResponseHeaders(response.getAllResponseHeaders())
-            };
-
-            $bus.publish("ajaxResponseReceived:failure:" + requestBuilder.url, failureMessage);
-
-            if (!failureHandlerRegistered) {
-                $bus.publish("ajaxResponseFailureUnhandled:" + requestBuilder.url, failureMessage);
-            }
-
-            return getDeferred.reject(response);
-        });
-
-        promise.fail = function(callback) {
+        promise.catch = function(callback) {
               failureHandlerRegistered = true;
 
-              return getDeferred.fail(callback);
+              return originalCatch.apply(this, callback);
         };
 
         promise.then = function(success, failure) {
               failureHandlerRegistered = failureHandlerRegistered || (failure != null);
 
-              return getDeferred.then(success, failure);
+              return originalThen.apply(this, success, failure);
         };
 
         if (listening) {
@@ -215,15 +209,13 @@ hx.singleton('$ajax', ['$bus'], function($bus) {
          */
         listen: function(f) {
             // Ensure we do not pick up previous requests.
-
-            var allFinishedPromise;
             requestDetectionFrame = [];
 
             listening = true;
             f();
             listening = false;
 
-            allFinishedPromise = jQuery.when.apply(this, requestDetectionFrame);
+            var allFinishedPromise = Promise.all(requestDetectionFrame);
 
             allFinishedPromise.then(function() {
                 requestDetectionFrame = [];

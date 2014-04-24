@@ -38,129 +38,148 @@ describe('Messaging - Commands', function () {
     });
 
     describe('Executing a Command', function () {
+        var command,
+            $ajax;
+
         beforeEach(function () {
             $Command.urlTemplate = 'ExecuteCommand/{name}';
 
-            this.command = new $Command('My Command', {
+            command = new $Command('My Command', {
                 id: ko.observable(3456).addValidationRules({
                     required: true
                 })
             });
-
-            this.successCallback = this.spy();
-            this.failureCallback = this.spy();
         });
 
         describe('that fails validation', function () {
+            var validationFailedEventSpy, submittingEventSpy;
+
             beforeEach(function () {
-                this.$ajax = hx.get('$ajax');
-                this.spy(this.$ajax, 'url');
+                $ajax = hx.get('$ajax');
+                this.spy($ajax, 'url');
 
-                this.validationFailedEventSpy = this.spy();
-                this.command.subscribe('validationFailed', this.validationFailedEventSpy);
+                validationFailedEventSpy = this.spy();
+                command.subscribe('validationFailed', validationFailedEventSpy);
 
-                this.submittingEventSpy = this.spy();
-                this.command.subscribe('submitting', this.submittingEventSpy);
+                submittingEventSpy = this.spy();
+                command.subscribe('submitting', submittingEventSpy);
 
-                this.command.id(void 0);
-
-                this.promise = this.command.execute();
-                this.promise.fail(this.failureCallback);
+                command.id(void 0);
             });
 
-            it('should not execute any AJAX', function () {
-                expect(this.$ajax.url).toHaveNotBeenCalled();
+            it('should not execute any AJAX', function (done) {
+                command.execute().then(function() {
+                    expect($ajax.url).toHaveNotBeenCalled();
+                }).then(done);
             });
 
-            it('should not raise a submitting event', function () {
-                expect(this.submittingEventSpy).toHaveNotBeenCalled();
+            it('should not raise a submitting event', function (done) {
+                command.execute().then(function() {
+                    expect(submittingEventSpy).toHaveNotBeenCalled();
+                }).then(done);
             });
 
-            it('validate properties', function () {
-                expect(this.command.id.isValid()).toBe(false);
+            it('validate properties', function (done) {
+                command.execute().then(function() {
+                    expect(command.id.isValid()).toBe(false);
+                }).then(done);
             });
 
-            it('should raise a validationFailed event', function () {
-                expect(this.validationFailedEventSpy).toHaveBeenCalledWith( { command: this.command });
+            it('should raise a validationFailed event', function (done) {
+                command.execute().then(function() {
+                    expect(validationFailedEventSpy).toHaveBeenCalledWith( { command: command });
+                }).then(done);
             });
 
-            it('should reject returned promise', function () {
-                expect(this.failureCallback).toHaveBeenCalled();
+            it('should reject returned promise', function (done) {
+                command.execute()
+                    .then(function() { fail('Should not have resolved'); })
+                    .catch(done);
             });
         });
 
         describe('async validator', function() {
-            beforeEach(function () {
-                this.asyncValidationDeferred = asyncValidationDeferred = new $.Deferred();
+            var resolver, submittingEventSpy;
 
-                this.command = new $Command('My Command', {
+            beforeEach(function () {
+                command = new $Command('My Command', {
                     id: ko.observable(3456).addValidationRules({
                         custom: function() {
-                            return asyncValidationDeferred;
+                            return new Promise(function(resolve) {
+                                resolver = resolve;
+                            });
                         }
                     })
                 });
 
-                this.submittingEventSpy = this.spy();
-                this.command.subscribe('submitting', this.submittingEventSpy);
-
-                this.command.execute();
+                submittingEventSpy = this.spy();
+                command.subscribe('submitting', this.submittingEventSpy);
             });
 
-            it('should not raise a submitting event when validation fails', function () {
-                this.asyncValidationDeferred.resolve(false);
-                expect(this.submittingEventSpy).toHaveNotBeenCalled();
+            it('should not raise a submitting event when validation fails', function (done) {
+                resolver(false);
+
+                command.execute().then(function() {
+                    expect(this.submittingEventSpy).toHaveNotBeenCalled();
+                }).then(done);
             });
 
-            it('should not raise a submitting event when validation succeeds', function () {
-                this.asyncValidationDeferred.resolve(true);
-                expect(this.submittingEventSpy).toHaveBeenCalled();
+            it('should raise a submitting event when validation succeeds', function (done) {
+                resolver(true);
+
+                command.execute().then(function() {
+                    expect(this.submittingEventSpy).toHaveBeenCalled();
+                }).then(done);
             });
         })
 
         describe('that succeeds', function () {
+            var succeededEventSpy, submittingEventSpy;
+
             beforeEach(function () {
-                this.succeededEventSpy = this.spy();
-                this.command.subscribe('succeeded', this.succeededEventSpy);
+                succeededEventSpy = this.spy();
+                submittingEventSpy = this.spy();
 
-                this.submittingEventSpy = this.spy();
-                this.command.subscribe('submitting', this.submittingEventSpy);
-
-                this.promise = this.command.execute();
-                this.promise.then(this.successCallback);
-                this.promise.fail(this.failureCallback);
+                command.subscribe('succeeded', succeededEventSpy);
+                command.subscribe('submitting', submittingEventSpy);
 
                 this.server.respondWith("POST", "ExecuteCommand/My Command", [
                     200, {
                         "Content-Type": "application/json"
                     }, '{ "resultProperty": 5}']);
+
                 this.server.respond();
             });
 
-            it('should resolve the promise with the result, using URL with replaced name', function () {
-                expect(this.successCallback).toHaveBeenCalledWith({
-                    resultProperty: 5
-                });
+            it('should resolve the promise with the result, using URL with replaced name', function (done) {
+                command.execute().then(function(result) {
+                    expect(result).toEqual({
+                        resultProperty: 5
+                    });
+                }).then(done);
             });
 
-            it('should raise a submitting event, before succeeded', function () {
-                expect(this.submittingEventSpy).toHaveBeenCalledBefore(this.succeededEventSpy);
+            it('should raise a submitting event, before succeeded', function (done) {
+                command.execute().then(function() {
+                    expect(submittingEventSpy).toHaveBeenCalledBefore(succeededEventSpy);
+                }).then(done);
             });
 
-            it('should raise a succeeded event', function () {
-                expect(this.succeededEventSpy).toHaveBeenCalled();
+            it('should raise a succeeded event', function (done) {
+                command.execute().then(function() {
+                    expect(succeededEventSpy).toHaveBeenCalled();
+                }).then(done);
             });
         });
 
         describe('overridden URL', function () {
+            var succeededEventSpy;
+
             beforeEach(function () {
-                this.command.setUrl('my/custom/url')
+                command.setUrl('my/custom/url')
 
-                this.succeededEventSpy = this.spy();
-                this.command.subscribe('succeeded', this.succeededEventSpy);
-
-                this.promise = this.command.execute();
-                this.promise.then(this.successCallback);
+                succeededEventSpy = this.spy();
+                command.subscribe('succeeded', succeededEventSpy);
 
                 this.server.respondWith("POST", "my/custom/url", [
                     200, {
@@ -170,24 +189,24 @@ describe('Messaging - Commands', function () {
                 this.server.respond();
             });
 
-            it('should resolve the promise with the result, using overriden URL', function () {
-                expect(this.successCallback).toHaveBeenCalledWith({
-                    resultProperty: 5
-                });
+            it('should resolve the promise with the result, using overriden URL', function (done) {
+                command.execute().then(function(result) {
+                    expect(result).toEqual({
+                        resultProperty: 5
+                    });
+                }).then(done);
             });
 
-            it('should raise a succeeded event', function () {
-                expect(this.succeededEventSpy).toHaveBeenCalled();
+            it('should raise a succeeded event', function (done) {
+                command.execute().then(function() {
+                    expect(succeededEventSpy).toHaveBeenCalled();
+                }).then(done);
             });
         });
 
 
         describe('that is executed under a different context', function () {
             beforeEach(function () {
-                this.promise = this.command.execute.call(this);
-                this.promise.then(this.successCallback);
-                this.promise.fail(this.failureCallback);
-
                 this.server.respondWith("POST", "ExecuteCommand/My Command", [
                     200, {
                         "Content-Type": "application/json"
@@ -195,25 +214,24 @@ describe('Messaging - Commands', function () {
                 this.server.respond();
             });
 
-            it('should resolve the promise with the result, using URL with replaced name', function () {
-                expect(this.successCallback).toHaveBeenCalledWith({
-                    resultProperty: 5
-                });
+            it('should resolve the promise with the result, using URL with replaced name', function (done) {
+                command.execute.call(this).then(function(result) {
+                    expect(result).toEqual({
+                        resultProperty: 5
+                    });
+                }).then(done);
             });
         });
 
         describe('that fails', function () {
+            var failedEventSpy, submittingEventSpy;
+
             beforeEach(function () {
-                this.failedEventSpy = this.spy();
-                this.command.subscribe('failed', this.failedEventSpy);
+                submittingEventSpy = this.spy();
+                failedEventSpy = this.spy();
 
-                this.submittingEventSpy = this.spy();
-                this.command.subscribe('submitting', this.submittingEventSpy);
-
-                this.promise = this.command.execute();
-                
-                this.promise.then(this.successCallback);
-                this.promise.fail(this.failureCallback);
+                command.subscribe('submitting', submittingEventSpy);
+                command.subscribe('failed', failedEventSpy);
 
                 this.server.respondWith("POST", "ExecuteCommand/My Command", [
                     500, {
@@ -222,37 +240,44 @@ describe('Messaging - Commands', function () {
                 this.server.respond();
             });
 
-            it('should reject the promise', function () {
-                expect(this.failureCallback).toHaveBeenCalled();
+            it('should reject the promise', function (done) {
+                command.execute().then(function() {
+                    fail('Should not successfully resolve');
+                }).catch(done);
             });
 
-            it('should raise a submitting event, before failed', function () {
-                expect(this.submittingEventSpy).toHaveBeenCalledBefore(this.failedEventSpy);
+            it('should raise a submitting event, before failed', function (done) {
+                command.execute().then(function() {
+                    expect(submittingEventSpy).toHaveBeenCalledBefore(failedEventSpy);
+                }).catch(done);
             });
 
-            it('should raise a failed event', function () {
-                expect(this.failedEventSpy).toHaveBeenCalled();
+            it('should raise a failed event', function (done) {
+                command.execute().then(function() {
+                    expect(failedEventSpy).toHaveBeenCalled();
+                }).catch(done);
             });
         });
 
         describe('multiple commands with subscriptions', function () {
-            beforeEach(function () {
+            var submittingEventSpy1, submittingEventSpy2;
 
+            beforeEach(function () {
                 this.command1 = new $Command('My Command 1', {});
                 this.command2 = new $Command('My Command 2', {});
 
-                this.submittingEventSpy1 = this.spy();
-                this.submittingEventSpy2 = this.spy();
+                submittingEventSpy1 = this.spy();
+                submittingEventSpy2 = this.spy();
 
-                this.command1.subscribe('submitting', this.submittingEventSpy1);
-                this.command2.subscribe('submitting', this.submittingEventSpy2);
-
-                this.promise = this.command1.execute();
+                this.command1.subscribe('submitting', submittingEventSpy1);
+                this.command2.subscribe('submitting', submittingEventSpy2);
             });
 
-            it('should not raise events to other instances', function () {
-                expect(this.submittingEventSpy1).toHaveBeenCalled();
-                expect(this.submittingEventSpy2).toHaveNotBeenCalled();
+            it('should not raise events to other instances', function (done) {
+                this.command1.execute().then(function() {
+                    expect(submittingEventSpy1).toHaveBeenCalled();
+                    expect(submittingEventSpy2).toHaveNotBeenCalled();
+                }).then(done);
             });
         });
     });

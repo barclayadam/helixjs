@@ -63,13 +63,13 @@
             $bus = hx.get('$bus'),
             $ajax = hx.get('$ajax');
 
-        ko.utils.toggleDomNodeCssClass(element, 'loading', true);
+        ko.utils.toggleDomNodeCssClass(element, 'app-loading', true);
 
         hx.runConfigBlocks();
 
         $ajax.listen(function() {
             $bus.publish('preload-data', {});
-        }).done(function() {
+        }).then(function() {
             // Once the app has been bootstrapped we want to set-up the region manager
             // before the app is properly 'started' (e.g. location services is initialised)
             var bindingContext = new ko.bindingContext({});
@@ -77,7 +77,7 @@
 
             $location.initialise();
 
-            ko.utils.toggleDomNodeCssClass(element, 'loading', false);
+            ko.utils.toggleDomNodeCssClass(element, 'app-loading', false);
         })
     }
 

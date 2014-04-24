@@ -32,7 +32,7 @@ hx.singleton('$templating', ['$ajax'], function($ajax) {
         
         templating.set(templateName, templating.loadingTemplate);
 
-        templating.loadExternalTemplate(templateName).done(function(templateText) {
+        templating.loadExternalTemplate(templateName).then(function(templateText) {
             templating.set(templateName, templateText);
         });
 

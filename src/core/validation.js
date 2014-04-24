@@ -63,21 +63,14 @@ function validateModel (model, includedProperties) {
         }
     }
     
-    // To avoid garbage we will only return a simple true value if there is
-    // nothing to be validated
-    if(validationPromises.length === 0) {
-        return true;
+    if (validationPromises.length === 0) {
+        return Promise.resolve(true);
     }
 
-    var masterDeferred = new jQuery.Deferred();
-
-    jQuery.when.apply(this, validationPromises).done(function() {
-        var allValid = _.every(arguments, function(r) { return r === true; });
-
-        masterDeferred.resolve(allValid);
-    })
-
-    return masterDeferred.promise();
+    return Promise.all(validationPromises)
+        .then(function(validationResults) {
+            return _.every(validationResults, function(r) { return r === true; });
+        });
 }
 
 /**
@@ -118,9 +111,9 @@ validation.mixin = function (model, includedProperties) {
             ko.computed(function () {
                 model.validating(true);
 
-                lastValidationPromise = hx.utils.asPromise(validateModel(model, includedProperties))
+                lastValidationPromise = validateModel(model, includedProperties)
 
-                lastValidationPromise.done(function(isValid) {
+                lastValidationPromise.then(function(isValid) {
                     model.isValid(isValid);
 
                     model.validating(false);
@@ -295,12 +288,12 @@ ko.extenders.validationRules = function (target, validationRules) {
                 if (rule != null) {
                     var isValidOrPromise = rule.validator(value, ruleOptions);
 
-                    if (isValidOrPromise && isValidOrPromise.state && isValidOrPromise.then) {
+                    if (isValidOrPromise && isValidOrPromise.then) {
                         // We are dealing with an async validator
                         asyncPromises.push(isValidOrPromise);
 
                         isValidOrPromise
-                            .done(function(isValidResult) {
+                            .then(function(isValidResult) {
                                 handleValidationResult(isValidResult, ruleName, ruleOptions, currentErrors);
                             })
                     } else {
@@ -310,24 +303,15 @@ ko.extenders.validationRules = function (target, validationRules) {
             }(ruleName));           
         }
 
-        var validationResultDeferred = new jQuery.Deferred();
+        lastValidationPromise = Promise.all(asyncPromises)
+            .then(function() {
+                target.errors(currentErrors);
+                target.isValid(currentErrors.length === 0);
 
-        function validationEnded() {
-            target.errors(currentErrors);
-            target.isValid(currentErrors.length === 0);
+                target.validating(false);
 
-            target.validating(false);
-
-            validationResultDeferred.resolve(currentErrors.length === 0);
-        }
-
-        lastValidationPromise = validationResultDeferred.promise();
-
-        if(asyncPromises.length === 0) {
-            validationEnded();
-        } else {
-            jQuery.when.apply(this, asyncPromises).always(validationEnded);
-        }
+                return currentErrors.length === 0;
+            });
     });
 
     return target;

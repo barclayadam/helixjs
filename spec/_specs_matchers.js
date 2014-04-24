@@ -3,8 +3,13 @@ beforeEach(function () {
 
     this.addMatchers({
         toBeAPromise: function () {
-            return (this.actual != null) && (this.actual.done != null) && (this.actual.fail != null);
+            return (this.actual != null) && (this.actual.then != null);
         },
+
+        toBeARejectedPromise: function () {
+            return (this.actual != null) && (this.actual.then != null);
+        },
+        
         
         toBeObservable: function () {
             return ko.isObservable(this.actual);

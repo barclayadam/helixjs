@@ -5,36 +5,29 @@
  *
  * If a component has an `isAuthorised` method then it will be called, with a set
  * of parameters (which would be the routing parameters, either form the current URL or
- * from a set of parameters that are used to generate a route), and a second parameter of
- * `callback`. The implementation of the `isAuthorised` is completely app-dependent, although
- * the result should be one of the following
+ * from a set of parameters that are used to generate a route). The implementation of 
+ * the `isAuthorised` is completely app-dependent, although the result should be one of the 
+ * following
  *
  * * [true|false] - A boolean indicating success or failure of the authorisation
  * * [promise] - A promise that will resolve (never reject) to a boolean value indicating
  *    success or failure of the authorisation
- * * [undefined] - Return nothing if the `callback` function will be called, being called
- *    with a boolean indicating success or failure of the authorisation
  */
 hx.provide('$authoriser', function() {
     function authorise(component, parameters) {
-        var authorizedDeferred = new jQuery.Deferred(),
-            handleResult = function(r) {
-                authorizedDeferred[r === false ? 'reject' : 'resolve']();
-            };
-
         if(component.isAuthorised) {
-            var result = component.isAuthorised(parameters, handleResult);
-
-            if(result !== undefined) {
-                hx.utils.asPromise(result)
-                    .then(handleResult, function() { authorizedDeferred.reject(); });
-            }
-        } else {
-            // Resolve immediately, nothing to wait for
-            authorizedDeferred.resolve();
+            // isAuthorised should return either true / false directly, or a promise that
+            // resolves to true / false.
+            //
+            // If `undefined` is returned, we will convert that to a `true` result.
+            return Promise.resolve(component.isAuthorised(parameters, handleResult))
+                .then(function(result) {
+                    return result !== false;
+                });
         }
 
-        return authorizedDeferred;        
+        // Resolve immediately, nothing to wait for
+        return Promise.resolve(true);    
     }
 
     return {
@@ -43,33 +36,19 @@ hx.provide('$authoriser', function() {
         authoriseAll: function(components, parameters) {
             var authorisationPromises = _.map(components, function(c) { return authorise(c, parameters) });
 
-            return jQuery.when.apply(this, authorisationPromises);
+            return Promise.all(authorisationPromises)
+                .then(function(authorisations) {
+                    return _.every(authorisations, function(a) { return a; });
+                })
         },
 
         authoriseAny: function(components, parameters) {
-            var authorisationPromises = _.map(components, function(c) { return authorise(c, parameters) }),
-                rejectedCount = 0,
-                masterPromise = new jQuery.Deferred();
+            var authorisationPromises = _.map(components, function(c) { return authorise(c, parameters) });
 
-            function handleResolve() {
-                masterPromise.resolve()
-            }
-
-            function handleReject() {
-                if(masterPromise.state() === 'pending') {
-                    rejectedCount = rejectedCount + 1;
-
-                    if(rejectedCount === authorisationPromises.length) {
-                        masterPromise.reject();
-                    }
-                }
-            }
-
-            _.each(authorisationPromises, function(a) {
-                a.then(handleResolve, handleReject);
-            });
-
-            return masterPromise.promise();
+            return Promise.all(authorisationPromises)
+                .then(function(authorisations) {
+                    return _.some(authorisations, function(a) { return a; });
+                })
         }        
     }
 });

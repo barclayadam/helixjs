@@ -75,7 +75,7 @@ hx.bindingHandler('navigate', ['$router', '$log'], function($router, $log) {
                 
                 ko.dependencyDetection.ignore(function() {
                     match.authorise()
-                         .fail(function() {
+                         .catch(function() {
                             element.style.display = "none";
                         })
                 });

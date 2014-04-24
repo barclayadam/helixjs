@@ -172,36 +172,4 @@ describe('utils', function () {
             expect(recordedContext).toBe(context);
         });
     });
-
-    describe('When converting to a promise', function() {
-        it('should return value as-is if already a promise', function() {
-            var promise = $.Deferred(),
-                result = hx.utils.asPromise(promise);
-
-            expect(result).toBe(promise);
-        })
-
-        it('should return resolved promise when given a value', function() {
-            var value = { aProp: 'My Property'},
-                result = hx.utils.asPromise(value),
-                resolvedValue;
-
-            result.done(function(v) {
-                resolvedValue = v;
-            })
-
-            expect(resolvedValue).toBe(value);
-        })
-
-        it('should return resolved promise when value is undefined', function() {
-            var result = hx.utils.asPromise(undefined),
-                resolvedValue = {}; // Set to something to ensure it gets explictly set to undefined
-
-            result.done(function(v) {
-                resolvedValue = v;
-            })
-            
-            expect(resolvedValue).toBe(undefined);
-        })
-    })
 });

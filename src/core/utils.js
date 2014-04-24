@@ -129,30 +129,5 @@ hx.utils = {
         } else {
             return ko.observable(value);
         }
-    },
-
-    /**
-     * Given a value will convert it into a promise, converting static values into an
-     * already resolved promise to allow boilerplate code to be cut in functions that
-     * handle both a static return value and promise-based returns, and returning
-     * existing promises / deferred as-is.
-     *
-     * @method asPromise
-     * @static
-     *
-     * @param {any} value - The value to convert to a promise.
-     *
-     * @return {promise} - A promise, either the one passed in or an already resolved one
-     *  that has been resolved with the given static value
-     */
-    asPromise: function(value) {
-        if(value && value.then) {
-            return value;
-        } else {
-            var deferred = new $.Deferred();
-            deferred.resolve(value)
-
-            return deferred;
-        }
     }
 };

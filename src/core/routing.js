@@ -126,9 +126,7 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location', '$injector', '$authorise
         if(this.route.options.component) {
             return $authoriser.authorise(createComponent(this.route.options.component), this.parameters);
         } else {
-            var deferred = jQuery.Deferred();
-            deferred.resolve();
-            return deferred.promise();
+            return Promise.resolve(true);
         }
     }
 
@@ -173,27 +171,22 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location', '$injector', '$authorise
             msg = {
                 route: match.route,
                 parameters: match.parameters
-            },
-            navigationDeferred = jQuery.Deferred();
+            };
 
-        match.authorise()
-            .done(function() {
-                self.current(match);
+        return match.authorise()
+            .then(function(isAuthorised) {
+                if (isAuthorised) {
+                    self.current(match);
 
-                if (match.route.callback) {
-                    if (match.route.callback(match.parameters) === false) {
+                    if (match.route.callback && match.route.callback(match.parameters) === false) {
                         return;
                     }
+
+                    $bus.publish("routeNavigated:" + match.route.name, msg);
+                } else {
+                    $bus.publish("unauthorisedRoute:" + match.route.name, msg);
                 }
-
-                navigationDeferred.resolve();
-                $bus.publish("routeNavigated:" + match.route.name, msg);
-            })
-            .fail(function() {
-                $bus.publish("unauthorisedRoute:" + match.route.name, msg);
             });
-
-        return navigationDeferred.promise();
     };
 
     /**
@@ -294,8 +287,10 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location', '$injector', '$authorise
         var match = this.buildMatchedRoute(name, parameters);
 
         if (match) {
-            this._doNavigate(match).done(function() {
-                $location.routePath(match.url);
+            this._doNavigate(match).then(function(didNavigate) {
+                if (didNavigate) {
+                    $location.routePath(match.url);
+                }
             });
         }
     };

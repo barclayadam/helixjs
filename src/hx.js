@@ -47,7 +47,6 @@
         //= data/provider.memory.js
         //= data/provider.odata.js
                         
-        //= messaging/messaging.query.js
         //= messaging/messaging.command.js
 
         //= ui/ui.part.js

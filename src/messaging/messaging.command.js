@@ -46,22 +46,22 @@ hx.singleton('$Command', ['$log', '$ajax', '$EventEmitterFactory'], function($lo
         var self = this,
             result = jQuery.Deferred();
 
-        this.validate().done(function() {
-            if (self.isValid()) {
+        return this.validate().then(function(isValid) {
+            if (isValid) {
                 self.$publish('submitting', { command: self });
 
-                execute(self.$name, self.$url, _.pick(self, self.$valueKeys))
-                    .done(function(data) {
+                return execute(self.$name, self.$url, _.pick(self, self.$valueKeys))
+                    .then(function(data) {
                             self.$publish('succeeded', { command: self, data: data });
-                            result.resolve(data);
+                            return data;
                         })
-                    .fail(function(data) {
+                    .catch(function(data) {
                             self.$publish('failed', { command: self, data: data });
-                            result.reject(data);
+                            return data;
                         });
             } else {
                 self.$publish('validationFailed', { command: self });
-                result.reject();
+                return Promise.reject(new Error('Command validation failed.'));
             }
         });
 

@@ -17,7 +17,7 @@ describe('validation - ui', function() {
         })
 
         describe('a validatable observable', function() {
-            beforeEach(function() {
+            beforeEach(function(done) {
                 this.setHtmlFixture("<div>" +
                                     " <input id='validated-input' type='text' data-bind='value: validated' />" +
                                     " <select id='validated-select' type='text' data-bind='value: validated'><option>a value</option></select>" +

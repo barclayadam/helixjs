@@ -24,217 +24,257 @@ describe('validation', function () {
 
     describe('given a plain observable', function () {
         describe('when making it validatable (mixin)', function () {
+            var property;
+
             beforeEach(function () {
-                this.property = ko.observable();
-                this.property.addValidationRules({
+                property = ko.observable();
+                property.addValidationRules({
                     required: true
                 });
             });
 
             it('should add a validate method', function () {
-                expect(this.property.validate).toBeAFunction();
+                expect(property.validate).toBeAFunction();
             });
 
             it('should add an isValid observable immediately set to correct state', function () {
-                expect(this.property.isValid).toBeObservable();
-                expect(this.property.isValid()).toEqual(false);
+                waitsFor(function() { return property.validating() === false; });
+
+                runs(function() {
+                    expect(property.isValid).toBeObservable();
+                    expect(property.isValid()).toEqual(false);
+                })
             });
 
             it('should add a validated observable set to false', function () {
-                expect(this.property.validated).toBeObservable();
-                expect(this.property.validated()).toBe(false);
+                waitsFor(function() { return property.validating() === false; });
+
+                runs(function() {
+                    expect(property.validated).toBeObservable();
+                    expect(property.validated()).toBe(false);
+                })
             });
 
             describe('updating invalid property to be valid', function () {
                 beforeEach(function () {
-                    this.property('My Required Value');
+                    property('My Required Value');
                 });
 
                 it('should remove any errors to the errors property', function () {
-                    expect(this.property.errors().length).toEqual(0);
+                    waitsFor(function() { return property.validating() === false; });
+
+                    runs(function() {
+                        expect(property.errors().length).toEqual(0);
+                    })
                 });
 
                 it('should mark the property as valid', function () {
-                    expect(this.property.isValid()).toEqual(true);
+                    waitsFor(function() { return property.validating() === false; });
+
+                    runs(function() {
+                        expect(property.isValid()).toEqual(true);
+                    })
                 });
             });
         });
     });
 
     describe('when observable wrapped in another observable', function () {
+        var property;
+
         beforeEach(function() {
-            this.property = ko.observable();
-            this.property.addValidationRules({
+            property = ko.observable();
+            property.addValidationRules({
                 equalTo: 'value' // Pick a validator that depends on the 'real' value
             });
         })
 
         it('should add an isValid observable immediately set to correct state by unwrapping all children of observable', function () {
-            var setObservableAsValue = function () {
-                this.property(ko.observable('value'))
-            }.bind(this);
-
-            expect(setObservableAsValue).toThrow('Cannot set an observable value as the value of a validated observable');
+            expect(function () {
+                property(ko.observable('value'))
+            }).toThrow('Cannot set an observable value as the value of a validated observable');
         });
     });
 
     describe('validating a property - non async', function () {
+        var property;
+
         beforeEach(function () {
-            this.property = ko.observable();
-            this.property.addValidationRules({
+            property = ko.observable();
+            property.addValidationRules({
                 required: true
             });
-            
-            this.validationPromise = this.property.validate();
         });
 
-        it('should mark property as having been validated', function () {
-            expect(this.property.validated()).toBe(true);
+        it('should mark property as having been validated', function (done) {
+            property.validate().then(function() {
+                expect(property.validated()).toBe(true);
+            }).then(done);
         });
 
-        it('should return a resolved promise with result of validation', function () {
-            expect(this.validationPromise.state()).toBe('resolved');
-
-            this.validationPromise.done(function(r) {
+        it('should return a resolved promise with result of validation', function (done) {
+            property.validate().then(function(r) {
                 expect(r).toBe(false);
-            })
+            }).then(done);
         });
     });
 
     describe('validating a property with async validator', function() {
-        beforeEach(function() {
-            this.deferred = deferred = new jQuery.Deferred();
+        var property, resolver;
 
+        beforeEach(function() {
             hx.validation.rules['asyncExample'] = {
-                validator: function (value, options) {
-                    return deferred;
+                validator: function () {
+                    return new Promise(function(resolve) {
+                        resolver = resolve;
+                    });
                 },
 
                 message: "This field is validated as async",
             }
 
-            this.property = ko.observable();
-            this.property.addValidationRules({
+            property = ko.observable();
+            property.addValidationRules({
                 asyncExample: true
             });
-
-            this.validatePromise = this.property.validate();
         })
 
         it('should set validating observable of property to true', function() {
-            expect(this.property.validating()).toBe(true);
+            property.validate();
+            expect(property.validating()).toBe(true);
         })
 
-        it('should return a pending promise from validate method', function() {
-            expect(this.validatePromise.state()).toBe("pending");
+        it('should set validating to false when promise resolved', function(done) {
+            resolver(false);
+
+            property.validate().then(function() {
+                expect(property.validating()).toBe(false);
+            }).then(done);
         })
 
-        it('should set validating to false when promise resolved', function() {
-            this.deferred.resolve();
-            expect(this.property.validating()).toBe(false);
+        it('should add an error if resolves to false', function(done) {
+            resolver(false);
+
+            property.validate().then(function() {
+                expect(property.errors()).toContain('This field is validated as async');
+            }).then(done);
+
         })
 
-        it('should add an error if resolves to false', function() {
-            this.deferred.resolve(false);
+        it('should set isValid to false if resolves to false', function(done) {
+            resolver(false);
 
-            expect(this.property.errors()).toContain('This field is validated as async');
+            property.validate().then(function() {
+                expect(property.isValid()).toBe(false);
+            }).then(done);
         })
 
-        it('should set isValid to false if resolves to false', function() {
-            this.deferred.resolve(false);
+        it('should not an error if resolves to true', function(done) {
+            resolver(true);
 
-            expect(this.property.isValid()).toBe(false);
+            property.validate().then(function() {
+                expect(property.errors()).toEqual([]);
+            }).then(done);
         })
 
-        it('should not an error if resolves to true', function() {
-            this.deferred.resolve(true);
+        it('should set isValid to false if resolves to true', function(done) {
+            resolver(true);
 
-            expect(this.property.errors()).toEqual([]);
-        })
-
-        it('should set isValid to false if resolves to true', function() {
-            this.deferred.resolve(true);
-
-            expect(this.property.isValid()).toBe(true);
+            property.validate().then(function() {
+                expect(property.isValid()).toBe(true);
+            }).then(done);
         })
     });
 
     describe('validating a property with multiple async validators', function() {
-        beforeEach(function() {
-            this.deferred1 = deferred1 = new jQuery.Deferred();
-            this.deferred2 = deferred2 = new jQuery.Deferred();
+        var property, resolver1, resolver2;
 
+        beforeEach(function() {
             hx.validation.rules['asyncExample1'] = {
-                validator: function (value, options) {
-                    return deferred1;
+                validator: function () {
+                    return new Promise(function(resolve) {
+                        resolver1 = resolve;
+                    });
                 },
 
                 message: "This field is validated as async - example1",
             }
 
             hx.validation.rules['asyncExample2'] = {
-                validator: function (value, options) {
-                    return deferred2;
+                validator: function () {                    
+                    return new Promise(function(resolve) {
+                        resolver2 = resolve;
+                    });
                 },
 
                 message: "This field is validated as async - example2",
             }
 
-            this.property = ko.observable();
+            property = ko.observable();
 
-            this.property.addValidationRules({
+            property.addValidationRules({
                 asyncExample1: true,
                 asyncExample2: true
             });
-
-            this.validatePromise = this.property.validate();
         })
 
         it('should not set errors if only one has resolved', function() {
-            this.deferred1.resolve(true);
+            resolver1(true);
 
-            expect(this.property.errors()).toEqual([]);
+            expect(property.errors()).toEqual([]);
         })
 
         it('should keep validating as true if only one resolves', function() {
-            this.deferred1.resolve(true);
+            resolver1(true);
 
-            expect(this.property.validating()).toBe(true);
+            expect(property.validating()).toBe(true);
         })
 
-        it('should mark validating as false when all resolve', function() {
-            this.deferred1.resolve(true);
-            this.deferred2.resolve(true);
+        it('should mark validating as false when all resolve', function(done) {
+            resolver1(true);
+            resolver2(true);
 
-            expect(this.property.validating()).toBe(false);
+            property.validate().then(function() {
+                expect(property.validating()).toBe(false);
+            }).then(done);
         })
 
-        it('should add errors of any resolved as false', function() {
-            this.deferred1.resolve(true);
-            this.deferred2.resolve(false);
+        it('should add errors of any resolved as false', function(done) {
+            resolver1(true);
+            resolver2(false);
 
-            expect(this.property.errors().length).toBe(1);
-            expect(this.property.errors()).toContain('This field is validated as async - example2');
+            property.validate().then(function() {
+                expect(property.errors().length).toBe(1);
+                expect(property.errors()).toContain('This field is validated as async - example2');
+            }).then(done);
         })
     })
 
     describe('adding validation rules multiple times', function () {
+        var property;
+
         beforeEach(function () {
-            this.property = ko.observable('a');
-            this.property.addValidationRules({
+            property = ko.observable('a');
+            
+            property.addValidationRules({
                 minLength: 2
             });
-            this.property.addValidationRules({
+
+            property.addValidationRules({
                 equalTo: 'b'
             });
         });
 
-        it('should include errors for each added rule', function () {
-            expect(this.property.errors().length).toBe(2);
+        it('should include errors for each added rule', function (done) {
+            property.validate().then(function() {
+                expect(property.errors().length).toBe(2);
+            }).then(done);
         });
     });
 
     describe('validating a property with validator that has observable dependencies', function () {
+        var property;
+
         beforeEach(function () {
             this.validatorDependency = validatorDependency = ko.observable(false);
 
@@ -244,53 +284,63 @@ describe('validation', function () {
                 }
             };
 
-            this.property = ko.observable('a');
-            this.property.addValidationRules({
+            property = ko.observable('a');
+            property.addValidationRules({
                 withObservableDependency: true
             });
         });
 
-        it('should reevaulate validility after dependency changes', function () {
-            expect(this.property.isValid()).toBe(this.validatorDependency());
+        it('should reevaulate isValid after dependency changes', function (done) {
+            property.validate().then(function() {
+                expect(property.isValid()).toBe(this.validatorDependency());
+            });
 
             // Flip the dependency, the value of which becomes isValid for this validator
             this.validatorDependency(!this.validatorDependency())
 
-            expect(this.property.isValid()).toBe(this.validatorDependency());
+            property.validate().then(function() {
+                expect(property.isValid()).toBe(this.validatorDependency());
+            }).then(done);
         });
     });
 
     describe('validating a model', function () {
         describe('with no defined observable properties', function () {
+            var model = {};
+
             beforeEach(function () {
-                this.model = {};
-                hx.validation.mixin(this.model);
-                this.model.validate();
+                hx.validation.mixin(model);
             });
 
-            it('should set isValid to true', function () {
-                expect(this.model.isValid()).toBe(true);
+            it('should set isValid to true', function (done) {
+                model.validate().then(function() {
+                    expect(model.isValid()).toBe(true);
+                }).then(done);
             });
 
-            it('should set validated observable to true', function () {
-                expect(this.model.validated()).toBe(true);
+            it('should set validated observable to true', function (done) {
+                model.validate().then(function() {
+                    expect(model.validated()).toBe(true);
+                }).then(done);
             });
         });
 
         describe('with undefined properties', function () {
+            var model;
             beforeEach(function () {
-                this.model = {
+                model = {
                     property1: void 0,
                     property2: ko.observable('Valid Value').addValidationRules({
                         required: true
                     })
                 };
-                hx.validation.mixin(this.model);
-                this.model.validate();
+                hx.validation.mixin(model);
             });
 
-            it('should set isValid to true', function () {
-                expect(this.model.isValid()).toBe(true);
+            it('should set isValid to true', function (done) {
+                model.validate().then(function() {
+                    expect(model.isValid()).toBe(true);
+                }).then(done);
             });
         });
 
@@ -313,161 +363,218 @@ describe('validation', function () {
             };
 
             describe('when observable wrapped in another observable', function () {
+                var model, realProperty;
+
                 beforeEach(function() {
-                    this.realProperty = ko.observable().addValidationRules({
+                    realProperty = ko.observable().addValidationRules({
                             required: true,
                             requiredMessage: 'This is a custom message'
                         });
 
-                    this.model = {
-                        wrapper: ko.observable(this.realProperty)
+                    model = {
+                        wrapper: ko.observable(realProperty)
                     };
 
-                    hx.validation.mixin(this.model);
-                    this.model.validate();
+                    hx.validation.mixin(model);
                 })
 
-                it('should keep unwrapping until reaches real observable value', function() {
-                    expect(this.realProperty.isValid()).toBe(false)
+                it('should keep unwrapping until reaches real observable value', function (done) {
+                    model.validate().then(function() {
+                        expect(realProperty.isValid()).toBe(false)
+                    }).then(done);
                 })
             });
 
             describe('when all properties are valid', function () {
+                var model;
+
                 beforeEach(function () {
-                    this.model = createModel({
+                    model = createModel({
                         property1: 'A Value',
                         property2: 'A Value'
                     });
                 });
 
-                it('should set isValid to true', function () {
-                    expect(this.model.isValid()).toBe(true);
+                it('should set isValid to true', function (done) {
+                    model.validate().then(function() {
+                        expect(model.isValid()).toBe(true);
+                    }).then(done);
                 });
 
-                it('should set validated observable to true', function () {
-                    expect(this.model.validated()).toBe(true);
+                it('should set validated observable to true', function (done) {
+                    model.validate().then(function() {
+                        expect(model.validated()).toBe(true);
+                    }).then(done);
                 });
             });
 
             describe('when single property is invalid', function () {
+                var model;
+
                 beforeEach(function () {
-                    this.model = createModel({
+                    model = createModel({
                         property1: 'A Value'
                     });
                 });
 
-                it('should set isValid of the model to false', function () {
-                    expect(this.model.isValid()).toBe(false);
+                it('should set isValid of the model to false', function (done) {
+                    model.validate().then(function() {
+                        expect(model.isValid()).toBe(false);
+                    }).then(done);
                 });
 
-                it('should set validated observable to true', function () {
-                    expect(this.model.validated()).toBe(true);
+                it('should set validated observable to true', function (done) {
+                    model.validate().then(function() {
+                        expect(model.validated()).toBe(true);
+                    }).then(done);
                 });
 
-                it('should not add error message to errors property of valid observable', function () {
-                    expect(this.model.property1.errors().length).toBe(0);
+                it('should not add error message to errors property of valid observable',function (done) {
+                    model.validate().then(function() {
+                        expect(model.property1.errors().length).toBe(0);
+                    }).then(done);
                 });
 
-                it('should set isValid to true for the valid property', function () {
-                    expect(this.model.property1.isValid()).toBe(true);
+                it('should set isValid to true for the valid property', function (done) {
+                    model.validate().then(function() {
+                        expect(model.property1.isValid()).toBe(true);
+                    }).then(done);
                 });
 
-                it('should add error message to errors property of invalid observable', function () {
-                    expect(this.model.property2.errors().length).toBe(1);
+                it('should add error message to errors property of invalid observable', function (done) {
+                    model.validate().then(function() {
+                        expect(model.property2.errors().length).toBe(1);
+                    }).then(done);
                 });
 
-                it('should set isValid to false for the invalid property', function () {
-                    expect(this.model.property2.isValid()).toBe(false);
+                it('should set isValid to false for the invalid property', function (done) {
+                    model.validate().then(function() {
+                        expect(model.property2.isValid()).toBe(false);
+                    }).then(done);
                 });
 
-                it('should use custom message if specified', function () {
-                    expect(this.model.property2.errors()[0]).toEqual('This is a custom message');
+                it('should use custom message if specified', function (done) {
+                    model.validate().then(function() {
+                        expect(model.property2.errors()[0]).toEqual('This is a custom message');
+                    }).then(done);
                 });
             });
 
             describe('when values are updated to make them valid', function () {
+                var model;
+
                 beforeEach(function () {
-                    this.model = createModel({
+                    model = createModel({
                         property1: 'A Value'
                     });
 
-                    this.model.property2('A Value');
+                    model.property2('A Value');
                 });
 
-                it('should set isValid of the model to true', function () {
-                    expect(this.model.isValid()).toBe(true);
+                it('should set isValid of the model to true', function (done) {
+                    model.validate().then(function() {
+                        expect(model.isValid()).toBe(true);
+                    }).then(done);
                 });
 
-                it('should set isValid to true for the now valid property', function () {
-                    expect(this.model.property2.isValid()).toBe(true);
+                it('should set isValid to true for the now valid property', function (done) {
+                    model.validate().then(function() {
+                        expect(model.property2.isValid()).toBe(true);
+                    }).then(done);
                 });
 
-                it('should remove error message from the invalid observable', function () {
-                    expect(this.model.property2.errors().length).toBe(0);
+                it('should remove error message from the invalid observable', function (done) {
+                    model.validate().then(function() {
+                        expect(model.property2.errors().length).toBe(0);
+                    }).then(done);
                 });
 
-                it('should set isValid to true for the now valid property', function () {
-                    expect(this.model.property2.isValid()).toBe(true);
+                it('should set isValid to true for the now valid property', function (done) {
+                    model.validate().then(function() {
+                        expect(model.property2.isValid()).toBe(true);
+                    }).then(done);
                 });
             });
 
             describe('when multiples properties are invalid', function () {
+                var model;
+
                 beforeEach(function () {
-                    this.model = createModel({});
+                    model = createModel({});
                 });
 
-                it('should set isValid of the model to false', function () {
-                    expect(this.model.isValid()).toBe(false);
+                it('should set isValid of the model to false', function (done) {
+                    model.validate().then(function() {
+                        expect(model.isValid()).toBe(false);
+                    }).then(done);
                 });
 
-                it('should add error messages to errors property of all invalid observable', function () {
-                    expect(this.model.property1.errors().length).toBe(1);
-                    expect(this.model.property2.errors().length).toBe(1);
+                it('should add error messages to errors property of all invalid observable', function (done) {
+                    model.validate().then(function() {
+                        expect(model.property1.errors().length).toBe(1);
+                        expect(model.property2.errors().length).toBe(1);
+                    }).then(done);
                 });
 
-                it('should set isValid to false for all inalid properties', function () {
-                    expect(this.model.property1.isValid()).toBe(false);
-                    expect(this.model.property2.isValid()).toBe(false);
+                it('should set isValid to false for all inalid properties', function (done) {
+                    model.validate().then(function() {
+                        expect(model.property1.isValid()).toBe(false);
+                        expect(model.property2.isValid()).toBe(false);
+                    }).then(done);
                 });
             });
 
             describe('when array property has no validationRules', function () {
+                var model;
+
                 beforeEach(function () {
-                    this.model = createModel({
+                    model = createModel({
                         property1: 'A Value',
                         property2: []
                     });
                 });
 
-                it('should set isValid to true', function () {
-                    expect(this.model.isValid()).toBe(true);
+                it('should set isValid to true', function (done) {
+                    model.validate().then(function() {
+                        expect(model.isValid()).toBe(true);
+                    }).then(done);
                 });
             });
 
             describe('when array property has validationRules that are broken', function () {
+                var model;
+
                 beforeEach(function () {
-                    this.model = {
+                    model = {
                         arrayProp: ko.observable([]).addValidationRules({
                             minLength: 2
                         })
                     };
-                    hx.validation.mixin(this.model);
-                    this.model.validate();
+
+                    hx.validation.mixin(model);
                 });
 
-                it('should set isValid of the model to false', function () {
-                    expect(this.model.isValid()).toBe(false);
+                it('should set isValid of the model to false',function (done) {
+                    model.validate().then(function() {
+                        expect(model.isValid()).toBe(false);
+                    }).then(done);
                 });
 
-                it('should set isValid of the array property to false', function () {
-                    expect(this.model.arrayProp.isValid()).toBe(false);
+                it('should set isValid of the array property to false', function (done) {
+                    model.validate().then(function() {
+                        expect(model.arrayProp.isValid()).toBe(false);
+                    }).then(done);
                 });
 
-                it('should add error message to the array property error observable', function () {
-                    expect(this.model.arrayProp.errors().length).toBe(1);
+                it('should add error message to the array property error observable', function (done) {
+                    model.validate().then(function() {
+                        expect(model.arrayProp.errors().length).toBe(1);
+                    }).then(done);
                 });
 
                 describe('and child validatables with one failing', function () {
+                    var model;
+
                     beforeEach(function () {
                         function makeArrayValue(value) {
                             return ko.observable(value).addValidationRules({
@@ -477,31 +584,39 @@ describe('validation', function () {
                         
                         var array = [makeArrayValue('A Value'), makeArrayValue(void 0), makeArrayValue('Another Value')];
                         
-                        this.model = {
+                        model = {
                             arrayProp: ko.observable(array).addValidationRules({
                                 minLength: 2
                             })
                         };
-                        hx.validation.mixin(this.model);
-                        this.model.validate();
+
+                        hx.validation.mixin(model);
                     });
 
-                    it('should set isValid of the model to false', function () {
-                        expect(this.model.isValid()).toBe(false);
+                    it('should set isValid of the model to false', function (done) {
+                        model.validate().then(function() {
+                            expect(model.isValid()).toBe(false);
+                        }).then(done);
                     });
 
-                    it('should set isValid of the valid child array property to true', function () {
-                        expect(this.model.arrayProp()[0].isValid()).toBe(true);
-                        expect(this.model.arrayProp()[2].isValid()).toBe(true);
+                    it('should set isValid of the valid child array property to true', function (done) {
+                        model.validate().then(function() {
+                            expect(model.arrayProp()[0].isValid()).toBe(true);
+                            expect(model.arrayProp()[2].isValid()).toBe(true);
+                        }).then(done);
                     });
 
-                    it('should set isValid of the invalid child array property to false', function () {
-                        expect(this.model.arrayProp()[1].isValid()).toBe(false);
+                    it('should set isValid of the invalid child array property to false', function (done) {
+                        model.validate().then(function() {
+                            expect(model.arrayProp()[1].isValid()).toBe(false);
+                        }).then(done);
                     });
                 });
             });
 
             describe('when array property has child validatables with one failing', function () {
+                var model;
+
                 beforeEach(function () {
                     function makeArrayValue(value) {
                         return ko.observable(value).addValidationRules({
@@ -510,30 +625,36 @@ describe('validation', function () {
                     };
                     
                     var array = [makeArrayValue('A Value'), makeArrayValue(void 0), makeArrayValue('Another Value')];
-                    this.model = hx.validation.newModel({
+                    model = hx.validation.newModel({
                         arrayProp: ko.observable(array)
                     });
-
-                    this.model.validate();
                 });
 
-                it('should set isValid of the model to false', function () {
-                    expect(this.model.isValid()).toBe(false);
+                it('should set isValid of the model to false', function (done) {
+                    model.validate().then(function() {
+                        expect(model.isValid()).toBe(false);
+                    }).then(done);
                 });
 
-                it('should set isValid of the valid child array property to true', function () {
-                    expect(this.model.arrayProp()[0].isValid()).toBe(true);
-                    expect(this.model.arrayProp()[2].isValid()).toBe(true);
+                it('should set isValid of the valid child array property to true', function (done) {
+                    model.validate().then(function() {
+                        expect(model.arrayProp()[0].isValid()).toBe(true);
+                        expect(model.arrayProp()[2].isValid()).toBe(true);
+                    }).then(done);
                 });
 
-                it('should set isValid of the invalid child array property to false', function () {
-                    expect(this.model.arrayProp()[1].isValid()).toBe(false);
+                it('should set isValid of the invalid child array property to false', function (done) {
+                    model.validate().then(function() {
+                        expect(model.arrayProp()[1].isValid()).toBe(false);
+                    }).then(done);
                 });
             });
 
             describe('when plain child object has validatables with one failing', function () {
+                var model;
+
                 beforeEach(function () {
-                    this.model = {
+                    model = {
                         child: {
                             childProperty: ko.observable().addValidationRules({
                                 required: true
@@ -541,20 +662,25 @@ describe('validation', function () {
                         }
                     };
 
-                    hx.validation.mixin(this.model);
-                    this.model.validate();
+                    hx.validation.mixin(model);
                 });
 
-                it('should set isValid of the model to false', function () {
-                    expect(this.model.isValid()).toBe(false);
+                it('should set isValid of the model to false', function (done) {
+                    model.validate().then(function() {
+                        expect(model.isValid()).toBe(false);
+                    }).then(done);
                 });
 
-                it('should set isValid of the invalid child property to false', function () {
-                    expect(this.model.child.childProperty.isValid()).toBe(false);
+                it('should set isValid of the invalid child property to false', function (done) {
+                    model.validate().then(function() {
+                        expect(model.child.childProperty.isValid()).toBe(false);
+                    }).then(done);
                 });
             });
 
             describe('when observable child object has validatables with one failing', function () {
+                var model;
+
                 beforeEach(function () {
                     var child = {
                         childProperty: ko.observable().addValidationRules({
@@ -562,163 +688,129 @@ describe('validation', function () {
                         })
                     };
 
-                    this.model = {
+                    model = {
                         child: ko.observable(child)
                     };
 
-                    hx.validation.mixin(this.model);
-                    this.model.validate();
+                    hx.validation.mixin(model);
                 });
 
-                it('should set isValid of the model to false', function () {
-                    expect(this.model.isValid()).toBe(false);
+                it('should set isValid of the model to false', function (done) {
+                    model.validate().then(function() {
+                        expect(model.isValid()).toBe(false);
+                    }).then(done);
                 });
 
-                it('should set isValid of the invalid child property to false', function () {
-                    expect(this.model.child().childProperty.isValid()).toBe(false);
+                it('should set isValid of the invalid child property to false', function (done) {
+                    model.validate().then(function() {
+                        expect(model.child().childProperty.isValid()).toBe(false);
+                    }).then(done);
                 });
             });
 
             describe('when only server-side errors are set', function () {
+                var model;
+
                 beforeEach(function () {
-                    this.model = createModel({
+                    model = createModel({
                         property1: 'A Value',
                         property2: 'A Value'
                     });
-                    this.model.setServerErrors({
+
+                    model.setServerErrors({
                         property1: 'property1 is invalid on server',
                         _: 'The whole form is somehow invalid'
                     });
                 });
 
-                it('should set isValid to true', function () {
-                    expect(this.model.isValid()).toBe(true);
+                it('should set isValid to true', function (done) {
+                    model.validate().then(function() {
+                        expect(model.isValid()).toBe(true);
+                    }).then(done);
                 });
 
-                it('should set non-property error messages on serverErrors of model', function () {
-                    expect(this.model.serverErrors()).toEqual(['The whole form is somehow invalid']);
+                it('should set non-property error messages on serverErrors of model', function (done) {
+                    model.validate().then(function() {
+                        expect(model.serverErrors()).toEqual(['The whole form is somehow invalid']);
+                    }).then(done);
                 });
 
-                it('should set property error messages on serverErrors of property', function () {
-                    expect(this.model.property1.serverErrors()).toEqual(['property1 is invalid on server']);
+                it('should set property error messages on serverErrors of property', function (done) {
+                    model.validate().then(function() {
+                        expect(model.property1.serverErrors()).toEqual(['property1 is invalid on server']);
+                    }).then(done);
                 });
 
-                it('should set isValid of property with server-side errors to true', function () {
-                    expect(this.model.property1.isValid()).toBe(true);
+                it('should set isValid of property with server-side errors to true', function (done) {
+                    model.validate().then(function() {
+                        expect(model.property1.isValid()).toBe(true);
+                    }).then(done);
                 });
 
-                it('should set properties without serverErrors as having an empty array of server errors', function () {
-                    expect(this.model.property2.serverErrors()).toEqual([]);
+                it('should set properties without serverErrors as having an empty array of server errors', function (done) {
+                    model.validate().then(function() {
+                        expect(model.property2.serverErrors()).toEqual([]);
+                    }).then(done);
                 });
 
-                describe('and property value is updated', function () {
-                    beforeEach(function () {
-                        this.model.property1('A New Value');
+                it('should clear the server errors of the property when property updated', function () {
+                    model.property1('A New Value');
+
+                    waitsFor(function() { return model.property1.validating() === false; })
+
+                    runs(function() {
+                        expect(model.property1.serverErrors()).toBeAnEmptyArray();
                     });
-
-                    it('should clear the server errors of the property', function () {
-                        expect(this.model.property1.serverErrors()).toBeAnEmptyArray();
-                    });
                 });
 
-                describe('and model is validated again', function () {
-                    beforeEach(function () {
-                        this.model.validate();
-                    });
-
-                    it('should clear the server errors of the model', function () {
+                it('should clear the server errors of the model when validated again', function (done) {
+                    model.validate().then(function() {
                         expect(this.model.serverErrors()).toBeAnEmptyArray();
-                    });
+                    }).then(done);
                 });
             });
-
-            describe('async', function() {
-                beforeEach(function() {
-                    this.asyncDeferred = asyncDeferred = new jQuery.Deferred();
-
-                    this.property = ko.observable().addValidationRules({
-                            custom: function() {
-                                return asyncDeferred;
-                            }
-                        });
-
-                    this.model = {
-                        asyncProperty: this.property
-                    };
-
-                    hx.validation.mixin(this.model);
-                    this.validatePromise = this.model.validate();
-                })
-
-                it('should return a pending promise from validate method', function() {
-                    expect(this.validatePromise.state()).toBe("pending");
-                })
-
-                it('should set validating to true if promises have not been resolved', function() {
-                    expect(this.model.validating()).toBe(true);
-                })
-
-                it('should set validating to false if promises have been resolved', function() {
-                    this.asyncDeferred.resolve(true);
-
-                    expect(this.model.validating()).toBe(false);
-                })
-
-                it('should resolve validation promise with isValid value when resolved true', function() {
-                    this.asyncDeferred.resolve(true);
-
-                    expect(this.validatePromise.state()).toBe("resolved");
-
-                    this.validatePromise.done(function(result) {
-                        expect(result).toBe(true);
-                    })
-                })
-
-                it('should resolve validation promise with isValid value when resolved true', function() {
-                    this.asyncDeferred.resolve(false);
-
-                    expect(this.validatePromise.state()).toBe("resolved");
-
-                    this.validatePromise.done(function(result) {
-                        expect(result).toBe(false);
-                    })
-                })
-
-            })
         });
 
         describe('with explicitly included properties', function () {
+            var model;
+
             beforeEach(function () {
-                this.model = {
+                model = {
                     ignoredProperty: ko.observable().addValidationRules({ required: true }),
                     includedProperty: ko.observable('a value').addValidationRules({ required: true })
                 };
 
-                hx.validation.mixin(this.model, ['includedProperty']);
-                this.model.validate();
+                hx.validation.mixin(model, ['includedProperty']);
             });
 
-            it('should not validate properties not in inclusion list', function () {
-                expect(this.model.ignoredProperty.validated()).toBe(false);
+            it('should not validate properties not in inclusion list', function (done) {
+                model.validate().then(function() {
+                    expect(model.ignoredProperty.validated()).toBe(false);
+                }).then(done);
             });
 
-            it('should validate properties in inclusion list', function () {
-                expect(this.model.includedProperty.validated()).toBe(true);
+            it('should validate properties in inclusion list', function (done) {
+                model.validate().then(function() {
+                    expect(model.includedProperty.validated()).toBe(true);
+                }).then(done);
             });
         });
 
         describe('messaging', function () {
+            var model;
+
             beforeEach(function () {
                 hx.validation.rules.myCustomRule = {
                     validator: function () {
-                        false;
+                        return false;
                     },
+
                     message: this.stub().returns('myCustomRule message')
                 };
 
                 this.asyncDeferred = asyncDeferred = new $.Deferred();
 
-                this.model = {
+                model = {
                     customMessageProp: ko.observable().addValidationRules({
                         required: true,
                         requiredMessage: 'My custom failure message'
@@ -734,7 +826,7 @@ describe('validation', function () {
                     }),
 
                     asyncMessageProp: ko.observable().addValidationRules({
-                        custom: function(value) {
+                        custom: function() {
                             return asyncDeferred;
                         },
 
@@ -743,28 +835,34 @@ describe('validation', function () {
                     })
                 };
 
-                hx.validation.mixin(this.model);
-                
-                this.model.validate();
+                hx.validation.mixin(model);
             });
 
-            it('should use message specified in rules', function () {
-                expect(this.model.customMessageProp.errors()).toContain('My custom failure message');
+            it('should use message specified in rules', function (done) {
+                model.validate().then(function() {
+                    expect(this.model.customMessageProp.errors()).toContain('My custom failure message');
+                }).then(done);
             });
 
-            it('should call rule message property if no overrides', function () {
-                expect(hx.validation.rules.myCustomRule.message).toHaveBeenCalledWith(true);
+            it('should call rule message property if no overrides', function (done) {
+                model.validate().then(function() {
+                    expect(hx.validation.rules.myCustomRule.message).toHaveBeenCalledWith(true);
+                }).then(done);
             });
 
-            it('should not format error messages by default', function () {
-                expect(this.model.customRuleProp.errors()).toContain('myCustomRule message');
+            it('should not format error messages by default', function (done) {
+                model.validate().then(function() {
+                    expect(this.model.customRuleProp.errors()).toContain('myCustomRule message');
+                }).then(done);
             });
 
-            it('should correctly use message when custom validator is async', function () {
-                // We want to simulate async that is not resolved immediately, resolve it here
-                asyncDeferred.resolve(false);
+            it('should correctly use message when custom validator is async', function (done) {
+                model.validate().then(function() {
+                    // We want to simulate async that is not resolved immediately, resolve it here
+                    asyncDeferred.resolve(false);
 
-                expect(this.model.asyncMessageProp.errors()).toContain('This is the async failure');
+                    expect(this.model.asyncMessageProp.errors()).toContain('This is the async failure');
+                }).then(done);
             });
         });
     });

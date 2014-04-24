@@ -174,7 +174,7 @@ describe('dialog', function() {
             it('should resolve open promise with value passed to close', function() {
                 expect(this.openPromise.state()).toBe('resolved');
 
-                this.openPromise.done(function(resolvedValue) {
+                this.openPromise.then(function(resolvedValue) {
                     expect(resolvedValue).toBe(this.closeValue);
                 }.bind(this))
             })
@@ -318,7 +318,7 @@ describe('dialog', function() {
                 ko.utils.triggerEvent(document.getElementsByClassName('hx-dialog--ok')[0], 'click');
 
                 expect(this.alertPromise.state()).toBe("resolved");
-                this.alertPromise.done(function(v) {
+                this.alertPromise.then(function(v) {
                     expect(v).toBe(true);
                 })
             })
@@ -385,7 +385,7 @@ describe('dialog', function() {
                 ko.utils.triggerEvent(document.getElementsByClassName('hx-dialog--ok')[0], 'click');
 
                 expect(this.confirmPromise.state()).toBe("resolved");
-                this.confirmPromise.done(function(v) {
+                this.confirmPromise.then(function(v) {
                     expect(v).toBe(true);
                 })
             })
@@ -399,7 +399,7 @@ describe('dialog', function() {
                 ko.utils.triggerEvent(document.getElementsByClassName('hx-dialog--cancel')[0], 'click');
 
                 expect(this.confirmPromise.state()).toBe("resolved");
-                this.confirmPromise.done(function(v) {
+                this.confirmPromise.then(function(v) {
                     expect(v).toBe(false);
                 })
             })

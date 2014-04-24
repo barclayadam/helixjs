@@ -232,7 +232,7 @@ hx.provide('$DataView', ['$InMemoryProvider'], function($InMemoryProvider) {
 
         var providerReturn = this.$$provider.load(this.$$paramsObservable());
 
-        hx.utils.asPromise(providerReturn).done(function(result) {
+        Promise.resolve(providerReturn).then(function(result) {
             if(this.$$provider.processResult && result) {
                 result = this.$$provider.processResult(result, this.$$paramsObservable());
             }
