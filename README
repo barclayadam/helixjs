@@ -17,9 +17,9 @@ creating killer applications:
  * Validation
  * A number of UI components built to work from mobile to desktop
 
- All of these features build on knockout in a natural way that does not impose too
- much structure. We want you to feel like you are writing pretty plain javascript and
- knockout code, not HelixJS.
+All of these features build on knockout in a natural way that does not impose too
+much structure. We want you to feel like you are writing pretty plain javascript and
+knockout code, not HelixJS.
 
 ##Team Members
 
