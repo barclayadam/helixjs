@@ -1,0 +1,14 @@
+* text=auto
+
+*.css text
+*.js text
+*.html text
+*.txt text
+
+# Graphics
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg text
