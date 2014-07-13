@@ -1,0 +1,38 @@
+{
+  "name": "HelixJS",
+  "version": "0.0.0",
+  "description": "HelixJS provides a solid foundation for creating rich web applications, built on the Knockout library",
+  "devDependencies": {
+    "gulp": "^3.6.2",
+    "vinyl-source-stream": "^0.1.1",
+    "browserify": "^4.1.8",
+    "tape": "^2.13.3",
+    "gulp-util": "^2.2.17",
+    "through": "^2.3.4",
+    "es6-transpiler": "^0.7.13-5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/barclayadam/helixjs.git"
+  },
+  "keywords": [
+    "helixjs",
+    "knockout"
+  ],
+  "author": "Adam Barclay",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/barclayadam/helixjs/issues"
+  },
+  "homepage": "https://github.com/barclayadam/helixjs",
+
+  "testling": {
+    "preprocess": "build-tests.bat",
+    "scripts": "build/hx.tests.js",
+    "browsers": [
+      "ie/8..latest",
+      "chrome/latest",
+      "firefox/latest"
+    ]
+  }
+}

@@ -63,7 +63,18 @@ If you prefer to build the library yourself:
 
         gulp
 
+##Running tests locally
 
+HelixJS tests are run using testling:
+
+ 1. Install testling using `npm`. This is installed globally
+
+        npm install -g testling
+
+ 2. Run the tests locally in a headless browser:
+
+     testling
+     
 ##License
 
 [The MIT License (MIT)](http://www.opensource.org/licenses/mit-license.php)
