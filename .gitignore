@@ -1,6 +1,14 @@
 build
 undefined
+bin
+obj
 readme.html
 node_modules
 helixjs.sublime-workspace
+helixjs.csproj.user
+*.suo
 npm-debug.log
+tests/*.js
+tests/*.
+src/*.js
+src/*.map

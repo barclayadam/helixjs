@@ -74,6 +74,22 @@ HelixJS tests are run using testling:
  2. Run the tests locally in a headless browser:
 
      testling
+
+##Typescript
+
+HelixJS is built using [Typescript](http://www.typescriptlang.org/):
+
+    TypeScript lets you write JavaScript the way you really want to.
+    TypeScript is a typed superset of JavaScript that compiles to plain JavaScript.
+    Any browser. Any host. Any OS. Open Source.
+
+HelixJS can still be used in plain javascript projects as it is distributed as plain javascript files, in addition to
+the typescript files.
+
+TypeScript provides many benefits to large-scale javascript application development, including class syntax and
+most importantly type-checking.
+
+We use [tsd](http://definitelytyped.org/tsd/) (`TypeScript Definition manager for DefinitelyTyped`) whilst developing to grab TypeScript definition files for dependencies such as `knockout` and `tape` for testing.
      
 ##License
 

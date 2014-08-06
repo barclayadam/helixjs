@@ -1,11 +1,11 @@
 var gulp = require('gulp');
+var path = require('path');
 var gutil = require('gulp-util');
-var source = require('vinyl-source-stream')
+var source = require('vinyl-source-stream');
 var browserify = require('browserify');
-var es6Transform = require('./gulp/es6-transform');
 
 var ERROR_LEVELS = ['error', 'warning'];
- 
+
 // Return true if the given level is equal to or more severe than
 // the configured fatality error level.
 // If the fatalLevel is 'off', then this will always return false.
@@ -13,7 +13,7 @@ var ERROR_LEVELS = ['error', 'warning'];
 function isFatal(level) {
     return ERROR_LEVELS.indexOf(level) <= ERROR_LEVELS.indexOf('error');
 }
- 
+
 // Handle an error based on its severity level.
 // Log all levels, and exit the process for fatal levels.
 function handleError(level, error) {
@@ -23,19 +23,31 @@ function handleError(level, error) {
         process.exit(1);
     }
 }
- 
+
 // Convenience handler for error-level errors.
-function onError(error) { handleError.call(this, 'error', error);}
+function onError(error) { handleError.call(this, 'error', error); }
 
 // Convenience handler for warning-level errors.
-function onWarning(error) { handleError.call(this, 'warning', error);}
+function onWarning(error) { handleError.call(this, 'warning', error); }
+
+function onBrowserifyError(error) {
+    // With a fileName we can assume this is a TypeScript error
+    if (error.fileName) {
+        gutil.log(path.relative(__DIRNAME, error.fileName) + ':' + error.line + ' ' + error.message);
+    } else {
+        gutil.log(error);
+    }
+
+    process.exit(1);
+}
 
 // Basic usage
-gulp.task('scripts', function() {
+gulp.task('scripts', function () {
     var bundleStream = browserify()
-                .transform(es6Transform.configure(/^(?!.*node_modules)+.+\.js$/))
-                .require(require.resolve('./src/app.js'), { entry: true })
-                .bundle({ debug: true })
+        .add('./src/app.ts')
+        .plugin('tsify', { noImplicitAny: true })
+        .on('error', onBrowserifyError)
+        .bundle({ debug: true });
 
     // Single entry point to browserify
     return bundleStream
@@ -45,11 +57,12 @@ gulp.task('scripts', function() {
 });
 
 // Basic usage
-gulp.task('tests', function() {
+gulp.task('tests', function () {
     var bundleStream = browserify()
-                .transform(es6Transform.configure(/^(?!.*node_modules)+.+\.js$/))
-                .require(require.resolve('./test/app.tests.js'), { entry: true })
-                .bundle({ debug: true })
+        .add('./tests/app.tests.ts')
+        .plugin('tsify', { noImplicitAny: true })
+        .on('error', onBrowserifyError)
+        .bundle({ debug: true });
 
     // Single entry point to browserify
     return bundleStream

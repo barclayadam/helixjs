@@ -6,10 +6,11 @@
     "gulp": "^3.6.2",
     "vinyl-source-stream": "^0.1.1",
     "browserify": "^4.1.8",
-    "tape": "^2.13.3",
     "gulp-util": "^2.2.17",
     "through": "^2.3.4",
-    "es6-transpiler": "^0.7.13-5"
+    "tsify": "^0.3.0",
+    "chai": "*",
+    "mocha": "*"
   },
   "repository": {
     "type": "git",
@@ -25,10 +26,10 @@
     "url": "https://github.com/barclayadam/helixjs/issues"
   },
   "homepage": "https://github.com/barclayadam/helixjs",
-
   "testling": {
     "preprocess": "build-tests.bat",
     "scripts": "build/hx.tests.js",
+    "harness":  "mocha",
     "browsers": [
       "ie/8..latest",
       "chrome/latest",
