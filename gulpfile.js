@@ -1,8 +1,11 @@
 var gulp = require('gulp');
+var glob = require("glob");
 var path = require('path');
 var gutil = require('gulp-util');
 var source = require('vinyl-source-stream');
 var browserify = require('browserify');
+var factor = require('factor-bundle');
+var tsify = require('tsify');
 
 var ERROR_LEVELS = ['error', 'warning'];
 
@@ -51,22 +54,27 @@ gulp.task('scripts', function () {
 
     // Single entry point to browserify
     return bundleStream
-      .on('error', onError)
       .pipe(source('hx.js'))
       .pipe(gulp.dest('./build/'));
 });
 
 // Basic usage
 gulp.task('tests', function () {
-    var bundleStream = browserify()
-        .add('./tests/app.tests.ts')
-        .plugin('tsify', { noImplicitAny: true })
+    var tests = glob.sync('./tests/**/*.ts'),
+        bundleStream = browserify({
+            entries: tests
+        })
+        .plugin(tsify, { noImplicitAny: true })
+        .plugin(factor, {
+            o: tests.map(function (source) {
+                return source.replace('.ts', '.spec.js').replace('/tests', '/build/tests');
+            })
+        })
         .on('error', onBrowserifyError)
         .bundle({ debug: true });
 
     // Single entry point to browserify
     return bundleStream
-      .on('error', onError)
-      .pipe(source('hx.tests.js'))
-      .pipe(gulp.dest('./build/'));
+      .pipe(source('hx.tests.deps.js'))
+      .pipe(gulp.dest('./build/tests'));
 });

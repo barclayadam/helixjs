@@ -7,8 +7,9 @@ node_modules
 helixjs.sublime-workspace
 helixjs.csproj.user
 *.suo
+*.user
 npm-debug.log
 tests/*.js
-tests/*.
+tests/*.map
 src/*.js
 src/*.map

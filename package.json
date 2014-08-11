@@ -1,39 +1,41 @@
 {
-  "name": "HelixJS",
-  "version": "0.0.0",
-  "description": "HelixJS provides a solid foundation for creating rich web applications, built on the Knockout library",
-  "devDependencies": {
-    "gulp": "^3.6.2",
-    "vinyl-source-stream": "^0.1.1",
-    "browserify": "^4.1.8",
-    "gulp-util": "^2.2.17",
-    "through": "^2.3.4",
-    "tsify": "^0.3.0",
-    "chai": "*",
-    "mocha": "*"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/barclayadam/helixjs.git"
-  },
-  "keywords": [
-    "helixjs",
-    "knockout"
-  ],
-  "author": "Adam Barclay",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/barclayadam/helixjs/issues"
-  },
-  "homepage": "https://github.com/barclayadam/helixjs",
-  "testling": {
-    "preprocess": "build-tests.bat",
-    "scripts": "build/hx.tests.js",
-    "harness":  "mocha",
-    "browsers": [
-      "ie/8..latest",
-      "chrome/latest",
-      "firefox/latest"
-    ]
-  }
+    "name": "HelixJS",
+    "version": "0.0.0",
+    "description": "HelixJS provides a solid foundation for creating rich web applications, built on the Knockout library",
+    "devDependencies": {
+        "gulp": "^3.6.2",
+        "vinyl-source-stream": "^0.1.1",
+        "browserify": "^4.1.8",
+        "gulp-util": "^2.2.17",
+        "through": "^2.3.4",
+        "tsify": "^0.3.0",
+        "chai": "*",
+        "mocha": "*",
+        "glob": "^4.0.5",
+        "factor-bundle": "^1.0.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/barclayadam/helixjs.git"
+    },
+    "keywords": [
+        "helixjs",
+        "knockout"
+    ],
+    "author": "Adam Barclay",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/barclayadam/helixjs/issues"
+    },
+    "homepage": "https://github.com/barclayadam/helixjs",
+    "testling": {
+        "preprocess": "build-tests.bat",
+        "scripts": [ "build/tests/hx.tests.deps.js", "build/tests/*.spec.js"],
+        "harness": "mocha",
+        "browsers": [
+            "ie/8..latest",
+            "chrome/latest",
+            "firefox/latest"
+        ]
+    }
 }
