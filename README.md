@@ -65,15 +65,14 @@ If you prefer to build the library yourself:
 
 ##Running tests locally
 
-HelixJS tests are run using testling:
+HelixJS tests can be run within a browser using the built `tests/runner.html`. The suite and all
+of its dependencies are built and watched:
 
- 1. Install testling using `npm`. This is installed globally
+    gulp tests
 
-        npm install -g testling
-
- 2. Run the tests locally in a headless browser:
-
-     testling
+The above command will start watching the source and tests folders building them and the test
+suite HTML file that will be automatically reloaded (using `live reload`). Your default browser
+will also be opened.
 
 ##Typescript
 
@@ -89,7 +88,8 @@ the typescript files.
 TypeScript provides many benefits to large-scale javascript application development, including class syntax and
 most importantly type-checking.
 
-We use [tsd](http://definitelytyped.org/tsd/) (`TypeScript Definition manager for DefinitelyTyped`) whilst developing to grab TypeScript definition files for dependencies such as `knockout` and `tape` for testing.
+We use [tsd](http://definitelytyped.org/tsd/) (`TypeScript Definition Manager for DefinitelyTyped`) whilst developing 
+to grab TypeScript definition files for dependencies such as `knockout` and `mocha` for testing.
      
 ##License
 

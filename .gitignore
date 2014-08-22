@@ -13,3 +13,4 @@ tests/*.js
 tests/*.map
 src/*.js
 src/*.map
+tests/runner.html

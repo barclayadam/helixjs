@@ -1,6 +1,7 @@
 * text=auto
 
 *.css text
+*.ts text
 *.js text
 *.html text
 *.txt text

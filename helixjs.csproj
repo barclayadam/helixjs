@@ -68,8 +68,8 @@
     <Content Include=".gitattributes" />
     <Content Include=".gitignore" />
     <Content Include="build-tests.bat" />
+    <Content Include="gulp\logger.js" />
     <Content Include="helixjs.sublime-project" />
-    <Content Include="helixjs.sublime-workspace" />
     <Content Include="LICENSE" />
     <Content Include="package.json" />
     <None Include="README.md" />

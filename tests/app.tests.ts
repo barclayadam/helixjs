@@ -9,4 +9,10 @@ describe('Basic app test', () => {
 
         chai.expect(appInstance.greeting()).to.eq('Hello Adam');
     });
+
+    it('second test!', () => {
+        var appInstance = new App('Adam');
+
+        chai.expect(appInstance.greeting()).to.eq('Hello Adam');
+    });
 });
