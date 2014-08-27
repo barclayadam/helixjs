@@ -20,7 +20,7 @@ hx.provide('$authoriser', function() {
             // resolves to true / false.
             //
             // If `undefined` is returned, we will convert that to a `true` result.
-            return Promise.resolve(component.isAuthorised(parameters, handleResult))
+            return Promise.resolve(component.isAuthorised(parameters))
                 .then(function(result) {
                     return result !== false;
                 });

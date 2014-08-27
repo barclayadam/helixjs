@@ -51,52 +51,21 @@
      */
     hx.runConfigBlocks = function() {
         for (var i in configBlocks) {
-            injector.instantiate.apply(this, configBlocks[i]);
+            injector.instantiate(configBlocks[i][0], configBlocks[i][1]);
         }
 
         configBlocks = [];
         configBlocksRun = true;
     }
 
-    function startApp(element) {
-        var $location = hx.get('$location'),
-            $bus = hx.get('$bus'),
-            $ajax = hx.get('$ajax');
-
-        ko.utils.toggleDomNodeCssClass(element, 'app-loading', true);
+    hx.start = function() {
+        ko.utils.toggleDomNodeCssClass(document.body, 'app-loading', true);
 
         hx.runConfigBlocks();
+        ko.applyBindings({});
 
-        $ajax.listen(function() {
-            $bus.publish('preload-data', {});
-        }).then(function() {
-            // Once the app has been bootstrapped we want to set-up the region manager
-            // before the app is properly 'started' (e.g. location services is initialised)
-            var bindingContext = new ko.bindingContext({});
-            ko.applyBindingsToDescendants(bindingContext, element);
+        hx.get('$location').initialise();
 
-            $location.initialise();
-
-            ko.utils.toggleDomNodeCssClass(element, 'app-loading', false);
-        })
-    }
-
-    // Once everything has been loaded we bootstrap, which simply involves attempting
-    // to bind the current document, which will find any app binding handler definitions
-    // which kicks off the 'app' semantics of a HelixJS application.
-
-    function bootstrap() {
-        ko.applyBindings({});        
-    }
-
-    // TODO: Remove jQuery dependency
-    $(document).ready(bootstrap);
-
-    koBindingHandlers.app = {
-        init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-            startApp(element); 
-            
-            return { controlsDescendantBindings: true };
-        }
+        ko.utils.toggleDomNodeCssClass(document.body, 'app-loading', false);
     };
 })();

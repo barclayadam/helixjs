@@ -54,11 +54,11 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location', '$injector', '$authorise
                 }
             });
 
-            if (routeDefinitionAsRegex.length > 1 && routeDefinitionAsRegex.charAt(0) === '/') {
-                routeDefinitionAsRegex = routeDefinitionAsRegex.substring(1);
+            if (routeDefinitionAsRegex.length > 1 && routeDefinitionAsRegex.charAt(0) !== '/') {
+                routeDefinitionAsRegex = '/' + routeDefinitionAsRegex;
             }
 
-            this.incomingMatcher = new RegExp("" + routeDefinitionAsRegex + "/?$", "i");
+            this.incomingMatcher = new RegExp("^" + routeDefinitionAsRegex + "/?$", "i");
         }
 
         Route.prototype.match = function (path) {
@@ -179,12 +179,14 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location', '$injector', '$authorise
                     self.current(match);
 
                     if (match.route.callback && match.route.callback(match.parameters) === false) {
-                        return;
+                        return false;
                     }
 
                     $bus.publish("routeNavigated:" + match.route.name, msg);
+                    return true;
                 } else {
                     $bus.publish("unauthorisedRoute:" + match.route.name, msg);
+                    return false;
                 }
             });
     };
@@ -229,18 +231,22 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location', '$injector', '$authorise
      */
     RouteTable.prototype.getMatchedRouteFromUrl = function (url) {
         var parsedUri = new hx.Uri(url, { decode: true }),
-            match;
+            foundMatch;
 
         for (var name in this._routes) {
             var r = this._routes[name],
                 matchedParams = r.match(parsedUri.path);
 
             if (matchedParams != null) {
-                match = new MatchedRoute(r, url, _.extend(matchedParams, parsedUri.variables));
+                // We want to find the longest URL, as that is more specific and generally
+                // wanted
+                if (!foundMatch || foundMatch.route.url.length < r.url) {
+                    foundMatch = new MatchedRoute(r, url, _.extend(matchedParams, parsedUri.variables));
+                }
             }
         }
 
-        return match;
+        return foundMatch;
     };
 
     /**

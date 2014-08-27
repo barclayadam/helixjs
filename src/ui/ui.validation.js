@@ -19,7 +19,7 @@ hx.bindingHandler('validated', {
         var passedValue = valueAccessor(),
             validatedObservable = passedValue === true ? allBindingsAccessor.get('value') : passedValue;
 
-        if(validatedObservable) {
+        if (validatedObservable) {
             if (validatedObservable.isValid) {
                 element.setAttribute('aria-invalid', '' + !validatedObservable.isValid());
 
@@ -95,11 +95,11 @@ hx.bindingHandler('validationMessage', {
                 var customErrorMessage = ko.utils.domData.get(element, '__validation_message');
             
                 if (customErrorMessage) {
-                    ko.utils.setTextContent(element, customErrorMessage);
+                    element.innerHTML = customErrorMessage;
                 } else if (allErrors.length === 0) {
-                    ko.utils.setTextContent(element, 'Valid');
+                    element.innerHTML = 'Valid';
                 } else {
-                    ko.utils.setTextContent(element, allErrors.join('<br />'));
+                    element.innerHTML = allErrors.join('<br />');
                 }
             }
         } else {

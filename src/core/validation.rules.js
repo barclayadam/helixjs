@@ -83,7 +83,7 @@
             },
 
             modifyElement: function (element, options) {
-                element.setAttribute("type", 'numeric');
+                element.setAttribute("type", 'number');
             }
         },
 
@@ -95,7 +95,7 @@
             message: "This field must be a whole number",
 
             modifyElement: function (element, options) {
-                element.setAttribute("type", 'numeric');
+                element.setAttribute("type", 'number');
             }
         },
 

@@ -40,7 +40,7 @@
             disableDuringExecution = true;
         } else {
             enabled = hx.utils.asObservable(funcOrOptions.enabled != null ? funcOrOptions.enabled : true, funcOrOptions.context || this);
-            disableDuringExecution = funcOrOptions.disableDuringExecution != null ? funcOrOptions.disableDuringExecution : false;
+            disableDuringExecution = funcOrOptions.disableDuringExecution != null ? funcOrOptions.disableDuringExecution : true;
             action = funcOrOptions.action;
         }
 
@@ -51,23 +51,24 @@
          * @return {any} The result of executing this action
          */
         function execute() {
-            var ret;
+            return ko.dependencyDetection.ignore(function() {
+                if (enabled() && (!disableDuringExecution || !executing())) {
+                    executing(true);
 
-            if (enabled() && (!disableDuringExecution || !executing())) {
-                executing(true);
+                    var ret = action.apply(funcOrOptions.context || this, arguments);
 
-                ret = action.apply(funcOrOptions.context || this, arguments);
+                    // If we have a promise returned then executing(false) will happen
+                    // AFTER it has completed.
+                    if (ret && ret.lastly) {
+                        return ret.lastly(function() {
+                            executing(false);
+                        });
+                    }
 
-                Promise.resolve(ret)
-                    .then(function () {
-                        executing(false);
-                    })
-                    .catch(function () {
-                        executing(false);
-                    });;
-
-                return ret;
-            }
+                    executing(false);
+                    return ret;
+                }
+            }, this, arguments);
         };
 
         /**
@@ -116,10 +117,6 @@
         return execute;
     }
 
-    hx.provide('$UiAction', function() {
-        return makeUiAction;
-    });
-
     function setupElementUpdateSubscriptions(element, uiAction, shouldHide) {
         ko.computed(function() {
             var isEnabled = uiAction.enabled();
@@ -137,14 +134,65 @@
                     element.style.display = 'none';
                 }
             } 
-        }, 
-        { disposeWhenNodeIsRemoved: element });
 
-        ko.computed(function() {
             ko.utils.toggleDomNodeCssClass(element, 'is-executing', uiAction.executing());
-        }, 
-        { disposeWhenNodeIsRemoved: element });
+        });
     }
+
+    ko.utils.registerEventHandler(document.body, 'click', function(ev) {
+        var node = ev.target,
+            action;
+
+        while (node && node.tagName !== 'FORM' && !(action = ko.utils.domData.get(node, '__action'))) {
+            node = node.parentNode;
+        }
+
+        if (action) {
+            action(ko.contextFor(node).$data);
+
+            ev.preventDefault();
+        }
+    });
+
+    function applyUiActionToNode(element, uiAction, shouldHide, context) {
+        var isForm = element.tagName === 'FORM';
+
+        if (!uiAction.isUiAction) {
+            if (_.isFunction(uiAction)) {
+                uiAction = makeUiAction({
+                    action: uiAction,
+                    context: context
+                });
+            } else {
+                uiAction.context = uiAction.context || context;
+                uiAction = makeUiAction(uiAction);
+            }
+        }
+
+        ko.utils.domData.set(element, '__action', uiAction);
+
+        setupElementUpdateSubscriptions(element, uiAction, shouldHide);
+
+        if (isForm) {
+            // The actionSubmitDisplay binding handler needs access to the action on
+            // its parent's form. Cannot modify binding context to take over descendant binding as needs
+            // to work with other controlling binding handlers.         
+            ko.utils.domData.set(element, '$formAction', uiAction);
+
+            // We need to register submit event handler as the event does not
+            // bubble so cannot be caught at document level.
+            ko.utils.registerEventHandler(element, 'submit', function handleAction(event) {
+                uiAction();
+                event.preventDefault();
+            });
+        }  
+    }
+
+    makeUiAction.applyToNode = applyUiActionToNode;
+
+    hx.provide('$UiAction', function() {
+        return makeUiAction;
+    });
      
     /**
      * @bindingHandler action
@@ -174,36 +222,7 @@
      */
     hx.bindingHandler('action', {
         init: function(element, valueAccessor, allBindingsAccessor, viewModel) {
-            var shouldHide = allBindingsAccessor.get('onDisabled') === 'hide',
-                uiAction = valueAccessor(),
-                isForm = element.tagName === 'FORM';
-
-            if (!uiAction.isUiAction) {
-                uiAction = makeUiAction({
-                    action: uiAction,
-                    context: viewModel
-                });
-            }
-
-            function handleAction(event) {
-                uiAction();
-                event.preventDefault();
-            }
-
-            ko.utils.domData.set(element, '__action', uiAction);
-
-            setupElementUpdateSubscriptions(element, uiAction, shouldHide);
-
-            if (isForm) {
-                // The actionSubmitDisplay binding handler needs access to the action on
-                // its parent's form. Cannot modify binding context to take over descendant binding as needs
-                // to work with other controlling binding handlers.         
-                ko.utils.domData.set(element, '$formAction', uiAction);
-
-                ko.utils.registerEventHandler(element, 'submit', handleAction);
-            } else {
-                ko.utils.registerEventHandler(element, 'click', handleAction);
-            }         
+            applyUiActionToNode(element, valueAccessor(), allBindingsAccessor.get('onDisabled') === 'hide', viewModel);      
         }
     });
 

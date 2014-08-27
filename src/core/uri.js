@@ -24,11 +24,11 @@ hx.Uri = (function () {
         for (name in variables) {
             val = variables[name];
 
-            if (val !== null) {
+            if (val != null) {
                 if (_.isArray(val)) {
                     for (_i = 0, _len = val.length; _i < _len; _i++) {
                         v = val[_i];
-                        if (v !== null) {
+                        if (v) {
                             tmp.push(queryStringVariable(name, v));
                         }
                     }

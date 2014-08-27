@@ -8,6 +8,21 @@ hx.singleton('$ajax', ['$bus'], function($bus) {
     var requestDetectionFrame = [],
         listening = false;
 
+    function AjaxError(message, responseData) {
+        var tmp = Error.apply(this, arguments);
+        tmp.name = this.name = 'AjaxError';
+
+        this.stack = tmp.stack;
+        this.message = tmp.message;
+        this.response = responseData;
+
+        return this
+    }
+
+    var IntermediateInheritor = function() {}
+        IntermediateInheritor.prototype = Error.prototype;
+    AjaxError.prototype = new IntermediateInheritor();
+
     function parseResponseHeaders(headerStr) {
         if (!headerStr) {
             return {};
@@ -34,8 +49,7 @@ hx.singleton('$ajax', ['$bus'], function($bus) {
     }
 
     function doCall(httpMethod, requestBuilder) {
-        var failureHandlerRegistered = false,
-            promise = new Promise(function(resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
                 var requestOptions = _.defaults(requestBuilder.properties, {
                         url: requestBuilder.url,
                         type: httpMethod,
@@ -73,28 +87,9 @@ hx.singleton('$ajax', ['$bus'], function($bus) {
 
                     $bus.publish("ajaxResponseReceived:failure:" + requestBuilder.url, failureMessage);
 
-                    if (!failureHandlerRegistered) {
-                        $bus.publish("ajaxResponseFailureUnhandled:" + requestBuilder.url, failureMessage);
-                    }
-
-                    reject(response);
+                    reject(new AjaxError('An AJAX request to "' + requestBuilder.url + '" has failed with status "' + response.status + '"', response));
                 });
             });
-
-        var originalCatch = promise.catch;
-            originalThen = promise.then;
-
-        promise.catch = function(callback) {
-              failureHandlerRegistered = true;
-
-              return originalCatch.apply(this, callback);
-        };
-
-        promise.then = function(success, failure) {
-              failureHandlerRegistered = failureHandlerRegistered || (failure != null);
-
-              return originalThen.apply(this, success, failure);
-        };
 
         if (listening) {
             requestDetectionFrame.push(promise);
@@ -161,6 +156,8 @@ hx.singleton('$ajax', ['$bus'], function($bus) {
 
     /** @namespace $ajax  */
     return {
+        error: AjaxError,
+        
         /**
          * Entry point to the AJAX API, which begins the process
          * of 'building' a call to a server using an AJAX call. This
@@ -215,13 +212,12 @@ hx.singleton('$ajax', ['$bus'], function($bus) {
             f();
             listening = false;
 
-            var allFinishedPromise = Promise.all(requestDetectionFrame);
+            return Promise.all(requestDetectionFrame)
+                .then(function(responses) {
+                    requestDetectionFrame = [];
 
-            allFinishedPromise.then(function() {
-                requestDetectionFrame = [];
-            });
-
-            return allFinishedPromise;
+                    return responses;
+                });
         }
     }
 });

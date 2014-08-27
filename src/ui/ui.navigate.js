@@ -74,9 +74,10 @@ hx.bindingHandler('navigate', ['$router', '$log'], function($router, $log) {
                 element.setAttribute('href', match.url);
                 
                 ko.dependencyDetection.ignore(function() {
-                    match.authorise()
-                         .catch(function() {
-                            element.style.display = "none";
+                    match.authorise().then(function (isAuthorised) {
+                            if (!isAuthorised) {
+                                element.style.display = "none";
+                            }
                         })
                 });
             } else {                

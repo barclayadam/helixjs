@@ -41,7 +41,7 @@ hx.singleton('$InMemoryProvider', function() {
     }
 
     $InMemoryProvider.prototype.load = function(loadOptions) {
-        var data = this.options.data(),
+        var data = ko.unwrap(this.options.data),
             totalCount = data.length;
 
         if(loadOptions.where) {

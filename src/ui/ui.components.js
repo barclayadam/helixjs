@@ -99,6 +99,8 @@ hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$r
 
         update: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
             var componentName = ko.utils.unwrapObservable(valueAccessor());
+
+            if (_.isString)
             
             ko.dependencyDetection.ignore(function() {
                 var component = getComponent(componentName),
@@ -121,31 +123,35 @@ hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$r
 
                 $authoriser
                     .authorise(component, parameters)
-                    .done(function() {
+                    .then(function(isAuthorised) {
+                        if (!isAuthorised) {
+                            $log.debug('Authorisation of component has failed "' + componentName + '", this component will not be rendered.');
+                            ko.utils.emptyDomNode(element);
+
+                            return;
+                        }
+
                         ko.utils.toggleDomNodeCssClass(element, 'is-loading', true);
 
-                        var showDeferred = new jQuery.Deferred();
+                        var showPromises = [];
 
                         if (component.beforeShow != null) {                
                             component.beforeShow.call(component, parameters);
                         }
 
                         if (component.show != null) {
-                            showDeferred = $ajax.listen(function() {
-                                component.show.call(component, parameters);
-                            });
-                        } else {
-                            // Resolve immediately, nothing to wait for
-                            showDeferred.resolve();
+                            showPromises.push($ajax.listen(function() {
+                                showPromises.push(component.show.call(component, parameters));
+                            }));
                         }
 
-                        showDeferred.done(function () {
+                        return Promise.all(showPromises).then(function () {
                             var templateValueAccessor = createTemplateValueAccessor(component, componentName, ko.utils.domData.get(element, '__component_hasAnonymousTemplate') === false),
                                 innerBindingContext = bindingContext.extend();
 
-                            $ajax.listen(function() {
+                            return $ajax.listen(function() {
                                 koBindingHandlers.template.update(element, templateValueAccessor, allBindingsAccessor, viewModel, innerBindingContext);
-                            }).done(function() {
+                            }).then(function() {
                                 ko.utils.toggleDomNodeCssClass(element, 'is-loading', false);
 
                                 if (component.afterRender != null) {
@@ -156,11 +162,11 @@ hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$r
                             });
                         });
                     })
-                    .fail(function() {
-                        $log.debug('Authorisation of component has failed, this component will not be rendered.');
+                    .caught(function(err) {
+                        $log.warn('An error occurred rendering component "' + componentName + '": ' + err.toString() + '\n' + err.stack);
+
                         ko.utils.emptyDomNode(element);                        
-                    })
-                
+                    });                
             })
         }
     };

@@ -31,33 +31,38 @@
         }
 
         var arguments = _.map(dependencies, function(d) {
-                if(_.isArray(d)) {
-                    var instantiatedModules = injector.get(d[0]);
+                var found = injector.find(d);
 
-                    return _.isArray(instantiatedModules) ? instantiatedModules : [instantiatedModules];
-                } else {
-                    return injector.get(d)
+                if (!found) {
+                    throw new Error('Could not find dependency "' + d + '" for "' + (func.annotatedName || '[anonymous]') + '"');
                 }
+
+                return found();
             });
 
         return func.apply(null, arguments);
     }
 
-    function annotate(injector, funcOrDependencies, func) {
+    function annotate(injector, funcOrDependencies, func, name) {
         if(!func) {
             func = funcOrDependencies;
             funcOrDependencies = undefined;
         }
 
+        var annotated;
+
         if(_.isFunction(func)) {
-            return function() {
+            annotated = function() {
                 return instantiate(injector, funcOrDependencies, func);
             }
         } else {
-            return function() {
+            annotated = function() {
                 return func;
             }
         }
+
+        annotated.annotatedName = name;
+        return annotated;
     }
 
     function normaliseModuleName(name) {
@@ -110,7 +115,7 @@
     hx.Injector.prototype.provide = function(name, creatorOrDependencies, creator) {
         name = normaliseModuleName(name);
 
-        var annotatedCreator = annotate(this, creatorOrDependencies, creator),
+        var annotatedCreator = annotate(this, creatorOrDependencies, creator, name),
             currentModule = this.modules[name];
 
         if (currentModule) {

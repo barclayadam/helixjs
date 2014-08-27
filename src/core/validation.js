@@ -42,7 +42,7 @@ function validateModel (model, includedProperties) {
                 var propValue = model[propName];
 
                 // We have reached a property that has been marked as `validatable`
-                if (propValue && propValue.validate && propValue.validationRules != null) {
+                if (propValue && propValue.validate) {
                     // We only want to be dependent on isValid, not the actual value or
                     // any any other value.
                     ko.dependencyDetection.ignore(function() {
@@ -53,8 +53,6 @@ function validateModel (model, includedProperties) {
                     // value change.
                     propValue.isValid();
                 }
-
-                validationPromises.push(validateModel(propValue));
             }
         } else if (_.isArray(model)) {
             for (var i = 0; i < model.length; i++) {
@@ -64,7 +62,7 @@ function validateModel (model, includedProperties) {
     }
     
     if (validationPromises.length === 0) {
-        return Promise.resolve(true);
+        return true;
     }
 
     return Promise.all(validationPromises)
@@ -111,12 +109,14 @@ validation.mixin = function (model, includedProperties) {
             ko.computed(function () {
                 model.validating(true);
 
-                lastValidationPromise = validateModel(model, includedProperties)
+                lastValidationPromise = Promise.resolve(validateModel(model, includedProperties));
 
                 lastValidationPromise.then(function(isValid) {
                     model.isValid(isValid);
 
                     model.validating(false);
+
+                    return isValid;
                 });
             });
 
@@ -197,6 +197,7 @@ validation.newModel = function (model) {
     if (model == null) {
         model = {};
     }
+
     validation.mixin(model);
     return model;
 };
@@ -290,12 +291,11 @@ ko.extenders.validationRules = function (target, validationRules) {
 
                     if (isValidOrPromise && isValidOrPromise.then) {
                         // We are dealing with an async validator
-                        asyncPromises.push(isValidOrPromise);
-
-                        isValidOrPromise
+                        asyncPromises.push(isValidOrPromise
                             .then(function(isValidResult) {
                                 handleValidationResult(isValidResult, ruleName, ruleOptions, currentErrors);
-                            })
+                            }));
+                        
                     } else {
                         handleValidationResult(isValidOrPromise, ruleName, ruleOptions, currentErrors);
                     }     

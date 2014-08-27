@@ -4,6 +4,7 @@
  */
 hx.singleton('$Log', function() {
     var console = window.console || {},
+        canApply = true,
         logger = {
             enabled: false
         };
@@ -15,6 +16,15 @@ hx.singleton('$Log', function() {
         console.log();
     } catch (e) {
         console = {};
+    }
+
+    // We attempt to use console.log to determine availability
+    // and safety of use, setting `console` to an empty object
+    // in the instance of failure.
+    try {
+        canApply = console.log && console.log.apply;
+    } catch (e) {
+        canApply = false
     }
 
     /**
@@ -55,7 +65,7 @@ hx.singleton('$Log', function() {
 
                 // IE 8 / 9 do not have an apply function, so we will just log
                 // the first 3 arguments.
-                if(fn.apply) {                    
+                if (canApply && fn.apply) {                    
                     fn.apply(console, arguments);
                 } else {
                     fn(arg1, arg2, arg3);

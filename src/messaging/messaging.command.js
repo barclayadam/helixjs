@@ -1,5 +1,18 @@
 hx.singleton('$Command', ['$log', '$ajax', '$EventEmitterFactory'], function($log, $ajax, $EventEmitterFactory) {
-    
+    function CommandValidationError(message) {
+        var tmp = Error.apply(this, arguments);
+        tmp.name = this.name = 'CommandValidationError';
+
+        this.stack = tmp.stack;
+        this.message = tmp.message;
+
+        return this
+    }
+
+    var IntermediateInheritor = function() {}
+        IntermediateInheritor.prototype = Error.prototype;
+    CommandValidationError.prototype = new IntermediateInheritor();
+
     function execute(name, url, values) {
         $log.info("Executing command '" + name + "'.");
 
@@ -55,13 +68,20 @@ hx.singleton('$Command', ['$log', '$ajax', '$EventEmitterFactory'], function($lo
                             self.$publish('succeeded', { command: self, data: data });
                             return data;
                         })
-                    .catch(function(data) {
-                            self.$publish('failed', { command: self, data: data });
-                            return data;
+                    .caught(function(err) {
+                            if (err instanceof $ajax.error && err.response.status === 422) {
+                                self.setServerErrors(JSON.parse(err.response.responseText).errors);
+
+                                self.$publish('validationFailed', { command: self });
+                                throw new CommandValidationError('Command validation failed.');
+                            } else {
+                                self.$publish('failed', { command: self, error: err });
+                                throw err;
+                            }
                         });
             } else {
                 self.$publish('validationFailed', { command: self });
-                return Promise.reject(new Error('Command validation failed.'));
+                throw new CommandValidationError('Command validation failed.');
             }
         });
 
@@ -78,6 +98,7 @@ hx.singleton('$Command', ['$log', '$ajax', '$EventEmitterFactory'], function($lo
         return definedValues;
     };
 
+    Command.ValidationError = CommandValidationError;
     Command.urlTemplate = '/api/{name}'; 
 
     return Command;
