@@ -70,15 +70,15 @@ hx.bindingHandler('navigate', ['$router', '$log'], function($router, $log) {
                 parameters = allBindingsAccessor.get('parameters'),
                 match = $router.buildMatchedRoute(routeName, parameters);
 
-            if(match) {
+            if (match) {
                 element.setAttribute('href', match.url);
                 
-                ko.dependencyDetection.ignore(function() {
-                    match.authorise().then(function (isAuthorised) {
-                            if (!isAuthorised) {
-                                element.style.display = "none";
-                            }
-                        })
+                match.authorise().then(function (isAuthorised) {
+                    if (isAuthorised) {
+                        element.style.display = "";
+                    } else {
+                        element.style.display = "none";
+                    }
                 });
             } else {                
                 element.setAttribute('href', '#');
