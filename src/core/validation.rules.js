@@ -178,26 +178,26 @@
 
         max: {
             validator: function (value, options) {
-                return (emptyValue(value)) || (value <= options);
+                return (emptyValue(value)) || (value <= ko.unwrap(options));
             },
 
             message: function (options) {
-                return "This field must be equal to or less than " + options;
+                return "This field must be equal to or less than " + ko.unwrap(options);
             },
 
             modifyElement: function (element, options) {
-                element.setAttribute("max", options);
-                return element.setAttribute("aria-valuemax", options);
+                element.setAttribute("max", ko.unwrap(options));
+                return element.setAttribute("aria-valuemax", ko.unwrap(options));
             }
         },
 
         lessThan: {
             validator: function (value, options) {
-                return (emptyValue(value)) || (value < options);
+                return (emptyValue(value)) || (value < ko.unwrap(options));
             },
 
             message: function (options) {
-                return "This field must be less than " + options + ".";
+                return "This field must be less than " + ko.unwrap(options) + ".";
             }
         },
 
@@ -296,7 +296,7 @@
                     throw new Error("You need to provide a value.");
                 }
 
-                valueToCheckAgainst = (ko.utils.unwrapObservable(options.value)) || null;
+                valueToCheckAgainst = ko.unwrap(options.value);
                 valueToCheckAgainstInList = _.any(options.equalsOneOf, function (v) {
                     return (v || null) === valueToCheckAgainst;
                 });
@@ -323,7 +323,7 @@
                     throw new Error("You need to provide a value.");
                 }
 
-                valueToCheckAgainst = (ko.utils.unwrapObservable(options.value)) || null;
+                valueToCheckAgainst = ko.unwrap(options.value);
                 valueToCheckAgainstNotInList = _.all(options.equalsOneOf, function (v) {
                     return (v || null) !== valueToCheckAgainst;
                 });
