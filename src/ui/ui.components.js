@@ -94,13 +94,20 @@ hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$r
         init: function (element) {
             ko.utils.domData.set(element, '__component_hasAnonymousTemplate', element.childNodes.length > 0);
 
+            ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
+                lastComponent = ko.utils.domData.get(element, '__component__currentViewModel');
+
+                if (lastComponent && lastComponent.hide) {
+                    lastComponent.hide.apply(lastComponent);
+                    lastComponent = null;
+                }
+            });
+
             return koBindingHandlers.template.init(element, function() { return { data: {} }; });
         },
 
         update: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
             var componentName = ko.utils.unwrapObservable(valueAccessor());
-
-            if (_.isString)
             
             ko.dependencyDetection.ignore(function() {
                 var component = getComponent(componentName),
