@@ -15,10 +15,6 @@ function isFatal(level) {
 // Log all levels, and exit the process for fatal levels.
 function handleError(level, error) {
     gutil.log(error);
-
-    if (isFatal(level)) {
-        process.exit(1);
-    }
 }
 
 // Convenience handler for error-level errors.
@@ -27,13 +23,17 @@ exports.onError = function(error) { handleError.call(this, 'error', error); };
 // Convenience handler for warning-level errors.
 exports.onWarning = function(error) { handleError.call(this, 'warning', error); };
 
-exports.onBrowserifyError = function(error) {
+exports.onBrowserifyError = function (error) {
+    var errorStyle = gutil.colors.bold.red;
+
     // With a fileName we can assume this is a TypeScript error
     if (error.fileName) {
-        gutil.log(path.relative(__DIRNAME, error.fileName) + ':' + error.line + ' ' + error.message);
+        gutil.log(errorStyle(path.relative('./', error.fileName) + ':' + error.line + ' ' + error.message));
     } else {
-        gutil.log(error);
+        gutil.log(errorStyle(error));
     }
 
-    process.exit(1);
+    gutil.beep();
+
+    this.emit('end');
 };

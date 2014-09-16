@@ -12,8 +12,6 @@
     "chai": "*",
     "mocha": "*",
     "glob": "^4.0.5",
-    "factor-bundle": "^1.0.0",
-    "gulp-mocha-browserify-suite": "^0.1.0",
     "resolve": "^1.0.0",
     "connect-livereload": "^0.4.0",
     "tiny-lr": "^0.1.0",

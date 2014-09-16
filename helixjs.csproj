@@ -57,8 +57,10 @@
   </PropertyGroup>
   <ItemGroup>
     <TypeScriptCompile Include="src\app.ts" />
+    <TypeScriptCompile Include="src\logger\logger.ts" />
     <TypeScriptCompile Include="tests\app.test-2.ts" />
     <TypeScriptCompile Include="tests\app.tests.ts" />
+    <TypeScriptCompile Include="tests\logger\logger.tests.ts" />
     <TypeScriptCompile Include="typings\chai\chai.d.ts" />
     <TypeScriptCompile Include="typings\mocha\mocha.d.ts" />
     <TypeScriptCompile Include="typings\node\node.d.ts" />

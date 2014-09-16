@@ -4,7 +4,6 @@ var path = require('path');
 var gutil = require('gulp-util');
 var source = require('vinyl-source-stream');
 var browserify = require('browserify');
-var factor = require('factor-bundle');
 var tsify = require('tsify');
 var resolve = require('resolve').sync;
 var open = require("gulp-open");
@@ -41,13 +40,12 @@ gulp.task('test-files', function () {
             entries: configuration.testSource()
         })
         .plugin(tsify, { noImplicitAny: true })
-        .plugin(factor, { o: configuration.testSourceBuilt() })
         .on('error', logger.onBrowserifyError)
         .bundle({ debug: true });
 
     return bundleStream
-      .pipe(source('hx.tests.deps.js'))
-      .pipe(gulp.dest('./build/tests'));
+      .pipe(source('hx.tests.js'))
+      .pipe(gulp.dest('./build/'));
 });
 
 gulp.task('test-suite', ['test-files'], function() {
@@ -68,8 +66,7 @@ gulp.task('test-suite', ['test-files'], function() {
         ' <script src="../' + mochaFile('mocha.js') + '"></script>',
         ' <link rel=stylesheet href="../' + mochaFile('mocha.css') + '"></script>',
         ' <script>mocha.setup(' + JSON.stringify({ ui: ui, reporter: reporter }) + ')</script>',
-        ' <script src="../build/tests/hx.tests.deps.js"></script>',
-        compiled.map(function(s) { return ' <script src="../' + s + '"></script>'; }).join('\n'),
+        ' <script src="../build/tests/hx.tests.js"></script>',
         ' <div id=mocha></div>',
         ' <script>mocha.run()</script>',
         ' </body>',
@@ -121,4 +118,4 @@ gulp.task('open-test-runner', function () {
         .pipe(open("", options));
 });
 
-gulp.task('tests', ['test-suite', 'express', 'livereload', 'watch', 'open-test-runner']);
+gulp.task('tests', ['test-suite', 'express', 'livereload', 'watch'/*, 'open-test-runner'*/]);
