@@ -74,7 +74,9 @@ hx.bindingHandler('navigate', ['$router', '$log'], function($router, $log) {
                 element.setAttribute('href', match.url);
                 
                 match.authorise().then(function (isAuthorised) {
-                    if (isAuthorised) {
+                    var visibleBindingTrueOrMissing = !allBindingsAccessor.has('visible') || ko.unwrap(allBindingsAccessor.get('visible'));
+
+                    if (isAuthorised && visibleBindingTrueOrMissing) {
                         element.style.display = "";
                     } else {
                         element.style.display = "none";
