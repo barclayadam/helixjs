@@ -56,8 +56,7 @@ hx.singleton('$Command', ['$log', '$ajax', '$EventEmitterFactory'], function($lo
     }
 
     Command.prototype.execute = function () {
-        var self = this,
-            result = jQuery.Deferred();
+        var self = this;
 
         return this.validate().then(function(isValid) {
             if (isValid) {
@@ -80,12 +79,10 @@ hx.singleton('$Command', ['$log', '$ajax', '$EventEmitterFactory'], function($lo
                             }
                         });
             } else {
-                self.$publish('validationFailed', { command: self });
+                self.$publish('validationFailed', { command: self, errors: self.errors() });
                 throw new CommandValidationError('Command validation failed.');
             }
         });
-
-        return result;
     };
 
     Command.prototype.toJSON = function () {

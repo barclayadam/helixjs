@@ -62,13 +62,10 @@ function validateModel (model, includedProperties) {
     }
     
     if (validationPromises.length === 0) {
-        return true;
+        return Promise.resolve([]);
     }
 
-    return Promise.all(validationPromises)
-        .then(function(validationResults) {
-            return _.every(validationResults, function(r) { return r === true; });
-        });
+    return Promise.all(validationPromises);
 }
 
 /**
@@ -109,15 +106,19 @@ validation.mixin = function (model, includedProperties) {
             ko.computed(function () {
                 model.validating(true);
 
-                lastValidationPromise = Promise.resolve(validateModel(model, includedProperties));
+                lastValidationPromise = validateModel(model, includedProperties)
+                    .then(function(errors) {
+                        // Flatten the errors into a single array
+                        var flattened = [];
+                        errors = flattened.concat.apply(flattened, errors);
 
-                lastValidationPromise.then(function(isValid) {
-                    model.isValid(isValid);
+                        model.errors(errors)
+                        model.isValid(errors.length === 0);
 
-                    model.validating(false);
+                        model.validating(false);
 
-                    return isValid;
-                });
+                        return model.isValid();
+                    });
             });
 
             model.validated(true);
@@ -189,6 +190,8 @@ validation.mixin = function (model, includedProperties) {
 
         model.serverErrors(_.flatten(_.values(errors)));
     };
+
+    model.errors = ko.observable([]);
 
     return model;
 };
@@ -310,7 +313,7 @@ ko.extenders.validationRules = function (target, validationRules) {
 
                 target.validating(false);
 
-                return currentErrors.length === 0;
+                return currentErrors;
             });
     });
 
