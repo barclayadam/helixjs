@@ -5,17 +5,17 @@ hx.config('$templating', function($templating) {
         '    <div class=hx-dialog--content data-bind="component: component, parameters: parameters, onComponentCreated: configureComponent" />' +
         '  </div>' +
         '' +
-        '  <a href="#!" class=hx-dialog--close title=Close data-bind="click: close, visible: options.closeControls">×</a>' +
+        '  <a href="#!" class=hx-dialog--close title=Close data-bind="click: cancel, visible: options.closeControls">×</a>' +
         '</div>'
     );
 
     $templating.set('$dialog-confirm',
-        '<div class=hx-confirm-dialog>' +
+        '<div class="hx-confirm-dialog" aria-labelledby="hx-dialog--title" aria-describedby="hx-dialog--message">' +
         ' <header>' +
-        '  <h2 class=hx-dialog--title data-bind="text: title"></h2>' +
+        '  <h2 class="hx-dialog--title" id="hx-dialog--title" data-bind="text: title"></h2>' +
         ' </header>' +
         '' +
-        '  <p class=hx-dialog--message data-bind="text: message"></p>' +
+        '  <p class="hx-dialog--message" id="hx-dialog--message" data-bind="text: message"></p>' +
         '' +
         ' <footer>' +
         '   <button class=hx-dialog--ok data-bind="click: function() { $root.close(true) }, text: okText"></button>' +
@@ -25,12 +25,12 @@ hx.config('$templating', function($templating) {
     );    
 
     $templating.set('$dialog-alert',
-        '<div class=hx-alert-dialog>' +
+        '<div class="hx-alert-dialog" role="alertdialog" aria-labelledby="hx-dialog--title" aria-describedby="hx-dialog--message">' +
         ' <header>' +
-        '  <h2 class=hx-dialog--title data-bind="text: title"></h2>' +
+        '  <h2 class="hx-dialog--title" id="hx-dialog--title" data-bind="text: title"></h2>' +
         ' </header>' +
         '' +
-        '  <p class=hx-dialog--message data-bind="text: message"></p>' +
+        '  <p class="hx-dialog--message" id="hx-dialog--message" data-bind="text: message"></p>' +
         '' +
         ' <footer>' +
         '   <button class=hx-dialog--ok data-bind="click: function() { $root.close(true) }, text: okText"></button>' +
@@ -39,24 +39,40 @@ hx.config('$templating', function($templating) {
     );   
 });
 
-hx.provide('$dialog', function() {
+hx.singleton('$dialog', function() {
     var currentlyShowingDialog,
+        currentDialogElement,
         defaultOptions = {
             modal: true,
+            canCancel: true,
             closeControls: true
         };
 
     ko.utils.registerEventHandler(document, 'keyup', function(e) {
-        if (currentlyShowingDialog && currentlyShowingDialog.options.closeControls) {
-            if (e.keyCode === 27) {
-                currentlyShowingDialog.close();
-            }
+        if (currentlyShowingDialog && e.keyCode === 27) {
+            currentlyShowingDialog.cancel();
         }
     });
 
+    ko.utils.registerEventHandler(document, 'click', function(e) {
+        if (currentlyShowingDialog && e.target.getAttribute('role') === 'dialog' && e.target.className.indexOf('hx-dialog') !== -1) {
+            currentlyShowingDialog.cancel();
+        }
+    });
+
+    // We must use addEventListener as knockout can not specify capturing or not
+    if (document.addEventListener) {
+        document.addEventListener("focus", function(e) {
+            if (currentlyShowingDialog && !ko.utils.domNodeIsContainedBy(e.target, currentDialogElement)) {
+                e.stopPropagation();
+                currentlyShowingDialog.focus();
+            }
+
+        }, true);
+    };
+
     function Dialog(component, options) {
         var currentShowPromise,
-            currentDialogElement,
             previouslyActiveElement;
 
         this.component = component;
@@ -64,8 +80,13 @@ hx.provide('$dialog', function() {
         this.parameters = this.options.parameters;
 
         this.configureComponent = function(createdComponent) {
-            createdComponent.closeDialog = this.close;
+            createdComponent.closeDialog = this.close.bind(this);
+            createdComponent.cancelDialog = this.cancel.bind(this);
         }.bind(this);
+
+        this.focus = function() {
+            currentDialogElement.focus();            
+        }
 
         /**
          * Opens this dialog.
@@ -84,7 +105,7 @@ hx.provide('$dialog', function() {
          * @returns {promise} A promise that will be resolved when this dialog is closed.
          */
         this.open = function() {
-            if(currentShowPromise) {
+            if (currentShowPromise) {
                 return currentShowPromise;
             }
 
@@ -108,26 +129,11 @@ hx.provide('$dialog', function() {
             return currentShowPromise = new $.Deferred();
         };
 
-        /**
-         * Closes the dialog, resolving the promise that had been created previously in the `show`
-         * function.
-         *
-         * Optionally a value may be passed to this function that will be used when resolving the promise
-         * to allow passing a value back to the originator, the client that opened this dialog instance.
-         *
-         * @param {any} closeValue The value used when resolving the open promise, optional
-         */
-        this.close = function(closeValue) {
-            if(currentDialogElement) {
+        function closeCurrentDialog() { 
+            if (currentDialogElement) {
                 currentDialogElement.parentNode.removeChild(currentDialogElement);
 
-                currentShowPromise.resolve(closeValue);
-
-                if (this.options.onClose) {
-                    this.options.onClose(closeValue);
-                }
-
-                if(previouslyActiveElement) {
+                if (previouslyActiveElement) {
                     previouslyActiveElement.focus();
                 }
 
@@ -139,6 +145,37 @@ hx.provide('$dialog', function() {
 
                 currentlyShowingDialog = null;
             }
+        }
+
+        /**
+         * Cancels this dialog, hiding the dialog but not resolving the promise and therefore never
+         * handling any sort of return.
+         */
+        this.cancel = function() {
+            if (this.options.canCancel) {
+                closeCurrentDialog();
+            }
+        }
+
+        /**
+         * Closes the dialog, resolving the promise that had been created previously in the `show`
+         * function.
+         *
+         * Optionally a value may be passed to this function that will be used when resolving the promise
+         * to allow passing a value back to the originator, the client that opened this dialog instance.
+         *
+         * @param {any} closeValue The value used when resolving the open promise, optional
+         */
+        this.close = function(closeValue) {
+            if (currentDialogElement) {
+                currentShowPromise.resolve(closeValue);
+
+                if (this.options.onClose) {
+                    this.options.onClose(closeValue);
+                }
+            }
+
+            closeCurrentDialog();
         }.bind(this);
     }
 
@@ -181,11 +218,15 @@ hx.provide('$dialog', function() {
          * allow overriding any option.
          */
         confirm: function(options) {
+            var defaultOptions = { modal: true, closeControls: false, canCancel: true };
+
             if(_.isString(options)) {
                 options = {
                     message: options
                 };
             }
+
+            options = _.extend({}, defaultOptions, options); 
 
             var component = {
                     templateName: '$dialog-confirm',
@@ -195,7 +236,7 @@ hx.provide('$dialog', function() {
                     okText: options.okText || 'Ok',
                     cancelText: options.cancelText || 'Cancel'
                 },
-                dialog = new Dialog(component, { modal: true, closeControls: false });
+                dialog = new Dialog(component, options);
 
             return dialog.open();
         },
@@ -212,11 +253,15 @@ hx.provide('$dialog', function() {
          * allow overriding any option.
          */
         alert: function(options) {
+            var defaultOptions = { modal: true, closeControls: false, canCancel: false };
+
             if(_.isString(options)) {
                 options = {
                     message: options
                 };
             }
+
+            options = _.extend({}, defaultOptions, options); 
 
             var component = {
                     templateName: '$dialog-alert',
@@ -225,7 +270,7 @@ hx.provide('$dialog', function() {
                     message: options.message || '',
                     okText: options.okText || 'Ok'
                 },
-                dialog = new Dialog(component, { modal: true, closeControls: false });
+                dialog = new Dialog(component, options);
 
             return dialog.open();
         }
