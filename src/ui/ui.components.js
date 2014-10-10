@@ -172,7 +172,9 @@ hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$r
                     .caught(function(err) {
                         $log.warn('An error occurred rendering component "' + componentName + '": ' + err.toString() + '\n' + err.stack);
 
-                        ko.utils.emptyDomNode(element);                        
+                        ko.utils.emptyDomNode(element);
+
+                        throw err;                        
                     });                
             })
         }
