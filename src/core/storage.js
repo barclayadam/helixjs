@@ -1,7 +1,7 @@
 (function() {
     var localStorageSupported = window['localStorage'] !== undefined,
         testKey = 'qeTest', 
-        storage = window.sessionStorage; 
+        storage = window.localStorage; 
 
     // We need to test whether we could actually use localStorage. In Safari in private browsing
     // mode (local|window)Storage is available, but will throw a storage exception on any attempt at
