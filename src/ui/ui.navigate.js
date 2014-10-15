@@ -23,7 +23,7 @@ hx.bindingHandler('navigate', ['$router', '$log'], function($router, $log) {
         var element = event.target;
 
         do {        
-            if(element.tagName === 'A') {
+            if (element.tagName === 'A' || element.tagName === 'BUTTON') {
                 var match = ko.utils.domData.get(element, '__matchedRoute');
 
                 if(match) {
@@ -79,7 +79,7 @@ hx.bindingHandler('navigate', ['$router', '$log'], function($router, $log) {
                     if (isAuthorised && visibleBindingTrueOrMissing) {
                         element.style.display = "";
                     } else {
-                        element.style.display = "none";
+                        element.style.display = allBindingsAccessor.get('hideOnUnauthorised') === false ? '' :  'none';
                     }
                 });
             } else {                
