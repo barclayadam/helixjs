@@ -82,7 +82,7 @@ hx.provide('$EventEmitterFactory', ['$log'], function($log) {
         function publish(messageName, payload) {
             if (payload == null) { payload = {}; }
 
-            $log.debug("Publishing " + messageName, payload);
+            $log.debug(messageName, payload);
             
             var indexOfSeparator = -1,
                 messages = [messageName];
