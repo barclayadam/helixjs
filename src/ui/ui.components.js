@@ -1,3 +1,56 @@
+hx.singleton('$components', ['$injector'], function($injector) {
+    function createComponent(componentName) {
+        var component = $injector.get(ko.unwrap(componentName));
+        component.$name = componentName
+
+        return component;
+    }
+
+    function getComponent(componentOrName) {
+        componentOrName = ko.utils.unwrapObservable(componentOrName);
+
+        return _.isString(componentOrName) ? createComponent(componentOrName) : componentOrName;
+    }
+
+    function createTemplateValueAccessor(component, componentName, useConvention) {
+        var templateName = component.templateName || (useConvention && _.isString(componentName) ? componentName : undefined);
+
+        if (!templateName) {
+            throw new Error('Cannot find a template name');
+        }
+
+        return function() {
+            return {
+                data: component,
+                name: templateName
+            }
+        };
+    }
+
+    function disposeComponent(component) {
+        if (component) {
+            if (typeof component.hide === 'function') {
+                component.hide(lastComponent);
+            }
+
+            ko.utils.objectForEach(component, disposeOne);
+        }
+    }
+
+    function disposeOne(propOrValue, value) {
+        var disposable = value || propOrValue;
+
+        if (disposable && typeof disposable.dispose === "function") {
+            disposable.dispose();
+        }
+    }
+
+    return {
+        create: getComponent,
+        dispose: disposeComponent
+    }
+});
+
 /**
  * @bindingHandler component
  * @tagReplacement div
@@ -72,18 +125,18 @@
  * will use a region manager to determine what component to show, delegating all rendering
  * and management of individual components to this binding handler.
  */
-hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$router'], function($log, $ajax, $injector, $authoriser, $router) {
-    function getComponent(componentOrName) {
-        componentOrName = ko.utils.unwrapObservable(componentOrName);
-
-        return _.isString(componentOrName) ? $injector.get(componentOrName) : componentOrName;
-    }
-
+hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$router', '$components'], function($log, $ajax, $injector, $authoriser, $router, $components) {
     function createTemplateValueAccessor(component, componentName, useConvention) {
+        var templateName = component.templateName || component.$name;
+
+        if (!templateName) {
+            throw new Error('Cannot find a template name');
+        }
+
         return function() {
             return {
                 data: component,
-                name: component.templateName || (useConvention && _.isString(componentName) ? componentName : undefined)
+                name: templateName
             }
         };
     }
@@ -97,10 +150,8 @@ hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$r
             ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
                 lastComponent = ko.utils.domData.get(element, '__component__currentViewModel');
 
-                if (lastComponent && lastComponent.hide) {
-                    lastComponent.hide.apply(lastComponent);
-                    lastComponent = null;
-                }
+                $components.dispose(lastComponent);
+                lastComponent = null;
             });
 
             return koBindingHandlers.template.init(element, function() { return { data: {} }; });
@@ -110,14 +161,12 @@ hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$r
             var componentName = ko.utils.unwrapObservable(valueAccessor());
             
             ko.dependencyDetection.ignore(function() {
-                var component = getComponent(componentName),
+                var component = $components.create(componentName),
                     lastComponent = ko.utils.domData.get(element, '__component__currentViewModel'),
                     parameters = _.extend({}, $router.current().parameters, allBindingsAccessor.get('parameters'));
-
-                if (lastComponent && lastComponent.hide) {
-                    lastComponent.hide.apply(lastComponent);
-                    lastComponent = null;
-                }
+                
+                $components.dispose(lastComponent);
+                lastComponent = null;
 
                 if (!component) {
                     ko.utils.emptyDomNode(element);
@@ -127,18 +176,21 @@ hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$r
                 if (allBindingsAccessor.get('onComponentCreated') && _.isFunction(allBindingsAccessor.get('onComponentCreated'))) {
                     allBindingsAccessor.get('onComponentCreated')(component);
                 }
+                
+                ko.utils.toggleDomNodeCssClass(element, 'is-loading', true);
 
                 $authoriser
                     .authorise(component, parameters)
                     .then(function(isAuthorised) {
                         if (!isAuthorised) {
                             $log.debug('Authorisation of component has failed "' + componentName + '", this component will not be rendered.');
+
                             ko.utils.emptyDomNode(element);
+                            ko.utils.toggleDomNodeCssClass(element, 'is-loading', false);
 
                             return;
                         }
 
-                        ko.utils.toggleDomNodeCssClass(element, 'is-loading', true);
 
                         var showPromises = [];
 
@@ -173,6 +225,7 @@ hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$r
                         $log.warn('An error occurred rendering component "' + componentName + '": ' + err.toString() + '\n' + err.stack);
 
                         ko.utils.emptyDomNode(element);
+                        ko.utils.toggleDomNodeCssClass(element, 'is-loading', false);
 
                         throw err;                        
                     });                
