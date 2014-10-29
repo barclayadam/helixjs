@@ -8,7 +8,7 @@
      */
     function instantiate(injector, dependencies, func) {
         // No dependencies have been specified, just execute function.
-        if(func == undefined) {
+        if (func == undefined) {
             if(typeof dependencies == "function") {
                 return dependencies();
             } else {
@@ -17,7 +17,7 @@
         }
         
         // No dependencies have been specified, just execute function.
-        if(dependencies == undefined) {
+        if (dependencies == undefined) {
             if(typeof func == "function") {
                 return func();
             } else {
@@ -26,11 +26,11 @@
         }
 
         // Dependencies have been defined
-        if(!_.isArray(dependencies)) {
+        if (!_.isArray(dependencies)) {
             dependencies = [dependencies];
         }
 
-        var arguments = _.map(dependencies, function(d) {
+        var moduleArguments = _.map(dependencies, function(d) {
                 var found = injector.find(d);
 
                 if (!found) {
@@ -40,7 +40,7 @@
                 return found();
             });
 
-        return func.apply(null, arguments);
+        return func.apply(null, moduleArguments);
     }
 
     function annotate(injector, funcOrDependencies, func, name) {
