@@ -2,7 +2,7 @@ hx.config('$templating', function($templating) {
     $templating.set('$hx-dialog',
         '<div class=hx-dialog tabindex=-1 role=dialog data-bind="css: { \'hx-dialog__modal\': options.modal }">' +
         '  <div class=hx-dialog--inner>' +
-        '    <div class=hx-dialog--content data-bind="component: component, parameters: parameters, onComponentCreated: configureComponent" />' +
+        '    <div data-bind="component: component, parameters: parameters, onComponentCreated: configureComponent" />' +
         '  </div>' +
         '' +
         '  <a href="#!" class=hx-dialog--close title=Close data-bind="click: cancel, visible: options.closeControls">×</a>' +
@@ -11,13 +11,15 @@ hx.config('$templating', function($templating) {
 
     $templating.set('$dialog-confirm',
         '<div class="hx-confirm-dialog" aria-labelledby="hx-dialog--title" aria-describedby="hx-dialog--message">' +
-        ' <header>' +
+        ' <header class=hx-dialog--header>' +
         '  <h2 class="hx-dialog--title" id="hx-dialog--title" data-bind="text: title"></h2>' +
         ' </header>' +
         '' +
+        ' <section class=hx-dialog--content>' +
         '  <p class="hx-dialog--message" id="hx-dialog--message" data-bind="text: message"></p>' +
+        ' </section>' +
         '' +
-        ' <footer>' +
+        ' <footer class=hx-dialog--footer>' +
         '   <button class=hx-dialog--ok data-bind="click: function() { $root.close(true) }, text: okText"></button>' +
         '   <button class=hx-dialog--cancel data-bind="click: function() { $root.close(false) }, text: cancelText"></button>' +
         ' </footer>' +
@@ -26,13 +28,15 @@ hx.config('$templating', function($templating) {
 
     $templating.set('$dialog-alert',
         '<div class="hx-alert-dialog" role="alertdialog" aria-labelledby="hx-dialog--title" aria-describedby="hx-dialog--message">' +
-        ' <header>' +
+        ' <header class=hx-dialog--header>' +
         '  <h2 class="hx-dialog--title" id="hx-dialog--title" data-bind="text: title"></h2>' +
         ' </header>' +
         '' +
+        ' <section class=hx-dialog--content>' +
         '  <p class="hx-dialog--message" id="hx-dialog--message" data-bind="text: message"></p>' +
+        ' </section>' +
         '' +
-        ' <footer>' +
+        ' <footer class=hx-dialog--footer>' +
         '   <button class=hx-dialog--ok data-bind="click: function() { $root.close(true) }, text: okText"></button>' +
         ' </footer>' +
         '</div>'
