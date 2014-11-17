@@ -104,6 +104,7 @@ hx.singleton('$location', ['$bus', '$log'], function($bus, $log) {
 
     location.routeVariables.set = function (key, value, options) {
         var currentUri = new hx.Uri(location.routePath());
+        currentUri.variables = location.routeVariables();
         currentUri.variables[key] = value;
 
         location.routePath(currentUri.toString(), {
