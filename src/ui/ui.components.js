@@ -127,9 +127,9 @@ hx.singleton('$components', ['$injector'], function($injector) {
  */
 hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$router', '$components'], function($log, $ajax, $injector, $authoriser, $router, $components) {
     function createTemplateValueAccessor(component, componentName, useConvention) {
-        var templateName = component.templateName || component.$name;
+        var templateName = component.templateName || (useConvention ? component.$name : undefined);
 
-        if (!templateName) {
+        if (!templateName && useConvention) {
             throw new Error('Cannot find a template name');
         }
 
@@ -139,6 +139,10 @@ hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$r
                 name: templateName
             }
         };
+    }
+
+    function toggleClass(element, cssClass, shouldShow) {
+        element.nodeType != 8 && ko.utils.toggleDomNodeCssClass(element, cssClass, shouldShow);
     }
 
     return {
@@ -169,7 +173,7 @@ hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$r
                 lastComponent = null;
 
                 if (!component) {
-                    ko.utils.emptyDomNode(element);
+                    ko.virtualElements.emptyNode(element);
                     return;
                 }
 
@@ -177,7 +181,7 @@ hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$r
                     allBindingsAccessor.get('onComponentCreated')(component);
                 }
                 
-                ko.utils.toggleDomNodeCssClass(element, 'is-loading', true);
+                toggleClass(element, 'is-loading', true);
 
                 $authoriser
                     .authorise(component, parameters)
@@ -185,8 +189,8 @@ hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$r
                         if (!isAuthorised) {
                             $log.debug('Authorisation of component has failed "' + componentName + '", this component will not be rendered.');
 
-                            ko.utils.emptyDomNode(element);
-                            ko.utils.toggleDomNodeCssClass(element, 'is-loading', false);
+                            ko.virtualElements.emptyNode(element);
+                            toggleClass(element, 'is-loading', false);
 
                             return;
                         }
@@ -205,13 +209,12 @@ hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$r
                         }
 
                         return Promise.all(showPromises).then(function () {
-                            var templateValueAccessor = createTemplateValueAccessor(component, componentName, ko.utils.domData.get(element, '__component_hasAnonymousTemplate') === false),
-                                innerBindingContext = bindingContext.extend();
+                            var templateValueAccessor = createTemplateValueAccessor(component, componentName, ko.utils.domData.get(element, '__component_hasAnonymousTemplate') === false);
 
                             return $ajax.listen(function() {
-                                koBindingHandlers.template.update(element, templateValueAccessor, allBindingsAccessor, viewModel, innerBindingContext);
+                                koBindingHandlers.template.update(element, templateValueAccessor, allBindingsAccessor, viewModel, bindingContext);
                             }).then(function() {
-                                ko.utils.toggleDomNodeCssClass(element, 'is-loading', false);
+                                toggleClass(element, 'is-loading', false);
 
                                 if (component.afterRender != null) {
                                     component.afterRender.call(component, parameters);
@@ -224,8 +227,8 @@ hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$r
                     .caught(function(err) {
                         $log.warn('An error occurred rendering component "' + componentName + '": ' + err.toString() + '\n' + err.stack);
 
-                        ko.utils.emptyDomNode(element);
-                        ko.utils.toggleDomNodeCssClass(element, 'is-loading', false);
+                        ko.virtualElements.emptyNode(element);
+                        toggleClass(element, 'is-loading', false);
 
                         throw err;                        
                     });                
@@ -233,3 +236,5 @@ hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$r
         }
     };
 });
+
+ko.virtualElements.allowedBindings['component'] = true;
