@@ -9,12 +9,12 @@ hx.singleton('$templating', ['$ajax'], function($ajax) {
      */
     function StringTemplateSource(templateText) {
         this.templateText = ko.observable(templateText);
-        this.parsedNodes = ko.observable(ko.utils.parseHtmlFragment('<div>' + templateText + '</div>')[0]);
+        this.parsedNodes = ko.observable();
     }
 
     StringTemplateSource.prototype.set = function(templateText) {
         this.templateText(templateText);
-        this.parsedNodes(ko.utils.parseHtmlFragment('<div>' + templateText + '</div>')[0]);
+        this.parsedNodes(undefined);
     }
 
     StringTemplateSource.prototype.text = function (value) {
@@ -22,6 +22,10 @@ hx.singleton('$templating', ['$ajax'], function($ajax) {
     };
 
     StringTemplateSource.prototype.nodes = function (value) {
+        if (!this.parsedNodes()) {
+            this.parsedNodes(ko.utils.parseHtmlFragment('<div>' + this.templateText() + '</div>')[0]);
+        }
+
         return this.parsedNodes();
     };
 
