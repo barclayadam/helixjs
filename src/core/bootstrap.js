@@ -67,5 +67,7 @@
         hx.get('$location').initialise();
 
         ko.utils.toggleDomNodeCssClass(document.body, 'app-loading', false);
+
+        hx.get('$bus').publish('app:started');
     };
 })();
