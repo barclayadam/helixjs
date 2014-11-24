@@ -28,3 +28,5 @@ hx.bindingHandler('router', ['$bus'], function($bus) {
         }
     };
 });
+
+ko.virtualElements.allowedBindings['router'] = true;
