@@ -83,7 +83,11 @@
             },
 
             modifyElement: function (element, options) {
-                element.setAttribute("type", 'number');
+                try {
+                    element.setAttribute("type", 'number');
+                } catch (e) {
+                    // IE8: Ignore this as it does not support changing the number type
+                }
             }
         },
 
@@ -95,7 +99,11 @@
             message: "This field must be a whole number",
 
             modifyElement: function (element, options) {
-                element.setAttribute("type", 'number');
+                try {
+                    element.setAttribute("type", 'number');
+                } catch (e) {
+                    // IE8: Ignore this as it does not support changing the number type
+                }
             }
         },
 
