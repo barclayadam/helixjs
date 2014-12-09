@@ -36,11 +36,7 @@
     	'' +
     	'<div class=panel>' +
     	'  <part id=content></part>' +
-    	'</div>' +
-        '' +
-        '<footer>' +
-        '  <part id=footer></part>' +
-        '</footer>'
+    	'</div>'
     	);
 
 	function createModel(data) {
