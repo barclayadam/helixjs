@@ -107,10 +107,12 @@
      * elements (e.g. to all `input` elements, or even custom elements such as `tab` or `region`).
      */
     hx.bindingHandler = function(name, bindingHandlerOrDependencies, bindingHandler) {
+        processTag(name);
+
         hx.config(function() {
             registerBindingHandler(name, hx.get('$injector').instantiate(bindingHandlerOrDependencies, bindingHandler));
         })
-    }
+    };
 
     ko.bindingProvider.instance.preprocessNode = preprocessNode;
 }());
