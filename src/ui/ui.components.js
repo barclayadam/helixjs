@@ -162,12 +162,16 @@ hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$r
         },
 
         update: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-            var componentName = ko.utils.unwrapObservable(valueAccessor());
-            
+            var options = ko.unwrap(valueAccessor());
+
+            var componentName = options.name || options.component || options,
+                params = options.params || allBindingsAccessor.get('params') || allBindingsAccessor.get('parameters'),
+                onComponentCreated = options.onComponentCreated || allBindingsAccessor.get('onComponentCreated');
+
             ko.dependencyDetection.ignore(function() {
                 var component = $components.create(componentName),
                     lastComponent = ko.utils.domData.get(element, '__component__currentViewModel'),
-                    parameters = _.extend({}, $router.current().parameters, allBindingsAccessor.get('parameters'));
+                    parameters = _.extend({}, $router.current().parameters, params);
                 
                 $components.dispose(lastComponent);
                 lastComponent = null;
@@ -177,8 +181,8 @@ hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$r
                     return;
                 }
 
-                if (allBindingsAccessor.get('onComponentCreated') && _.isFunction(allBindingsAccessor.get('onComponentCreated'))) {
-                    allBindingsAccessor.get('onComponentCreated')(component);
+                if (typeof onComponentCreated === 'function') {
+                    onComponentCreated(component);
                 }
                 
                 toggleClass(element, 'is-loading', true);
