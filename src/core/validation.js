@@ -112,6 +112,13 @@ validation.mixin = function (model, includedProperties) {
                         var flattened = [];
                         errors = flattened.concat.apply(flattened, errors);
 
+                        // We need to filter out any values that exactly equal
+                        // true. If a sub-object is a validatable (through mixin)
+                        // the validate() method would resolve to `true`.
+                        errors = errors.filter(function(e) {
+                            return e !== true;
+                        });
+
                         model.errors(errors)
                         model.isValid(errors.length === 0);
 
