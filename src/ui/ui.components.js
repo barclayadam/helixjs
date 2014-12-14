@@ -1,9 +1,6 @@
 hx.singleton('$components', ['$injector'], function($injector) {
     function createComponent(componentName) {
-        var component = $injector.get(ko.unwrap(componentName));
-        component.$name = componentName
-
-        return component;
+        return $injector.get(ko.unwrap(componentName));
     }
 
     function getComponent(componentOrName) {
