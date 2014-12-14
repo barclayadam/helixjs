@@ -43,10 +43,9 @@
         return func.apply(null, moduleArguments);
     }
 
-    function annotate(injector, funcOrDependencies, func, name) {
+    function annotate(injector, name, funcOrDependencies, func) {
         // Func is undefined, we have not been passed any dependencies
         if (func === undefined) {
-            name = func;
             func = funcOrDependencies;
             funcOrDependencies = undefined;
         }
@@ -67,7 +66,6 @@
             }
         }
 
-        annotated.annotatedName = name;
         return annotated;
     }
 
@@ -121,7 +119,7 @@
     hx.Injector.prototype.provide = function(name, creatorOrDependencies, creator) {
         var normalisedName = normaliseModuleName(name);
 
-        var annotatedCreator = annotate(this, creatorOrDependencies, creator, name),
+        var annotatedCreator = annotate(this, name, creatorOrDependencies, creator),
             currentModule = this.modules[normalisedName];
 
         if (currentModule) {
@@ -129,7 +127,6 @@
         }
 
         this.modules[normalisedName] = annotatedCreator;
-        this.modules[normalisedName].$name = name;
     };
 
     /**
@@ -147,7 +144,7 @@
     hx.Injector.prototype.singleton = function(name, dependencies, creator) {
         var created = false,
             moduleReturn = undefined,
-            creator = annotate(this, dependencies, creator, name);
+            creator = annotate(this, name, dependencies, creator);
 
         this.provide(name, function() {
             if(!created) {
