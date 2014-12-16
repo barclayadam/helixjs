@@ -68,22 +68,23 @@ hx.bindingHandler('navigate', ['$router', '$log'], function($router, $log) {
         update: function(element, valueAccessor, allBindingsAccessor) {
             var routeName = ko.utils.unwrapObservable(valueAccessor()),
                 parameters = allBindingsAccessor.get('parameters'),
+                hideOnUnauthorised = allBindingsAccessor.get('hideOnUnauthorised') !== false,
                 match = $router.buildMatchedRoute(routeName, parameters);
 
             if (match) {
-                element.setAttribute('href', match.url);
-                
                 match.authorise().then(function (isAuthorised) {
                     var visibleBindingTrueOrMissing = !allBindingsAccessor.has('visible') || ko.unwrap(allBindingsAccessor.get('visible'));
 
-                    if (isAuthorised && visibleBindingTrueOrMissing) {
-                        element.style.display = "";
+                    if (isAuthorised) {
+                        element.setAttribute('href', match.url);
+                        element.style.display = visibleBindingTrueOrMissing ? '' : 'none';
                     } else {
-                        element.style.display = allBindingsAccessor.get('hideOnUnauthorised') === false ? '' :  'none';
+                        element.removeAttribute('href');
+                        element.style.display = hideOnUnauthorised ? 'none' : '';
                     }
                 });
             } else {                
-                element.setAttribute('href', '#');
+                element.removeAttribute('href');
             }
             
             ko.utils.domData.set(element, '__matchedRoute', match);
