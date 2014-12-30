@@ -26,8 +26,8 @@ hx.singleton('$components', ['$injector'], function($injector) {
 
     function disposeComponent(component) {
         if (component) {
-            if (typeof component.hide === 'function') {
-                component.hide(lastComponent);
+            if (typeof component.dispose === 'function') {
+                component.dispose();
             }
 
             ko.utils.objectForEach(component, disposeOne);
@@ -228,7 +228,6 @@ hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$r
                     .caught(function(err) {
                         $log.warn('An error occurred rendering component "' + componentName + '": ' + err.toString() + '\n' + err.stack);
 
-                        ko.virtualElements.emptyNode(element);
                         toggleClass(element, 'is-loading', false);
 
                         throw err;                        
