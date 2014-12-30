@@ -139,6 +139,20 @@
         });
     }
 
+    function executeActionFromNode(node, ev) {
+        var action = ko.utils.domData.get(node, '__action');
+
+        if (action) {
+            action(ko.contextFor(node).$data);
+
+            ev.preventDefault();
+
+            if (ko.utils.domData.get(node, '__action-clickBubble') === false) {
+                return false;
+            }
+        }
+    }
+
     ko.utils.registerEventHandler(document.body, 'click', function(ev) {
         var node = ev.target,
             action;
@@ -148,13 +162,11 @@
         }
 
         if (action) {
-            action(ko.contextFor(node).$data);
-
-            ev.preventDefault();
+            return executeActionFromNode(node, ev);
         }
     });
 
-    function applyUiActionToNode(element, uiAction, shouldHide, context) {
+    function applyUiActionToNode(element, uiAction, shouldHide, context, clickBubble) {
         var isForm = element.tagName === 'FORM';
 
         if (!uiAction.isUiAction) {
@@ -170,6 +182,15 @@
         }
 
         ko.utils.domData.set(element, '__action', uiAction);
+        ko.utils.domData.set(element, '__action-clickBubble', clickBubble);
+
+        // If clicks should not bubble we will need to handle the click event at the element
+        // level, not on the document.        
+        if (clickBubble === false) {
+            ko.utils.registerEventHandler(element, 'click', function(ev) {
+               return executeActionFromNode(ev.target, ev); 
+            });
+        }
 
         setupElementUpdateSubscriptions(element, uiAction, shouldHide);
 
@@ -222,7 +243,12 @@
      */
     hx.bindingHandler('action', {
         init: function(element, valueAccessor, allBindingsAccessor, viewModel) {
-            applyUiActionToNode(element, valueAccessor(), allBindingsAccessor.get('onDisabled') === 'hide', viewModel);      
+            applyUiActionToNode(
+                element, 
+                valueAccessor(), 
+                allBindingsAccessor.get('onDisabled') === 'hide', 
+                viewModel,
+                allBindingsAccessor.get('clickBubble'));      
         }
     });
 
