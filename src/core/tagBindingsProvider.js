@@ -25,7 +25,7 @@
         if(bindingHandler.tag) {
             var tags = _.isArray(bindingHandler.tag) ? bindingHandler.tag : [bindingHandler.tag];
 
-            _.each(tags, function(t) {
+            tags.forEach(function(t) {
                 var lowerCaseTag = t.toLowerCase();
 
                 tagToBindingHandlerNames[lowerCaseTag] = tagToBindingHandlerNames[lowerCaseTag] || [];

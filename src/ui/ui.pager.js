@@ -107,7 +107,7 @@ hx.bindingHandler('pager', '$templating', function($templating) {
 
                 endPage = Math.min(startPage + maximumPages, pageCount + 1);
 
-                return _.range(startPage, endPage);
+                return ko.utils.range(startPage, endPage - 1);
             })
         }
     }

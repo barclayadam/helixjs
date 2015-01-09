@@ -81,7 +81,7 @@ hx.bindingHandler('validationMessage', {
         var value = valueAccessor();
 
         if(value && value.isValid) {
-            var allErrors = _.filter(value.errors().concat(value.serverErrors()), function (x) { return x; }),
+            var allErrors = value.errors().concat(value.serverErrors()).filter(function (x) { return x; }),
                 isValid = allErrors.length === 0;
 
             ko.utils.toggleDomNodeCssClass(element, 'valid', isValid);

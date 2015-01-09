@@ -305,7 +305,7 @@
                 }
 
                 valueToCheckAgainst = ko.unwrap(options.value);
-                valueToCheckAgainstInList = _.any(options.equalsOneOf, function (v) {
+                valueToCheckAgainstInList = options.equalsOneOf.some(function (v) {
                     return v === valueToCheckAgainst;
                 });
 
@@ -332,7 +332,7 @@
                 }
 
                 valueToCheckAgainst = ko.unwrap(options.value);
-                valueToCheckAgainstNotInList = _.all(options.equalsOneOf, function (v) {
+                valueToCheckAgainstNotInList = options.equalsOneOf.every(function (v) {
                     return v !== valueToCheckAgainst;
                 });
 

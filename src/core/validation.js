@@ -37,7 +37,7 @@ function validateModel (model, includedProperties) {
         if (_.isObject(model)) {
             for (var propName in model) {
                 if (!__hasProp.call(model, propName)) continue;
-                if (includedProperties && !_.contains(includedProperties, propName)) continue
+                if (includedProperties && includedProperties.indexOf(propName) === -1) continue
 
                 var propValue = model[propName];
 

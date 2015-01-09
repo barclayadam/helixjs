@@ -34,20 +34,20 @@ hx.provide('$authoriser', function() {
         authorise: authorise,
 
         authoriseAll: function(components, parameters) {
-            var authorisationPromises = _.map(components, function(c) { return authorise(c, parameters) });
+            var authorisationPromises = components.map(function(c) { return authorise(c, parameters) });
 
             return Promise.all(authorisationPromises)
                 .then(function(authorisations) {
-                    return _.every(authorisations, function(a) { return a; });
+                    return authorisations.every(function(a) { return a; });
                 })
         },
 
         authoriseAny: function(components, parameters) {
-            var authorisationPromises = _.map(components, function(c) { return authorise(c, parameters) });
+            var authorisationPromises = components.map(function(c) { return authorise(c, parameters) });
 
             return Promise.all(authorisationPromises)
                 .then(function(authorisations) {
-                    return _.some(authorisations, function(a) { return a; });
+                    return authorisations.some(function(a) { return a; });
                 })
         }        
     }

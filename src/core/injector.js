@@ -30,7 +30,7 @@
             dependencies = [dependencies];
         }
 
-        var moduleArguments = _.map(dependencies, function(d) {
+        var moduleArguments = dependencies.map(function(d) {
                 var found = injector.find(d);
 
                 if (!found) {

@@ -91,13 +91,13 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location', '$injector', '$authorise
         };
 
         Route.prototype._allRequiredParametersPresent = function (parameters) {
-            return _.all(this.requiredParams, function (p) {
+            return this.requiredParams.every(function (p) {
                 return parameters[p] != null;
             });
         };
 
         Route.prototype.toString = function () {
-            return "" + this.name + ": " + this.url;
+            return this.name + ": " + this.url;
         };
 
         Route.prototype.getComponents = function() {
