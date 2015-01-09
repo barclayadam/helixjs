@@ -30,7 +30,6 @@
         //= core/eventEmitter.js
         //= core/uri.js
         //= core/ajax.js
-        //= core/sorting.js
         //= core/storage.js
         //= core/notifications.js
         //= core/templating.js
@@ -42,10 +41,6 @@
         //= core/tagBindingsProvider.js
         //= core/viewModel.js
         //= core/authoriser.js
-
-        //= data/dataView.js
-        //= data/provider.memory.js
-        //= data/provider.odata.js
                         
         //= messaging/messaging.command.js
 
