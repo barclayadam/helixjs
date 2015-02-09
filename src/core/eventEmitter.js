@@ -56,11 +56,14 @@ hx.provide('$EventEmitterFactory', ['$log'], function($log) {
 
                 var newToken = subscriberList.length;
                 subscriberList[newToken] = callback;
+
+                var unsubscribe = function() {
+                    return delete subscriberList[newToken];
+                };
               
                 return {
-                    unsubscribe: function() {
-                        return delete subscriberList[newToken];
-                    }
+                    unsubscribe: unsubscribe,
+                    destroy: unsubscribe
                 };
             }
         };
