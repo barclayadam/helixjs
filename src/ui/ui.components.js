@@ -204,9 +204,7 @@ hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$r
                         }
 
                         if (component.show != null) {
-                            showPromises.push($ajax.listen(function() {
-                                showPromises.push(component.show.call(component, parameters));
-                            }));
+                            showPromises.push(component.show.call(component, parameters));
                         }
 
                         return Promise.all(showPromises).then(function () {
