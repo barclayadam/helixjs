@@ -9,18 +9,43 @@
  * `component` that has been configured for the route using the `component` binding
  * handler and composition system.
  */
-hx.bindingHandler('router', ['$bus'], function($bus) {
+hx.bindingHandler('router', ['$bus', '$router'], function($bus, $router) {
     return {
         tag: 'router',
 
         init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+            function render(options) {
+                koBindingHandlers.component.update(
+                    element, 
+                    function() { return options; }, 
+                    allBindingsAccessor, 
+                    viewModel, 
+                    bindingContext);
+            }
+
             $bus.subscribe('routeNavigated', function(msg) {
                 if (msg.route.options.templateName) {
-                    koBindingHandlers.component.update(element, function() { return { templateName: msg.route.options.templateName }; }, allBindingsAccessor, viewModel, bindingContext);
+                    render({ templateName: msg.route.options.templateName });
                 } else if (msg.route.options.component) {
-                    koBindingHandlers.component.update(element, function() { return msg.route.options.component; }, allBindingsAccessor, viewModel, bindingContext);
+                    render(msg.route.options.component);
                 } else {                    
-                    koBindingHandlers.component.update(element, function() { return null; }, allBindingsAccessor, viewModel, bindingContext);
+                    render(null);
+                }
+            });
+
+            $bus.subscribe('unauthorisedRoute', function() {
+                if ($router.unauthorisedComponent) {
+                    render($router.unauthorisedComponent);
+                } else if($router.unauthorisedTemplate) {
+                    render({ templateName: $router.unauthorisedTemplate });
+                }
+            });
+
+            $bus.subscribe('routeNotFound', function() {
+                if ($router.routeNotFoundComponent) {
+                    render($router.routeNotFoundComponent);
+                } else if($router.routeNotFoundTemplate) {
+                    render({ templateName: $router.routeNotFoundTemplate });
                 }
             });
 
