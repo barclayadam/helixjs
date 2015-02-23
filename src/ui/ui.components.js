@@ -162,7 +162,7 @@ hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$r
             var options = ko.unwrap(valueAccessor());
 
             var componentName = options.name || options.component || options,
-                params = options.params || allBindingsAccessor.get('params') || allBindingsAccessor.get('parameters'),
+                params = ko.unwrap(options.params || allBindingsAccessor.get('params') || allBindingsAccessor.get('parameters')),
                 onComponentCreated = options.onComponentCreated || allBindingsAccessor.get('onComponentCreated');
 
             ko.dependencyDetection.ignore(function() {
