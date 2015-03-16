@@ -136,7 +136,7 @@
             } 
 
             ko.utils.toggleDomNodeCssClass(element, 'is-executing', uiAction.executing());
-        });
+        }, null, { disposeWhenNodeIsRemoved: element });
     }
 
     function executeActionFromNode(node, ev) {
