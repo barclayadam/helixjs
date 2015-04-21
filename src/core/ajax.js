@@ -54,13 +54,15 @@ hx.singleton('$ajax', ['$bus'], function($bus) {
                         url: requestBuilder.url,
                         type: httpMethod,
                         contentType: "application/json; charset=utf-8"
-                    }),
-                    ajaxRequest = jQuery.ajax(requestOptions);
+                    });
 
-                $bus.publish("ajaxRequestSent:" + requestBuilder.url, {
+                $bus.publish("ajaxRequestSending:" + requestBuilder.url, {
                     path: requestBuilder.url,
-                    method: httpMethod
+                    method: httpMethod,
+                    requestOptions: requestOptions
                 });
+
+                var ajaxRequest = jQuery.ajax(requestOptions);
 
                 ajaxRequest.done(function (response, textStatus, jqXHR) {
                     $bus.publish("ajaxResponseReceived:success:" + requestBuilder.url, {
