@@ -119,9 +119,10 @@
 
     function setupElementUpdateSubscriptions(element, uiAction, shouldHide) {
         ko.computed(function() {
-            var isEnabled = uiAction.enabled();
+            var isEnabled = uiAction.enabled(),
+                notExclusivelyExecuting = !uiAction.executing() || !uiAction.disableDuringExecution;
 
-            if (isEnabled) {
+            if (isEnabled && notExclusivelyExecuting) {
                 element.removeAttribute('disabled');
             } else {
                 element.setAttribute('disabled', 'disabled');
