@@ -26,23 +26,36 @@
     // storage of any 'complex' data type.
     "local session".replace(/\w+/g, function (type) {
         ko.extenders[type + 'Storage'] = function (target, key) {
-            if (localStorageSupported) {
-                var stored = window[type + 'Storage'].getItem(key);
-                
-                if (stored != null && ko.isWriteableObservable(target)) {
-                    target((JSON.parse(stored)).value);
-                }
-
-                target.subscribe(function (newValue) {
-                    if (newValue) {
+            function store(newValue) {
+                if (localStorageSupported) {
+                    if (newValue !== undefined) {
                         window[type + 'Storage'].setItem(key, JSON.stringify({
                             value: newValue
                         }));
                     } else {
                         window[type + 'Storage'].removeItem(key);
                     }
-                });
+                }
             }
+
+            if (localStorageSupported) {
+                var stored = window[type + 'Storage'].getItem(key);
+                
+                if (stored != null && ko.isWriteableObservable(target)) {
+                    target((JSON.parse(stored)).value);
+                }
+            }
+
+            // Automatically store new value to storage (will only work if
+            // support is enabled)
+            target.subscribe(store);
+
+            // Force the current value to be stored, useful for when the value
+            // is initialised but not changed and you want value to be exposed
+            // in DevTools
+            target.store = function() {
+                store(target());
+            };
 
             return target;
         };
