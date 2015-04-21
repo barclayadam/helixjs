@@ -18,9 +18,6 @@ hx.singleton('$Log', function() {
         console = {};
     }
 
-    // We attempt to use console.log to determine availability
-    // and safety of use, setting `console` to an empty object
-    // in the instance of failure.
     try {
         canApply = console.log && console.log.apply;
     } catch (e) {
