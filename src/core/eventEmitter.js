@@ -51,14 +51,18 @@ hx.provide('$EventEmitterFactory', ['$log'], function($log) {
                     subscribe(messageName[i], callback);
                 }
             } else {
-                subscriberList = subscribers[messageName] = subscribers[messageName] || { length: 0 };
-                subscriberList.length = subscriberList.length + 1;
+                if (!subscribers[messageName]) {
+                    subscribers[messageName] = [];
+                }
 
-                var newToken = subscriberList.length;
-                subscriberList[newToken] = callback;
+                subscribers[messageName].push(callback);
 
                 var unsubscribe = function() {
-                    return delete subscriberList[newToken];
+                    var index = subscribers[messageName].indexOf(callback);
+
+                    if (index > -1) {
+                        subscribers[messageName].splice(index, 1);
+                    }
                 };
               
                 return {
@@ -87,22 +91,19 @@ hx.provide('$EventEmitterFactory', ['$log'], function($log) {
 
             $log.debug(messageName, payload);
             
-            var indexOfSeparator = -1,
-                messages = [messageName];
+            var messages = [messageName];
             
             while (messageName = messageName.substring(0, messageName.lastIndexOf(':'))) {
                 messages.push(messageName);
             }
             
             for (var i = 0; i < messages.length; i++) {
-                var msg = messages[i],
-                    subscriberList = subscribers[msg] || {};
+                var msg = messages[i];
             
-                for (var token in subscriberList) {
-                    if (token != 'length') {
-                        subscriber = subscriberList[token];
-                        subscriber.call(this, payload);
-                    }
+                if (subscribers[msg]) {
+                    subscribers[msg].forEach(function(c) {
+                        c(payload);
+                    });
                 }
             }
         };
