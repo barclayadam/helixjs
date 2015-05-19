@@ -117,7 +117,13 @@ hx.singleton('$templating', ['$ajax'], function($ajax) {
     templating.externalPath = '/Templates/{name}';
 
     templating.loadExternalTemplate = function (name) {
-        var path = templating.externalPath.replace('{name}', name);
+        var path;
+
+        if (name.charAt(0) === '~') {
+            path = name.substr(1);
+        } else {
+            path = templating.externalPath.replace('{name}', name);
+        }
 
         return $ajax.url(path).get();
     };
