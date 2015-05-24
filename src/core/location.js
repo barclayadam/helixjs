@@ -142,10 +142,6 @@ hx.singleton('$location', ['$bus', '$log'], function($bus, $log) {
                 options = {};
             }
 
-            if (location.routePath() === newPath) {
-                return false;
-            }
-
             if (options.replace === true) {
                 windowHistory.replaceState(null, document.title, newPath);
             } else {
