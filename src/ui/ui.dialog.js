@@ -172,8 +172,10 @@ hx.singleton('$dialog', function() {
          */
         this.close = function(closeValue) {
             if (currentDialogElement) {
-                currentShowPromise.resolve(closeValue);
-
+                if (currentShowPromise) {
+                    currentShowPromise.resolve(closeValue);
+                }
+                
                 if (this.options.onClose) {
                     this.options.onClose(closeValue);
                 }
