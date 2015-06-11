@@ -168,7 +168,9 @@ hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$r
             ko.dependencyDetection.ignore(function() {
                 var component = $components.create(componentName),
                     lastComponent = ko.utils.domData.get(element, '__component__currentViewModel'),
-                    parameters = _.extend({}, $router.current().parameters, params);
+                    // If the value is an array we are not going to push the router parameters on to it
+                    // as it converts it in to an object, therefore client code cannot treat it as a real array
+                    parameters = _.isArray(params) ? params : _.extend({}, $router.current().parameters, params);
                 
                 $components.dispose(lastComponent);
                 lastComponent = null;
@@ -191,42 +193,34 @@ hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$r
                             $log.debug('Authorisation of component has failed "' + componentName + '", this component will not be rendered.');
 
                             ko.virtualElements.emptyNode(element);
-                            toggleClass(element, 'is-loading', false);
 
                             return;
                         }
 
-
-                        var showPromises = [];
+                        var showPromise;
 
                         if (component.beforeShow != null) {                
-                            component.beforeShow.call(component, parameters);
+                            component.beforeShow(parameters);
                         }
 
                         if (component.show != null) {
-                            showPromises.push(component.show.call(component, parameters));
+                            showPromise = component.show(parameters);
                         }
 
-                        return Promise.all(showPromises).then(function () {
+                        return Promise.resolve(showPromise).then(function () {
                             var templateValueAccessor = createTemplateValueAccessor(component, componentName, ko.utils.domData.get(element, '__component_hasAnonymousTemplate') === false);
 
-                            return $ajax.listen(function() {
-                                koBindingHandlers.template.update(element, templateValueAccessor, allBindingsAccessor, viewModel, bindingContext);
-                            }).then(function() {
-                                toggleClass(element, 'is-loading', false);
+                            koBindingHandlers.template.update(element, templateValueAccessor, allBindingsAccessor, viewModel, bindingContext);
 
-                                if (component.afterRender != null) {
-                                    component.afterRender.call(component, parameters);
-                                }
+                            if (component.afterRender != null) {
+                                component.afterRender.call(component, parameters);
+                            }
 
-                                ko.utils.domData.set(element, '__component__currentViewModel', component);
-                            });
+                            ko.utils.domData.set(element, '__component__currentViewModel', component);
                         });
                     })
                     .caught(function(err) {
                         $log.warn('An error occurred rendering component "' + componentName + '": ' + err.toString() + '\n' + err.stack);
-
-                        toggleClass(element, 'is-loading', false);
 
                         throw err;                        
                     });                
