@@ -196,17 +196,20 @@
         setupElementUpdateSubscriptions(element, uiAction, shouldHide);
 
         if (isForm) {
-            // The actionSubmitDisplay binding handler needs access to the action on
-            // its parent's form. Cannot modify binding context to take over descendant binding as needs
-            // to work with other controlling binding handlers.         
-            ko.utils.domData.set(element, '$formAction', uiAction);
-
             // We need to register submit event handler as the event does not
             // bubble so cannot be caught at document level.
             ko.utils.registerEventHandler(element, 'submit', function handleAction(event) {
                 uiAction();
                 event.preventDefault();
             });
+
+            var submitButton = element.querySelector('[type="submit"]');
+
+            if (submitButton) {
+                // TODO: Is shouldHide == false always correct? Can we determine from
+                // button to see if it has binding?
+                setupElementUpdateSubscriptions(submitButton, uiAction, false);
+            }
         }  
     }
 
@@ -250,40 +253,6 @@
                 allBindingsAccessor.get('onDisabled') === 'hide', 
                 viewModel,
                 allBindingsAccessor.get('clickBubble'));      
-        }
-    });
-
-    /** 
-     * @bindingHandler
-     * @internal
-     *
-     * A binding handler that will add the necessary 'display' elements as described in the `action`
-     * binding handler in the case that the action binding handler has been applied on a form, affecting
-     * buttons and inputs with type='submit'.
-     *
-     * This binding handler should not be applied manually, it is applied to all buttons automatically.
-     */
-    hx.bindingHandler('actionSubmitDisplay', {
-        tag: ['button', 'input'],
-
-        init: function(element, valueAccessor, allBindingsAccessor) {
-            var shouldHide = allBindingsAccessor.get('onDisabled') === 'hide';
-
-            if (element.getAttribute('type') === 'submit' && !allBindingsAccessor.get('action')) {
-                var parentForm = element.parentNode;
-
-                while (parentForm && parentForm.tagName !== 'FORM') {
-                    parentForm = parentForm.parentNode;
-                }
-
-                if (parentForm) {
-                    var formAction = ko.utils.domData.get(parentForm, '$formAction');
-
-                    if (formAction) {
-                        setupElementUpdateSubscriptions(element, formAction, shouldHide);
-                    }
-                }
-            }
         }
     });
 }());
