@@ -161,32 +161,32 @@
 
         min: {
             validator: function (value, options) {
-                return (emptyValue(value)) || (value >= options);
+                return emptyValue(value) || parseFloat(value) >= parseFloat(ko.unwrap(options));
             },
 
             message: function (options) {
-                return "This field must be equal to or greater than " + options;
+                return "This field must be equal to or greater than " + ko.unwrap(options);
             },
 
             modifyElement: function (element, options) {
-                element.setAttribute("min", options);
-                element.setAttribute("aria-valuemin", options);
+                element.setAttribute("min", ko.unwrap(options));
+                element.setAttribute("aria-valuemin", ko.unwrap(options));
             }
         },
 
         moreThan: {
             validator: function (value, options) {
-                return (emptyValue(value)) || (value > options);
+                return emptyValue(value) || parseFloat(value) > parseFloat(options);
             },
 
             message: function (options) {
-                return "This field must be greater than " + options + ".";
+                return "This field must be greater than " + ko.unwrap(options) + ".";
             }
         },
 
         max: {
             validator: function (value, options) {
-                return (emptyValue(value)) || (value <= ko.unwrap(options));
+                return emptyValue(value) || parseFloat(value) <= parseFloat(ko.unwrap(options));
             },
 
             message: function (options) {
@@ -201,7 +201,7 @@
 
         lessThan: {
             validator: function (value, options) {
-                return (emptyValue(value)) || (value < ko.unwrap(options));
+                return emptyValue(value) || parseFloat(value) < parseFloat(ko.unwrap(options));
             },
 
             message: function (options) {
@@ -211,16 +211,16 @@
 
         range: {
             validator: function (value, options) {
-                return (rules.min.validator(value, options[0])) && (rules.max.validator(value, options[1]));
+                return rules.min.validator(value, ko.unwrap(options)[0]) && rules.max.validator(value, ko.unwrap(options)[1]);
             },
 
             message: function (options) {
-                return "This field must be between " + options[0] + " and " + options[1];
+                return "This field must be between " + ko.unwrap(options)[0] + " and " + ko.unwrap(options)[1];
             },
 
             modifyElement: function (element, options) {
-                rules.min.modifyElement(element, options[0]);
-                return rules.max.modifyElement(element, options[1]);
+                rules.min.modifyElement(element, ko.unwrap(options)[0]);
+                return rules.max.modifyElement(element, ko.unwrap(options)[1]);
             }
         },
 
