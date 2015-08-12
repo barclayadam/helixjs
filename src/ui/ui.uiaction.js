@@ -122,10 +122,12 @@
             var isEnabled = uiAction.enabled(),
                 notExclusivelyExecuting = !uiAction.executing() || !uiAction.disableDuringExecution;
 
-            if (isEnabled && notExclusivelyExecuting) {
-                element.removeAttribute('disabled');
-            } else {
-                element.setAttribute('disabled', 'disabled');
+            if (element.tagName !== 'FORM') {
+                if (isEnabled && notExclusivelyExecuting) {
+                    element.removeAttribute('disabled');
+                } else {
+                    element.setAttribute('disabled', 'disabled');
+                }
             }
 
             if (shouldHide) {
