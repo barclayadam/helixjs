@@ -138,10 +138,6 @@ hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$r
         };
     }
 
-    function toggleClass(element, cssClass, shouldShow) {
-        element.nodeType != 8 && ko.utils.toggleDomNodeCssClass(element, cssClass, shouldShow);
-    }
-
     return {
         tag: 'component',
 
@@ -184,8 +180,6 @@ hx.bindingHandler('component', ['$log', '$ajax', '$injector', '$authoriser', '$r
                     onComponentCreated(component);
                 }
                 
-                toggleClass(element, 'is-loading', true);
-
                 $authoriser
                     .authorise(component, parameters)
                     .then(function(isAuthorised) {
