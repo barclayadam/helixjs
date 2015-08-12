@@ -114,7 +114,7 @@ hx.provide('$RouteTable', ['$bus', '$log', '$location', '$injector', '$authorise
     function MatchedRoute(route, url, parameters) {
         this.route = route;
         this.url = url;
-        this.parameters = ko.toJS(parameters || {});
+        this.parameters = parameters || {};
     }
 
     /**
